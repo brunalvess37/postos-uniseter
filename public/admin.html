@@ -1,34 +1,51 @@
 <!doctype html>
-<html lang='pt-BR'>
+<html lang="pt-BR">
 <head>
-<meta charset='utf-8'>
-<meta name='viewport' content='width=device-width,initial-scale=1'>
-<title>Admin Upload</title>
-<link rel='stylesheet' href='/style.css'>
-<script
-  async
-  crossorigin="anonymous"
-  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
-  data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Upload de Planilha</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- Clerk -->
+<script async crossorigin="anonymous"
+src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async ()=>{
+
+  const adminEmail = "brunalvess@hotmail.com";   // 🔥 ADMIN MASTER
+
+  const c = window.Clerk;
+  await c.load();
+
+  /* 1) Se não estiver logado → login */
+  if(!c.user){
+      return location.href="/signin.html";
+  }
+
+  /* 2) Se logado mas não for admin → bloqueia */
+  if(c.user.primaryEmailAddress.emailAddress !== adminEmail){
+      alert("❌ Acesso restrito. Área somente para administradores.");
+      return location.href="/home.html";
+  }
+
+  /* 3) Se chegou aqui → é administradora e pode usar normalmente 👇 */
+});
 </script>
 </head>
+
 <body>
-  <script>
-  document.addEventListener("DOMContentLoaded", async () => {
-    await Clerk.load();
-    if (!Clerk.user) {
-      window.location.href = "/signin.html";
-    }
-  });
-</script>
-<h1>Admin Upload</h1>
+
+<h1>Admin — Atualizar Planilha</h1>
+<p>Enviar arquivo XLSX com cadastro de Postos UNISETER</p>
+
 <input id='file' type='file' accept='.xls,.xlsx'>
 <pre id='preview'></pre>
-<button id='sendBtn' style='display:none;'>Enviar para servidor</button>
+<button id='sendBtn' style='display:none;'>📤 Enviar para Servidor</button>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-<script src="/admin.js"></script>
+<script src="xlsx.full.min.js"></script>
+<script src="admin.js"></script>
 
 </body>
 </html>
