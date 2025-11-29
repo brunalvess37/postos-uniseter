@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Admin — Upload de Planilha</title>
+
 <link rel="stylesheet" href="style.css">
 
 <!-- Clerk -->
@@ -19,30 +20,55 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   const c = window.Clerk;
   await c.load();
 
-  /* 1) Se não estiver logado → login */
-  if(!c.user){
-      return location.href="/signin.html";
-  }
+  // 🔐 1) Redirecionar para login se não autenticado
+  if(!c.user) return location.href="/signin.html";
 
-  /* 2) Se logado mas não for admin → bloqueia */
+  // 🔒 2) Se logado mas não autorizado → bloquear
   if(c.user.primaryEmailAddress.emailAddress !== adminEmail){
-      alert("❌ Acesso restrito. Área somente para administradores.");
+      alert("❌ Área restrita — somente administradores");
       return location.href="/home.html";
   }
-
-  /* 3) Se chegou aqui → é administradora e pode usar normalmente 👇 */
 });
-</script>
-</head>
 
+/* 🔘 Logout */
+async function sair(){
+    const c = window.Clerk;
+    await c.load();
+    await c.signOut();
+    location.href="/signin.html";
+}
+</script>
+
+<style>
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px;
+}
+button{
+  padding:8px 14px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  cursor:pointer;
+  margin-right:5px;
+}
+</style>
+
+</head>
 <body>
 
-<h1>Admin — Atualizar Planilha</h1>
-<p>Enviar arquivo XLSX com cadastro de Postos UNISETER</p>
+<header>
+  <button onclick="location='home.html'">← Menu</button>
+  <h2 style="margin:0;">Admin — Atualizar Planilha</h2>
+  <button onclick="sair()">Sair</button>
+</header>
+
+<p>Selecione o arquivo XLSX com os postos cadastrados</p>
 
 <input id='file' type='file' accept='.xls,.xlsx'>
 <pre id='preview'></pre>
-<button id='sendBtn' style='display:none;'>📤 Enviar para Servidor</button>
+<button id='sendBtn' style='display:none;margin-top:10px;'>📤 Enviar para o servidor</button>
 
 <script src="xlsx.full.min.js"></script>
 <script src="admin.js"></script>
