@@ -6,28 +6,16 @@
 
 <title>Postos UNISETER</title>
 
-<!-- Clerk (autenticação) -->
-<script
-  async
-  crossorigin="anonymous"
-  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-  data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
-</script>
+<!-- Clerk -->
+<script async crossorigin="anonymous"
+src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
 
 <link rel="stylesheet" href="style.css">
 
 <style>
-body{
-  font-family: Arial, sans-serif;
-  text-align:center;
-  padding:20px;
-}
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
-}
+body{ font-family: Arial, sans-serif; text-align:center; padding:20px; }
+header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
 h1{ font-size:24px; margin:0; }
 
 .menu-grid{
@@ -52,101 +40,80 @@ h1{ font-size:24px; margin:0; }
   cursor:pointer;
 }
 .menu-card:hover{ transform:scale(1.05); opacity:.9; }
-
-.menu-card img{
-  width:42px;
-  margin-bottom:6px;
-}
+.menu-card img{ width:42px; margin-bottom:6px; }
 
 @media(max-width:600px){
   .menu-grid{ grid-template-columns:1fr 1fr; }
 }
+
 button.logout-btn{
-  background:#eee;
-  border:1px solid #ccc;
-  border-radius:8px;
-  padding:6px 10px;
-  font-size:13px;
-  cursor:pointer;
+  background:#eee; border:1px solid #ccc; border-radius:8px;
+  padding:6px 10px; font-size:13px; cursor:pointer;
 }
 </style>
-
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-  const adminEmail = "brunalvess@hotmail.com";
-
-  const c = window.Clerk;
-  await c.load();
-
-  // 🔐 Se não estiver logado → manda para o login
-  if (!c.user) {
-    window.location.href = "/signin.html";
-    return;
-  }
-
-  // Mostrar/ocultar card de admin conforme e-mail
-  const btnAdmin = document.getElementById("admin-card");
-  if (c.user.primaryEmailAddress &&
-      c.user.primaryEmailAddress.emailAddress === adminEmail) {
-    btnAdmin.style.display = "flex";   // mostra para você
-  } else {
-    btnAdmin.style.display = "none";   // esconde para todos os demais
-  }
-});
-
-// 🔘 Função de logout geral
-async function sair() {
-  const c = window.Clerk;
-  await c.load();
-  await c.signOut();
-  window.location.href = "/signin.html";
-}
-</script>
-
 </head>
 
 <body>
+
+<script>
+document.addEventListener("DOMContentLoaded", async ()=>{
+   const adminEmail = "brunalvess@hotmail.com";
+   const c = window.Clerk;
+
+   await c.load();
+
+   // Se não estiver logado → vai para login e não renderiza menu
+   if(!c.user) return location.href="/signin.html";
+
+   // Controle do botão ADMIN
+   const adminCard = document.getElementById("admin-card");
+   if(c.user.primaryEmailAddress.emailAddress === adminEmail){
+      adminCard.style.display="flex";
+   }else{
+      adminCard.style.display="none";
+   }
+});
+
+async function sair(){
+   const c = window.Clerk;
+   await c.load();
+   await c.signOut();
+   location.href="/signin.html";
+}
+</script>
+
 
 <header>
   <h1>POSTOS UNISETER</h1>
   <button class="logout-btn" onclick="sair()">Sair</button>
 </header>
 
-<p style="color:#333;font-size:14px;margin-top:0;">
-  Sistema de visitas, gestão e planejamento
-</p>
+<p style="color:#333;font-size:14px;margin-top:0;">Sistema de visitas, gestão e planejamento</p>
 
 <div class="menu-grid">
 
   <div class="menu-card" onclick="location='app.html'">
-    <img src="https://img.icons8.com/ios-filled/100/search.png" alt="">
-    Buscar Postos
+    <img src="https://img.icons8.com/ios-filled/100/search.png"> Buscar Postos
   </div>
 
   <div class="menu-card" onclick="location='rota.html'">
-    <img src="https://img.icons8.com/ios-filled/100/route.png" alt="">
-    Rota do Dia
+    <img src="https://img.icons8.com/ios-filled/100/route.png"> Rota do Dia
   </div>
 
   <div class="menu-card" onclick="gerarPDFGeral()">
-    <img src="https://img.icons8.com/ios-filled/100/pdf.png" alt="">
-    PDF Geral
+    <img src="https://img.icons8.com/ios-filled/100/pdf.png"> PDF Geral
   </div>
 
   <div class="menu-card" onclick="location='rota.html'">
-    <img src="https://img.icons8.com/ios-filled/100/car.png" alt="">
-    Waze / Navegar
+    <img src="https://img.icons8.com/ios-filled/100/car.png"> Waze / Navegar
   </div>
 
-  <!-- 🔐 Card de admin: só aparece para o seu e-mail -->
-  <div class="menu-card" id="admin-card" style="display:none;" onclick="location='admin.html'">
-    <img src="https://img.icons8.com/ios-filled/100/upload.png" alt="">
-    Atualizar Planilha
+  <div class="menu-card" id="admin-card" onclick="location='admin.html'">
+    <img src="https://img.icons8.com/ios-filled/100/upload.png"> Atualizar Planilha
   </div>
 
-  <div class="menu-card" onclick="alert('Em breve: estatísticas e mapas!')">
-    <img src="https://img.icons8.com/ios-filled/100/combo-chart.png" alt="">
-    Relatórios Avançados
+  <div class="menu-card" onclick="alert('Em breve — Estatísticas e Insights!')">
+    <img src="https://img.icons8.com/ios-filled/100/combo-chart.png"> Relatórios Avançados
   </div>
 
 </div>
