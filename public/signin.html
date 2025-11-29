@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar — Postos Uniseter</title>
+
+  <!-- Clerk -->
+  <script
+    async
+    crossorigin="anonymous"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
+    data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
+  </script>
+</head>
+
+<body>
+  <div id="app" style="max-width:400px;margin:80px auto;"></div>
+
+  <script>
+    window.addEventListener("load", async () => {
+      await Clerk.load();
+      Clerk.mountSignIn(document.getElementById("app"));
+    });
+  </script>
+</body>
+</html>
