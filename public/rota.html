@@ -7,6 +7,22 @@
 <title>Rota - Postos UNISETER</title>
 <link rel="stylesheet" href="style.css">
 
+<!-- Clerk Autenticação -->
+<script async crossorigin="anonymous"
+src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
+
+<!-- 🔐 BLOQUEIO PARA NÃO LOGADOS -->
+<script>
+document.addEventListener("DOMContentLoaded", async ()=>{
+   const c = window.Clerk;
+   await c.load();
+
+   // Se não estiver autenticado → volta ao login
+   if(!c.user) window.location.href = "/signin.html";
+});
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="pdfmake.min.js"></script>
 <script src="vfs_fonts.js"></script>
@@ -22,7 +38,6 @@
 </header>
 
 <p id="rota-info"></p>
-
 <div id="rota-lista"></div>
 
 <hr>
