@@ -3,25 +3,57 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Entrar — Postos Uniseter</title>
+  <title>Login — Postos Uniseter</title>
 
-  <!-- Clerk -->
+  <!-- Clerk Login -->
   <script
     async
     crossorigin="anonymous"
-    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
     data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
   </script>
+
+  <style>
+    body{
+      background:#F3F5FA;
+      font-family:Arial, sans-serif;
+      text-align:center;
+    }
+    h2{
+      margin-top:60px;
+      color:#0A3D8A;
+      font-size:26px;
+      font-weight:bold;
+    }
+    p{
+      color:#333;
+      margin-bottom:20px;
+      font-size:15px;
+    }
+    #loginBox{
+      margin-top:30px;
+      display:flex;
+      justify-content:center;
+    }
+  </style>
 </head>
 
 <body>
-  <div id="app" style="max-width:400px;margin:80px auto;"></div>
+
+  <h2>🔐 Acesso Restrito</h2>
+  <p>Faça login para acessar o sistema</p>
+
+  <div id="loginBox"></div>
 
   <script>
-    window.addEventListener("load", async () => {
+    document.addEventListener("DOMContentLoaded", async()=>{
       await Clerk.load();
-      Clerk.mountSignIn(document.getElementById("app"));
+
+      Clerk.mountSignIn(document.getElementById("loginBox"),{
+        redirectUrl: "/home.html"     // 🔥 após login → vai para home
+      });
     });
   </script>
+
 </body>
 </html>
