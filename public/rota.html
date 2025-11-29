@@ -7,38 +7,34 @@
 <title>Rota - Postos UNISETER</title>
 <link rel="stylesheet" href="style.css">
 
-<script
-  async
-  crossorigin="anonymous"
-  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-  data-clerk-publishable-key="SUA_CLERK_KEY">
-</script>
-
-</head>
-<body>
-
-<header style="padding:10px;border-bottom:1px solid #ccc;">
-  <h2 style="margin:0;">Rota — Postos UNISETER</h2>
-  <button onclick="window.location.href='app.html'">← Voltar</button>
-</header>
-
-<br>
-
-<div id="rota-info" style="font-size:14px;color:#555;padding:0 10px;"></div>
-
-<div id="rota-lista" style="padding:10px;"></div>
-
-<div style="padding:10px;display:flex;gap:10px;flex-wrap:wrap;">
-  <button onclick="ordenarRota()">📍 Otimizar rota</button>
-  <button onclick="salvarRota()">💾 Salvar rota</button>
-  <button onclick="limparRota()">🗑 Limpar rota</button>
-  <button onclick="gerarPDFRota()">📄 PDF da Rota do Dia</button>
-  <button onclick="abrirNoWaze()">🚗 Abrir rota no Waze</button>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="pdfmake.min.js"></script>
 <script src="vfs_fonts.js"></script>
 <script src="pdf-rota.js"></script>
 <script src="rota.js"></script>
+
+</head>
+<body>
+
+<header>
+  <button onclick="location='app.html'">← Voltar</button>
+  <h2>Rota — Postos UNISETER</h2>
+</header>
+
+<p id="rota-info"></p>
+
+<div id="rota-lista"></div>
+
+<hr>
+<button onclick="toggleMapa()">🗺 Mostrar / Ocultar Mapa</button>
+<div id="mapa" style="height:0;overflow:hidden;transition:.4s"></div>
+
+<hr>
+<button onclick="ordenarRota()">📍 Otimizar rota</button>
+<button onclick="salvarRota()">💾 Salvar</button>
+<button onclick="limparRota()">🗑 Limpar</button>
+<button onclick="abrirNoWaze()">🚗 Abrir no Waze</button>
+<button onclick="gerarPDFRota()">📄 PDF da Rota</button>
+
 </body>
 </html>
