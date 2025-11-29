@@ -3,14 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Postos UNISETER</title>
+
+<title>Postos UNISETER — Buscar Postos</title>
+
+<!-- Clerk Autenticação -->
+<script async crossorigin="anonymous"
+src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
+
+<!-- 🔐 BLOQUEIO PARA USUÁRIOS NÃO LOGADOS -->
+<script>
+document.addEventListener("DOMContentLoaded", async ()=>{
+   const c = window.Clerk;
+   await c.load();
+
+   // Se não estiver autenticado → vai para login
+   if(!c.user) window.location.href = "/signin.html";
+});
+</script>
 
 <link rel="stylesheet" href="style.css">
 
-<script async crossorigin="anonymous"
-src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-data-clerk-publishable-key="SUA_CLERK_PUBLISHABLE_KEY_AQUI"></script>
-
+<!-- PDF + Busca -->
 <script src="pdfmake.min.js"></script>
 <script src="vfs_fonts.js"></script>
 <script src="pdf-geral.js"></script>
