@@ -6,25 +6,30 @@
 
 <title>Postos UNISETER — Buscar Postos</title>
 
-<!-- Clerk Autenticação -->
+<!-- Clerk -->
 <script async crossorigin="anonymous"
 src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
 data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
 
-<!-- 🔐 BLOQUEIO PARA USUÁRIOS NÃO LOGADOS -->
+<!-- BLOQUEIO DE ACESSO -->
 <script>
 document.addEventListener("DOMContentLoaded", async ()=>{
    const c = window.Clerk;
    await c.load();
-
-   // Se não estiver autenticado → vai para login
-   if(!c.user) window.location.href = "/signin.html";
+   if(!c.user) return location.href="/signin.html";
 });
+
+async function sair(){
+   const c = window.Clerk;
+   await c.load();
+   await c.signOut();
+   location.href="/signin.html";
+}
 </script>
 
 <link rel="stylesheet" href="style.css">
 
-<!-- PDF + Busca -->
+<!-- PDF + JS -->
 <script src="pdfmake.min.js"></script>
 <script src="vfs_fonts.js"></script>
 <script src="pdf-geral.js"></script>
@@ -33,8 +38,9 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
 <body>
 
-<header>
+<header style="display:flex;justify-content:space-between;align-items:center;">
   <h2>Postos UNISETER</h2>
+  <button onclick="sair()" style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">Sair</button>
 </header>
 
 <div class="search-box">
