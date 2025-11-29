@@ -15,43 +15,38 @@
 
   <style>
     body{
-      background:#F3F5FA;
+      background:#f7f9fc;
       font-family:Arial, sans-serif;
       text-align:center;
+      padding-top:120px;
     }
-    h2{
-      margin-top:60px;
-      color:#0A3D8A;
-      font-size:26px;
+    h1{
+      font-size:24px;
       font-weight:bold;
+      color:#003c8d;
     }
-    p{
-      color:#333;
-      margin-bottom:20px;
-      font-size:15px;
-    }
-    #loginBox{
-      margin-top:30px;
-      display:flex;
-      justify-content:center;
+    #login-box{
+      width:350px;
+      margin:auto;
+      padding:20px;
     }
   </style>
 </head>
 
 <body>
 
-  <h2>🔐 Acesso Restrito</h2>
+  <h1>🔐 Acesso Restrito</h1>
   <p>Faça login para acessar o sistema</p>
 
-  <div id="loginBox"></div>
+  <div id="login-box"></div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", async()=>{
-      await Clerk.load();
+    document.addEventListener("DOMContentLoaded", async () => {
+      const c = window.Clerk;
+      await c.load();
 
-      Clerk.mountSignIn(document.getElementById("loginBox"),{
-        redirectUrl: "/home.html"     // 🔥 após login → vai para home
-      });
+      // Renderiza formulário de login
+      c.mountSignIn(document.getElementById("login-box"));
     });
   </script>
 
