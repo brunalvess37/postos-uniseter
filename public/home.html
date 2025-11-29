@@ -5,6 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Postos UNISETER</title>
+
+<!-- Clerk (obrigatório para validar login) -->
+<script
+  async
+  crossorigin="anonymous"
+  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+  data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async ()=>{
+   const c = window.Clerk;
+   await c.load();
+
+   // Se não estiver logado → volta para tela de login
+   if(!c.user) window.location.href = "/signin.html";
+});
+</script>
+
 <link rel="stylesheet" href="style.css">
 
 <style>
@@ -42,7 +61,6 @@ h1{ font-size:26px; margin-top:10px; }
   margin-bottom:6px;
 }
 
-/* versão mobile perfeita */
 @media(max-width:600px){
   .menu-grid{ grid-template-columns:1fr 1fr; }
 }
@@ -52,7 +70,9 @@ h1{ font-size:26px; margin-top:10px; }
 <body>
 
 <h1>POSTOS UNISETER</h1>
-<p style="color:#333;font-size:14px;margin-top:-8px;">Sistema de visitas, gestão e planejamento</p>
+<p style="color:#333;font-size:14px;margin-top:-8px;">
+Sistema de visitas, gestão e planejamento
+</p>
 
 <div class="menu-grid">
 
@@ -76,7 +96,8 @@ h1{ font-size:26px; margin-top:10px; }
     Waze / Navegar
   </div>
 
-  <div class="menu-card" onclick="location='admin.html'">
+  <!-- 🔥 Este botão ainda NÃO está protegido como exclusivo do administrador -->
+  <div class="menu-card" id="btnAdmin" onclick="location='admin.html'">
     <img src="https://img.icons8.com/ios-filled/100/upload.png">
     Atualizar Planilha
   </div>
