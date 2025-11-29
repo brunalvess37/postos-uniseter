@@ -1,19 +1,32 @@
-let rota = JSON.parse(localStorage.getItem("rota_postos") || "[]");
+// ==================== CARREGAR ROTA DO CELULAR ====================
+let dados = JSON.parse(localStorage.getItem("rota_postos") || "{}");
+let rota = dados.rota || [];
+let dataRota = dados.data || null;
 
+
+// ==================== SALVAR COM DATA E HORA ====================
 function salvarRota(){
-  localStorage.setItem("rota_postos", JSON.stringify(rota));
-  alert("Rota salva!");
+  localStorage.setItem("rota_postos", JSON.stringify({
+    rota,
+    data: new Date().toLocaleString("pt-BR")   // << grava data
+  }));
+
+  alert("Rota salva com sucesso!");
+  listarRota(); // atualiza tela exibindo nova data
 }
 
+
+// ==================== LIMPAR TUDO ====================
 function limparRota(){
-  if(confirm("Deseja realmente limpar a rota?")){
+  if(confirm("Deseja realmente apagar toda a rota?")){
     rota = [];
+    dataRota = null;
     salvarRota();
-    listarRota();
   }
 }
 
-// Distância entre dois pontos (Haversine)
+
+// ==================== CALCULAR DISTÂNCIA ENTRE DOIS PONTOS ====================
 function distancia(a, b) {
   const R = 6371;
   const dLat = (b.lat - a.lat) * Math.PI/180;
@@ -25,50 +38,58 @@ function distancia(a, b) {
   return R * 2 * Math.atan2(Math.sqrt(sa), Math.sqrt(1-sa));
 }
 
+
+// ==================== OTIMIZAR ROTA GEO ====================
 function ordenarRota(){
   if(rota.length < 2){
-    alert("Adicione mais de um posto para otimizar");
+    alert("Adicione ao menos dois postos antes de otimizar.");
     return;
   }
 
-  let base = rota[0];
+  let base = rota[0]; // primeiro ponto da rota é referência
+
   rota = [
     base,
     ...rota.slice(1).sort((a,b)=>distancia(base,a) - distancia(base,b))
   ];
 
   salvarRota();
-  listarRota();
-  alert("Rota otimizada com sucesso!");
+  alert("Rota otimizada com sucesso! (por proximidade)");
 }
 
+
+// ==================== REMOVER POSTO DA ROTA ====================
 function remover(index){
   rota.splice(index,1);
   salvarRota();
-  listarRota();
 }
 
-// ========== LISTAR NA TELA ==========
+
+// ==================== EXIBIR TELA ====================
 function listarRota(){
   const area = document.getElementById("rota-lista");
+  const info = document.getElementById("rota-info");
+
   area.innerHTML = "";
 
+  // Exibe data registrada
+  info.innerHTML = dataRota
+    ? `<b>Rota criada/em uso desde:</b> ${dataRota}`
+    : "Nenhuma rota registrada ainda.";
+
   if(rota.length === 0){
-    area.innerHTML = "<p>Nenhum posto foi adicionado à rota.</p>";
+    area.innerHTML = "<p>Nenhum posto na rota.</p>";
     return;
   }
 
   rota.forEach((p, i)=>{
     const div = document.createElement("div");
     div.className = "card";
-
     div.innerHTML = `
       <h3>${p.nome}</h3>
-      <p>Latitude: ${p.lat}</p>
-      <p>Longitude: ${p.lon}</p>
-      <button onclick="remover(${i})">Remover ❌</button>
+      <p><b>Lat:</b> ${p.lat} — <b>Lon:</b> ${p.lon}</p>
+      <button onclick="remover(${i})">❌ Remover</button>
     `;
-
     area.appendChild(div);
   });
 }
