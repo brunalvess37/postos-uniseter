@@ -11,21 +11,25 @@
   async
   crossorigin="anonymous"
   src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-  data-clerk-publishable-key="SUA_PUBLISHABLE_KEY_AQUI">
+  data-clerk-publishable-key="SUA_CLERK_KEY">
 </script>
-</head>
 
+</head>
 <body>
 
-<header>
-  <h2>Rota — Postos UNISETER</h2>
+<header style="padding:10px;border-bottom:1px solid #ccc;">
+  <h2 style="margin:0;">Rota — Postos UNISETER</h2>
   <button onclick="window.location.href='app.html'">← Voltar</button>
 </header>
 
-<div id="rota-lista"></div>
+<br>
 
-<div class="buttons">
-  <button onclick="ordenarRota()">📍 Otimizar rota automaticamente</button>
+<div id="rota-info" style="font-size:14px;color:#555;padding:0 10px;"></div>
+
+<div id="rota-lista" style="padding:10px;"></div>
+
+<div style="padding:10px;display:flex;gap:10px;flex-wrap:wrap;">
+  <button onclick="ordenarRota()">📍 Otimizar rota</button>
   <button onclick="salvarRota()">💾 Salvar rota</button>
   <button onclick="limparRota()">🗑 Limpar rota</button>
 </div>
