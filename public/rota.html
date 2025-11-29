@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Rota - Postos UNISETER</title>
+<title>Rota — Postos UNISETER</title>
 <link rel="stylesheet" href="style.css">
 
 <!-- Clerk Autenticação -->
@@ -12,29 +12,55 @@
 src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
 data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
 
-<!-- 🔐 BLOQUEIO PARA NÃO LOGADOS -->
+<!-- 🔐 BLOQUEIO DE ACESSO -->
 <script>
 document.addEventListener("DOMContentLoaded", async ()=>{
+    const c = window.Clerk;
+    await c.load();
+
+    if(!c.user) return location.href="/signin.html"; // precisa estar logado
+});
+
+/* 🔘 logout */
+async function sair(){
    const c = window.Clerk;
    await c.load();
-
-   // Se não estiver autenticado → volta ao login
-   if(!c.user) window.location.href = "/signin.html";
-});
+   await c.signOut();
+   location.href="/signin.html";
+}
 </script>
 
+<!-- Scripts essenciais -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="pdfmake.min.js"></script>
 <script src="vfs_fonts.js"></script>
 <script src="pdf-rota.js"></script>
 <script src="rota.js"></script>
 
+<style>
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px;
+}
+button{
+  margin:4px;
+  padding:8px 14px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  cursor:pointer;
+  font-size:14px;
+}
+</style>
+
 </head>
 <body>
 
 <header>
-  <button onclick="location='app.html'">← Voltar</button>
-  <h2>Rota — Postos UNISETER</h2>
+  <button onclick="location='home.html'">← Menu</button>
+  <h2 style="margin:0;">Rota — Postos UNISETER</h2>
+  <button onclick="sair()">Sair</button>
 </header>
 
 <p id="rota-info"></p>
