@@ -1,4 +1,3 @@
-// admin.js — atualizado para Clerk
 document.addEventListener("DOMContentLoaded", async () => {
 
   // 🔐 1) Carregar Clerk e validar login
