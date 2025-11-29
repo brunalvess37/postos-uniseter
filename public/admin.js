@@ -1,5 +1,11 @@
 
-document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener("DOMContentLoaded", async () => {
+
+  await Clerk.load();
+  if (!Clerk.user) {
+    window.location.href = "/signin.html";
+    return;
+  }
   const input=document.getElementById('file');
   const preview=document.getElementById('preview');
   const sendBtn=document.getElementById('sendBtn');
