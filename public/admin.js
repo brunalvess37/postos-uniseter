@@ -1,57 +1,68 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
-  // 🔐 1) Carregar Clerk e validar login
-  await Clerk.load();
-  if (!Clerk.user) {
-    window.location.href = "/signin.html";
-    return;
+  await Clerk.load();            // Carrega autenticação
+  if (!Clerk.user) return location.href = "/signin.html";
+
+  // E-mail autorizado
+  const adminEmail = "brunalvess@hotmail.com";
+  const userEmail = Clerk.user.primaryEmailAddress.emailAddress;
+
+  // 🔒 Bloqueio — só você pode enviar planilha
+  if (userEmail !== adminEmail) {
+    alert("Acesso negado — Apenas a administradora pode enviar planilha.");
+    return location.href = "/home.html";
   }
 
-  const input = document.getElementById("file");
+  // ---------- VARIÁVEIS DE INTERFACE ----------
+  const input   = document.getElementById("file");
   const preview = document.getElementById("preview");
   const sendBtn = document.getElementById("sendBtn");
+
   let fileData = null;
 
-  // 📌 2) Ler e converter a planilha para JSON
+  // --------- LER EXCEL E TRANSFORMAR EM JSON ---------
   input.addEventListener("change", async () => {
     const file = input.files[0];
     if (!file) return;
 
-    const arrayBuffer = await file.arrayBuffer();
-    const workbook = XLSX.read(arrayBuffer);
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer);
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
     fileData = XLSX.utils.sheet_to_json(sheet);
 
     preview.textContent = JSON.stringify(fileData, null, 2);
     sendBtn.style.display = "block";
   });
 
-  // 📌 3) Enviar dados para serverless function
+  // --------- ENVIAR PARA O GITHUB DIRETO NO REPOSITÓRIO ---------
   sendBtn.addEventListener("click", async () => {
-    if (!fileData) {
-      alert("Selecione uma planilha antes de enviar.");
-      return;
-    }
 
-    // 🔐 3.1) Obter token do Clerk
+    if (!fileData) return alert("Selecione uma planilha primeiro.");
+
     const token = await Clerk.session.getToken();
+    if (!token) return alert("Erro ao obter token de segurança.");
 
-    if (!token) {
-      alert("Erro: não foi possível obter o token do usuário.");
-      return;
-    }
+    // CONFIGURAÇÃO GITHUB
+    const owner = "brunalvess37";
+    const repo  = "postos-uniseter";
+    const path  = "data/postos.json";
 
-    // 🔐 3.2) Enviar token + JSON
-    const res = await fetch("/.netlify/functions/upload-postos", {
-      method: "POST",
+    const content = btoa(JSON.stringify(fileData, null, 2)); // codifica para base64
+
+    // SALVAR OU SUBSTITUIR ARQUIVO
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+      method: "PUT",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({ data: fileData })
+      body: JSON.stringify({
+        message: "Atualização automática via painel admin",
+        content: content,
+      })
     });
 
-    const result = await res.text();
-    alert(result);
+    alert(res.ok ? "✔ Planilha atualizada no GitHub!" : "❌ Falha no upload");
   });
 });
