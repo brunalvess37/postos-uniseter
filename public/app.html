@@ -3,36 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Postos UNISETER</title>
+
 <link rel="stylesheet" href="style.css">
 
-<script
-  async
-  crossorigin="anonymous"
-  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-  data-clerk-publishable-key="SUA_PUBLISHABLE_KEY_AQUI">
-</script>
+<script async crossorigin="anonymous"
+src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+data-clerk-publishable-key="SUA_CLERK_PUBLISHABLE_KEY_AQUI"></script>
 
+<script src="pdfmake.min.js"></script>
+<script src="vfs_fonts.js"></script>
+<script src="pdf-geral.js"></script>
+<script src="app.js"></script>
 </head>
+
 <body>
 
-<div class="header">
+<header>
   <h2>Postos UNISETER</h2>
-</div>
+</header>
 
 <div class="search-box">
-  <input type="text" id="search" placeholder="Buscar posto por nome, endereço ou cidade...">
+  <input id="search" type="text" placeholder="Buscar posto...">
   <div id="suggestions"></div>
 </div>
 
 <div id="details"></div>
 
+<br>
 <button onclick="gerarPDFGeral()">📄 Gerar PDF Geral de Todos os Postos</button>
-<script src="pdfmake.min.js"></script>
-<script src="vfs_fonts.js"></script>
-<script src="pdf-geral.js"></script>
 
-<script src="app.js"></script>
 </body>
 </html>
