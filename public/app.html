@@ -1,1 +1,33 @@
-<html><body><h1>App</h1></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Postos UNISETER</title>
+<link rel="stylesheet" href="style.css">
+
+<script
+  async
+  crossorigin="anonymous"
+  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+  data-clerk-publishable-key="SUA_PUBLISHABLE_KEY_AQUI">
+</script>
+
+</head>
+<body>
+
+<div class="header">
+  <h2>Postos UNISETER</h2>
+</div>
+
+<div class="search-box">
+  <input type="text" id="search" placeholder="Buscar posto por nome, endereço ou cidade...">
+  <div id="suggestions"></div>
+</div>
+
+<div id="details"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
