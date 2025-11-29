@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang='pt-BR'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Admin Upload</title>
+<link rel='stylesheet' href='/style.css'>
+<script defer src='https://identity.netlify.com/v1/netlify-identity-widget.js'></script>
+</head>
+<body>
+<h1>Admin Upload</h1>
+<input id='file' type='file' accept='.xls,.xlsx'>
+<pre id='preview'></pre>
+<button id='sendBtn' style='display:none;'>Enviar para servidor</button>
+
+<script src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'></script>
+<script src='/admin.js'></script>
+</body>
+</html>
