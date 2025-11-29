@@ -1,0 +1,10 @@
+{
+  "name": "postos-uniseter",
+  "version": "1.0.0",
+  "description": "Site de administração e relatórios dos postos Uniseter",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/rest": "^20.0.0"
+  }
+}
