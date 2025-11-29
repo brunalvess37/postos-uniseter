@@ -95,3 +95,25 @@ function listarRota(){
 }
 
 document.addEventListener("DOMContentLoaded", listarRota);
+
+// =======================================================
+// 🚗 ABRIR ROTA COMPLETA NO WAZE
+// =======================================================
+function abrirNoWaze(){
+
+  if(rota.length < 1){
+    alert("Nenhum posto na rota.");
+    return;
+  }
+
+  // Primeiro destino (início)
+  let url = `https://waze.com/ul?ll=${rota[0].lat},${rota[0].lon}&navigate=yes`;
+
+  // Demais destinos como paradas extras
+  // (Waze aceita forma abreviada via parámetro &ll=)
+  for(let i=1;i<rota.length;i++){
+    url += `&ll=${rota[i].lat},${rota[i].lon}`;
+  }
+
+  window.open(url, "_blank");
+}
