@@ -5,17 +5,28 @@
 <meta name='viewport' content='width=device-width,initial-scale=1'>
 <title>Admin Upload</title>
 <link rel='stylesheet' href='/style.css'>
-<script defer src='https://identity.netlify.com/v1/netlify-identity-widget.js'></script>
+<script
+  async
+  crossorigin="anonymous"
+  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
+  data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
+</script>
 </head>
 <body>
+  <script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    await Clerk.load();
+    if (!Clerk.user) {
+      window.location.href = "/signin.html";
+    }
+  });
+</script>
 <h1>Admin Upload</h1>
 <input id='file' type='file' accept='.xls,.xlsx'>
 <pre id='preview'></pre>
 <button id='sendBtn' style='display:none;'>Enviar para servidor</button>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-<script src="/auth.js"></script>
 
 <script src="/admin.js"></script>
 
