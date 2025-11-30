@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  
+
+<!-- 🔥 Anti-cache -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -10,7 +11,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Admin — Upload de Planilha</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=202501">
 
 <!-- Clerk -->
 <script async crossorigin="anonymous"
@@ -20,47 +21,38 @@ data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMu
 <script>
 document.addEventListener("DOMContentLoaded", async ()=>{
 
-  const adminEmail = "brunalvess@hotmail.com";   // 🔥 ADMIN MASTER
+  const adminEmail = "brunalvess@hotmail.com";  // 🔥 Admin master
+  await Clerk.load();
 
-  const c = window.Clerk;
-  await c.load();
+  // 🔐 Se não estiver logado → login
+  if(!Clerk.user) return location.href="/signin.html";
 
-  // 🔐 1) Redirecionar para login se não autenticado
-  if(!c.user) return location.href="/signin.html";
-
-  // 🔒 2) Se logado mas não autorizado → bloquear
-  if(c.user.primaryEmailAddress.emailAddress !== adminEmail){
-      alert("❌ Área restrita — somente administradores");
+  // 🔒 Se logado mas NÃO for admin → bloquear
+  if(Clerk.user.primaryEmailAddress.emailAddress !== adminEmail){
+      alert("❌ Acesso restrito — somente administradores");
       return location.href="/home.html";
   }
 });
 
-/* 🔘 Logout */
 async function sair(){
-    const c = window.Clerk;
-    await c.load();
-    await c.signOut();
-    location.href="/signin.html";
+  await Clerk.load();
+  await Clerk.signOut();
+  location.href="/signin.html";
 }
 </script>
 
 <style>
 header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px; border-bottom:1px solid #ccc;
 }
 button{
-  padding:8px 14px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  cursor:pointer;
-  margin-right:5px;
+  padding:8px 14px; border-radius:8px; border:1px solid #ccc;
+  cursor:pointer; margin-right:5px;
 }
 </style>
-
 </head>
+
 <body>
 
 <header>
@@ -73,10 +65,11 @@ button{
 
 <input id='file' type='file' accept='.xls,.xlsx'>
 <pre id='preview'></pre>
-<button id='sendBtn' style='display:none;margin-top:10px;'>📤 Enviar para o servidor</button>
+<button id='sendBtn' style='display:none;margin-top:10px;'>📤 Enviar Planilha</button>
 
-<script src="xlsx.full.min.js"></script>
-<script src="admin.js"></script>
+<!-- Agora com anti-cache e upload Cloudflare -->
+<script src="xlsx.full.min.js?v=202501"></script>
+<script src="admin.js?v=202501"></script>
 
 </body>
 </html>
