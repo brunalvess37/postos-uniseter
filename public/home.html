@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 
+<!-- 🔥 Impede cache antigo -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -11,12 +12,13 @@
 
 <title>Postos UNISETER</title>
 
-<!-- Clerk -->
+<!-- Clerk Autenticação -->
 <script async crossorigin="anonymous"
 src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
 data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
 
-<link rel="stylesheet" href="style.css">
+<!-- CSS com anti-cache -->
+<link rel="stylesheet" href="style.css?v=202501">
 
 <style>
 body{ font-family: Arial, sans-serif; text-align:center; padding:20px; }
@@ -30,19 +32,11 @@ h1{ font-size:24px; margin:0; }
   margin-top:25px;
 }
 .menu-card{
-  background:#0354a6;
-  color:white;
-  padding:18px;
-  border-radius:12px;
+  background:#0354a6; color:white; padding:18px; border-radius:12px;
   box-shadow:0 3px 8px rgba(0,0,0,.2);
-  font-size:15px;
-  font-weight:bold;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  transition:.2s;
-  cursor:pointer;
+  font-size:15px; font-weight:bold;
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+  transition:.2s; cursor:pointer;
 }
 .menu-card:hover{ transform:scale(1.05); opacity:.9; }
 .menu-card img{ width:42px; margin-bottom:6px; }
@@ -62,15 +56,16 @@ button.logout-btn{
 
 <script>
 document.addEventListener("DOMContentLoaded", async ()=>{
+
    const adminEmail = "brunalvess@hotmail.com";
    const c = window.Clerk;
 
    await c.load();
 
-   // Se não estiver logado → vai para login e não renderiza menu
+   // 🔐 Se não estiver logado → vai para login
    if(!c.user) return location.href="/signin.html";
 
-   // Controle do botão ADMIN
+   // 🔐 Exibe botão ADMIN só para você
    const adminCard = document.getElementById("admin-card");
    if(c.user.primaryEmailAddress.emailAddress === adminEmail){
       adminCard.style.display="flex";
@@ -79,6 +74,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
    }
 });
 
+// 🔓 Logout
 async function sair(){
    const c = window.Clerk;
    await c.load();
@@ -87,13 +83,14 @@ async function sair(){
 }
 </script>
 
-
 <header>
   <h1>POSTOS UNISETER</h1>
   <button class="logout-btn" onclick="sair()">Sair</button>
 </header>
 
-<p style="color:#333;font-size:14px;margin-top:0;">Sistema de visitas, gestão e planejamento</p>
+<p style="color:#333;font-size:14px;margin-top:0;">
+  Sistema de visitas, gestão e planejamento
+</p>
 
 <div class="menu-grid">
 
@@ -113,6 +110,7 @@ async function sair(){
     <img src="https://img.icons8.com/ios-filled/100/car.png"> Waze / Navegar
   </div>
 
+  <!-- 🔒 Só aparece para você -->
   <div class="menu-card" id="admin-card" onclick="location='admin.html'">
     <img src="https://img.icons8.com/ios-filled/100/upload.png"> Atualizar Planilha
   </div>
@@ -123,9 +121,10 @@ async function sair(){
 
 </div>
 
-<script src="pdfmake.min.js"></script>
-<script src="vfs_fonts.js"></script>
-<script src="pdf-geral.js?v=202501">
+<!-- Scripts com anti-cache 🔥 -->
+<script src="pdfmake.min.js?v=202501"></script>
+<script src="vfs_fonts.js?v=202501"></script>
+<script src="pdf-geral.js?v=202501"></script>
 
 </body>
 </html>
