@@ -1,29 +1,40 @@
+export default {
+  async fetch(request) {
+    // Método inválido
+    if (request.method !== "POST") {
+      return new Response("Método não permitido", { status: 405 });
+    }
 
-const { Octokit } = require("@octokit/rest");
+    // Corpo enviado pelo admin.js
+    const { fileData } = await request.json();
 
-exports.handler = async (event)=>{
-  try{
-    const body = JSON.parse(event.body);
-    const data = body.data || [];
+    if (!fileData) {
+      return new Response("Nenhuma planilha enviada", { status: 400 });
+    }
 
-    const owner = process.env.GITHUB_REPO_OWNER;
-    const repo = process.env.GITHUB_REPO_NAME;
-    const path = process.env.GITHUB_TARGET_PATH;
-    const token = process.env.GITHUB_COMMIT_TOKEN;
+    // Token GitHub (substituir pelo seu)
+    const TOKEN = UPLOAD_TOKEN; // será lido do Cloudflare
 
-    const octokit = new Octokit({ auth: token });
+    const repo = "brunalvess37/postos-uniseter";
+    const path = "public/data.json";  // ← onde ficará salva a planilha convertida
 
-    const content = Buffer.from(JSON.stringify(data,null,2)).toString('base64');
+    const commitMessage = "Atualização automática via painel UNISETER";
 
-    await octokit.repos.createOrUpdateFileContents({
-      owner, repo, path,
-      message: "Atualização automática via Admin",
-      content,
-      sha: undefined
+    // Enviar ao GitHub
+    const base64 = btoa(JSON.stringify(fileData, null, 2));
+
+    const upload = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: commitMessage,
+        content: base64
+      })
     });
 
-    return { statusCode:200, body:"Upload concluído!" };
-  } catch(e){
-    return { statusCode:500, body:"Erro: "+e.message };
+    return new Response("Upload concluído com sucesso!", { status: 200 });
   }
-};
+}
