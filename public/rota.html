@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 
+<!-- 🔥 Impede cache antigo -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -10,77 +11,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Rota — Postos UNISETER</title>
-<link rel="stylesheet" href="style.css">
 
-<!-- Clerk Autenticação -->
+<!-- Clerk Login -->
 <script async crossorigin="anonymous"
 src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
 data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
 
-<!-- 🔐 BLOQUEIO DE ACESSO -->
 <script>
 document.addEventListener("DOMContentLoaded", async ()=>{
     const c = window.Clerk;
     await c.load();
 
-    if(!c.user) return location.href="/signin.html"; // precisa estar logado
+    if(!c.user) return location.href="/signin.html";
 });
-
-/* 🔘 logout */
-async function sair(){
-   const c = window.Clerk;
-   await c.load();
-   await c.signOut();
-   location.href="/signin.html";
-}
 </script>
 
-<!-- Scripts essenciais -->
+<link rel="stylesheet" href="style.css?v=202501">
+
+<!-- Bibliotecas -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="pdfmake.min.js"></script>
-<script src="vfs_fonts.js"></script>
-<script src="pdf-rota.js"></script>
-<script src="rota.js"></script>
+<script src="pdfmake.min.js?v=202501"></script>
+<script src="vfs_fonts.js?v=202501"></script>
+
+<!-- Scripts da rota -->
+<script src="pdf-rota.js?v=202501"></script>
+<script src="rota.js?v=202501"></script>
 
 <style>
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px;
-}
-button{
-  margin:4px;
-  padding:8px 14px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  cursor:pointer;
-  font-size:14px;
-}
+#rota-info{ margin:10px;font-size:14px;color:#333; }
+#rota-lista .card{ padding:10px;border:1px solid #ddd;margin:6px;border-radius:8px; }
+#mapa{ width:100%;max-height:350px;background:#eee;margin-top:10px; }
+button{ margin:4px;padding:8px 12px;font-size:14px; }
 </style>
 
 </head>
 <body>
 
 <header>
-  <button onclick="location='home.html'">← Menu</button>
+  <button onclick="location='home.html'">← Voltar</button>
   <h2 style="margin:0;">Rota — Postos UNISETER</h2>
-  <button onclick="sair()">Sair</button>
 </header>
 
 <p id="rota-info"></p>
 <div id="rota-lista"></div>
 
 <hr>
-<button onclick="toggleMapa()">🗺 Mostrar / Ocultar Mapa</button>
-<div id="mapa" style="height:0;overflow:hidden;transition:.4s"></div>
+
+<button onclick="ordenarRota()">📍 Otimizar rota</button>
+<button onclick="salvarRota()">💾 Salvar rota</button>
+<button onclick="limparRota()">🗑 Limpar rota</button>
+<button onclick="abrirNoWaze()">🚗 Abrir no Waze</button>
+<button onclick="gerarPDFRota()">📄 PDF da rota</button>
 
 <hr>
-<button onclick="ordenarRota()">📍 Otimizar rota</button>
-<button onclick="salvarRota()">💾 Salvar</button>
-<button onclick="limparRota()">🗑 Limpar</button>
-<button onclick="abrirNoWaze()">🚗 Abrir no Waze</button>
-<button onclick="gerarPDFRota()">📄 PDF da Rota</button>
+
+<button onclick="toggleMapa()">🗺 Mostrar / Ocultar mapa</button>
+<div id="mapa" style="height:0; overflow:hidden; transition:.3s"></div>
 
 </body>
 </html>
