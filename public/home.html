@@ -21,7 +21,12 @@ data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMu
 <link rel="stylesheet" href="style.css?v=202501">
 
 <style>
-body{ font-family: Arial, sans-serif; text-align:center; padding:20px; }
+body{
+  display:none;                 /* 🔐 anti-flash */
+  font-family: Arial, sans-serif;
+  text-align:center;
+  padding:20px;
+}
 header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
 h1{ font-size:24px; margin:0; }
 
