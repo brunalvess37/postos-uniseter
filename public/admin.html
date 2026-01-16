@@ -70,7 +70,16 @@ button{
 
 <input id='file' type='file' accept='.xls,.xlsx'>
 <pre id='preview'></pre>
-<button id='sendBtn' style='display:none;margin-top:10px;'>📤 Enviar Planilha</button>
+<button id="sendBtn"
+        disabled
+        style="margin-top:10px;opacity:.5;cursor:not-allowed;">
+  📤 Enviar Planilha
+</button>
+
+<p id="status" style="font-size:13px;color:#555;margin-top:6px;">
+  Selecione uma planilha para habilitar o envio.
+</p>
+
 
 <!-- Agora com anti-cache e upload Cloudflare -->
 <script src="xlsx.full.min.js?v=202501"></script>
