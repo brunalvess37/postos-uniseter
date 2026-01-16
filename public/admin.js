@@ -2,29 +2,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // 🔐 Carrega Clerk e valida login
   await Clerk.load();
-  if (!Clerk.user) return location.href="/signin.html";
+  if (!Clerk.user) return location.href = "/signin.html";
 
   const ADMIN = "brunalvess@hotmail.com";
   if (Clerk.user.primaryEmailAddress.emailAddress !== ADMIN) {
     alert("❌ Área restrita a administradores.");
-    return location.href="/home.html";
+    return location.href = "/home.html";
   }
 
-  const input = document.getElementById("file");
+  const input   = document.getElementById("file");
   const preview = document.getElementById("preview");
   const sendBtn = document.getElementById("sendBtn");
-  const status = document.getElementById("status");
+  const status  = document.getElementById("status");
+
   let fileData = null;
 
-  // 🔒 Estado inicial do botão
+  // 🔒 Estado inicial
   sendBtn.disabled = true;
-  sendBtn.textContent = "📤 Enviar Planilha";
   sendBtn.style.opacity = "0.5";
   sendBtn.style.cursor = "not-allowed";
-
-  if (status) {
-    status.textContent = "Selecione uma planilha para habilitar o envio.";
-  }
+  status.textContent = "Selecione uma planilha para habilitar o envio.";
 
   // 📥 Lê planilha XLSX → JSON
   input.addEventListener("change", async () => {
@@ -38,28 +35,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     preview.textContent = JSON.stringify(fileData, null, 2);
 
-    // 🔓 Habilita botão
+    // 🔓 Habilita envio
     sendBtn.disabled = false;
     sendBtn.style.opacity = "1";
     sendBtn.style.cursor = "pointer";
+    sendBtn.textContent = "📤 Enviar Planilha";
 
-    if (status) {
-      status.textContent =
-        "Arquivo carregado. Clique em 'Enviar Planilha' para atualizar os dados.";
-    }
+    status.textContent =
+      "Arquivo carregado. Clique em “Enviar Planilha” para atualizar os dados.";
   });
 
-  // 🚀 Envio da planilha
+  // 🚀 Envio para Cloudflare Function
   sendBtn.addEventListener("click", async () => {
-    if (!fileData) {
-      alert("Selecione uma planilha primeiro.");
-      return;
-    }
+    if (!fileData) return alert("Selecione uma planilha primeiro.");
 
-    // ⏳ Feedback de envio
     sendBtn.disabled = true;
     sendBtn.textContent = "⏳ Enviando...";
     sendBtn.style.opacity = "0.6";
+    sendBtn.style.cursor = "wait";
 
     try {
       const res = await fetch("/functions/upload-postos", {
@@ -68,15 +61,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         body: JSON.stringify({ data: fileData })
       });
 
-      alert(await res.text());
-    } catch (err) {
-      alert("Erro ao enviar a planilha.");
-    }
+      const msg = await res.text();
+      alert(msg);
 
-    // 🔁 Restaura botão
-    sendBtn.textContent = "📤 Enviar Planilha";
-    sendBtn.disabled = false;
-    sendBtn.style.opacity = "1";
+      status.textContent = "Planilha enviada com sucesso ✅";
+    } catch (err) {
+      alert("Erro ao enviar planilha.");
+      status.textContent = "Erro ao enviar a planilha ❌";
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = "📤 Enviar Planilha";
+      sendBtn.style.opacity = "1";
+      sendBtn.style.cursor = "pointer";
+    }
   });
 
 });
