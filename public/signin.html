@@ -2,15 +2,16 @@
 <html lang="pt-BR">
 <head>
 
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-  
+  <!-- Anti-cache -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login — Postos Uniseter</title>
+  <title>Login — Postos UNISETER</title>
 
-  <!-- Clerk Login -->
+  <!-- Clerk -->
   <script
     async
     crossorigin="anonymous"
@@ -20,38 +21,36 @@
 
   <style>
     body{
+      margin:0;
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
       background:#f7f9fc;
       font-family:Arial, sans-serif;
-      text-align:center;
-      padding-top:120px;
-    }
-    h1{
-      font-size:24px;
-      font-weight:bold;
-      color:#003c8d;
     }
     #login-box{
-      width:350px;
-      margin:auto;
-      padding:20px;
+      width:360px;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>🔐 Acesso Restrito</h1>
-  <p>Faça login para acessar o sistema</p>
-
+  <!-- Clerk renderiza o login aqui -->
   <div id="login-box"></div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const c = window.Clerk;
-      await c.load();
+    window.addEventListener("load", async () => {
+      await Clerk.load();
 
-      // Renderiza formulário de login
-      c.mountSignIn(document.getElementById("login-box"));
+      Clerk.mountSignIn(
+        document.getElementById("login-box"),
+        {
+          afterSignInUrl: "/home.html",
+          afterSignUpUrl: "/home.html"
+        }
+      );
     });
   </script>
 
