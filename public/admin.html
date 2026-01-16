@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
       alert("❌ Acesso restrito — somente administradores");
       return location.href="/home.html";
   }
+  document.body.style.display = "block"; // ✅ libera tela só para admin
 });
 
 async function sair(){
@@ -42,6 +43,10 @@ async function sair(){
 </script>
 
 <style>
+body{
+  display:none;   /* 🔐 anti-flash */
+}
+  
 header{
   display:flex; justify-content:space-between; align-items:center;
   padding:10px; border-bottom:1px solid #ccc;
