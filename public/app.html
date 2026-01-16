@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", async ()=>{
    const c = window.Clerk;
    await c.load();
    if(!c.user) return location.href="/signin.html";
+
+   document.body.style.display = "block"; // ✅ libera tela após login
 });
 
 async function sair(){
