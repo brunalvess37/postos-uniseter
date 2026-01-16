@@ -23,6 +23,8 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     await c.load();
 
     if(!c.user) return location.href="/signin.html";
+
+    document.body.style.display = "block"; // ✅ libera tela após login
 });
 </script>
 
@@ -38,6 +40,10 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 <script src="rota.js?v=202501"></script>
 
 <style>
+body{
+  display:none;   /* 🔐 anti-flash: esconde até validar login */
+}
+    
 #rota-info{ margin:10px;font-size:14px;color:#333; }
 #rota-lista .card{ padding:10px;border:1px solid #ddd;margin:6px;border-radius:8px; }
 #mapa{ width:100%;max-height:350px;background:#eee;margin-top:10px; }
