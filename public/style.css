@@ -9,37 +9,53 @@ body {
 }
 
 /* =========================================================
-   BUSCA (INPUT) + SUGESTÕES
+   BUSCA (INPUT + UX)
 ========================================================= */
 
-/* Container da busca */
+/* Container geral da busca */
 .search-box {
   position: relative;
   margin-top: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
-/* Campo de busca */
+/* Campo de busca principal */
 #search {
   width: 100%;
-  padding: 14px 14px;
-  font-size: 16px;              /* 🔥 maior e legível no mobile */
-  border-radius: 10px;
-  border: 2px solid #003c8d;    /* 🔥 destaque visual */
+  padding: 14px 44px 14px 42px; /* espaço para lupa + X */
+  font-size: 16px;
+  border-radius: 12px;
+  border: 2px solid #003c8d;
   outline: none;
   box-sizing: border-box;
+  background: #fff;
 }
 
-/* Foco no input */
+/* Foco */
 #search:focus {
   border-color: #005edb;
   box-shadow: 0 0 0 3px rgba(0, 94, 219, 0.15);
 }
 
-/* Placeholder mais visível */
+/* Placeholder */
 #search::placeholder {
   color: #777;
   font-size: 15px;
+}
+
+/* =========================================================
+   ESTADOS DA BUSCA
+========================================================= */
+
+.search-state {
+  margin-top: 14px;
+  padding: 14px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  background: #ffffff;
+  border: 1px dashed #ccc;
+  border-radius: 10px;
 }
 
 /* =========================================================
@@ -50,7 +66,7 @@ body {
 #suggestions {
   margin-top: 6px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 10px;
   max-height: 320px;
   overflow-y: auto;
   background: #ffffff;
@@ -71,7 +87,7 @@ body {
   border-bottom: none;
 }
 
-/* Hover (mouse) */
+/* Hover */
 .suggestion-card:hover {
   background: #f4f7fb;
 }
@@ -125,7 +141,7 @@ mark {
   margin-top: 20px;
   padding: 16px;
   background: #ffffff;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid #ddd;
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
@@ -153,4 +169,17 @@ mark {
 
 #details button:hover {
   background: #eaeaea;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+@media (max-width: 600px) {
+  body {
+    padding: 16px;
+  }
+
+  #search {
+    font-size: 16px; /* evita zoom automático */
+  }
 }
