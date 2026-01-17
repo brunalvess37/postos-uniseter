@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     status.textContent = "⏳ Enviando dados para o servidor...";
 
     try {
-      const res = await fetch("/functions/upload-postos", {
+      const res = await fetch("/upload-postos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ data: fileData })
