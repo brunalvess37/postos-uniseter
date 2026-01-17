@@ -8,6 +8,14 @@ async function carregarPostos() {
   console.log("Postos carregados:", postos);
 }
 
+// ========= UTIL: formatar contatos =========
+function formatarContato(nome, telefone) {
+  if (nome && telefone) return `${nome} — ${telefone}`;
+  if (telefone) return telefone;
+  if (nome) return nome;
+  return null;
+}
+
 // ========= DETALHES (GLOBAL) =========
 function abrirDetalhes(i) {
   const p = postos[i];
@@ -18,18 +26,36 @@ function abrirDetalhes(i) {
     (p["ENDEREÇO III"] ? " - " + p["ENDEREÇO III"] : "") +
     (p["ENDEREÇO IV"] ? " - " + p["ENDEREÇO IV"] : "");
 
+  // contatos tratados corretamente
+  const contato1 = formatarContato(
+    p["CONTATO 1 - Nome"],
+    p["CONTATO 1 - Telefone"]
+  );
+  const contato2 = formatarContato(
+    p["CONTATO 2 - Nome"],
+    p["CONTATO 2 - Telefone"]
+  );
+
   document.getElementById("details").innerHTML = `
     <h3>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</h3>
     <p><b>Cidade:</b> ${p.CIDADE}</p>
     <p><b>Endereço:</b> ${end}</p>
-    <p><b>Contato 1:</b> ${p["CONTATO 1 - Nome"] || ""} — ${p["CONTATO 1 - Telefone"] || ""}</p>
-    <p><b>Contato 2:</b> ${p["CONTATO 2 - Nome"] || ""} — ${p["CONTATO 2 - Telefone"] || ""}</p>
-    <button onclick="addRota(${i})">➕ Adicionar à rota</button>
-    <button onclick="location='rota.html'">📍 Abrir rota</button>
+
+    ${contato1 ? `<p><b>Contato:</b> <a href="tel:${p["CONTATO 1 - Telefone"] || ""}">${contato1}</a></p>` : ""}
+    ${contato2 ? `<p><b>Contato:</b> <a href="tel:${p["CONTATO 2 - Telefone"] || ""}">${contato2}</a></p>` : ""}
+
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+      <button onclick="addRota(${i})">➕ Adicionar à rota</button>
+      <button onclick="location='rota.html'">📍 Abrir rota</button>
+    </div>
   `;
 
-  // limpa sugestões após seleção
+  // limpa sugestões e busca
   document.getElementById("suggestions").innerHTML = "";
+  document.getElementById("search").value = "";
+
+  // scroll suave até detalhes
+  document.getElementById("details").scrollIntoView({ behavior: "smooth" });
 }
 
 // 🔑 expõe para onclick inline
@@ -63,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const searchInput = document.getElementById("search");
   const suggestions = document.getElementById("suggestions");
 
-  let activeIndex = -1; // controle teclado
+  let activeIndex = -1;
 
   // ===== BUSCA COM SUGESTÕES =====
   searchInput.oninput = function () {
@@ -81,10 +107,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       (p.ENDERECO_COMPLETO || "").toLowerCase().includes(q)
     ).slice(0, 10);
 
+    if (lista.length === 0) {
+      suggestions.innerHTML = `
+        <div class="suggestion-card">
+          <div class="suggestion-city">Nenhum posto encontrado</div>
+        </div>
+      `;
+      return;
+    }
+
     suggestions.innerHTML = lista.map(p => {
       const index = postos.indexOf(p);
 
-      // destaque do termo buscado
       const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"]
         .replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
 
