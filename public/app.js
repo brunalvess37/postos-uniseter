@@ -4,7 +4,7 @@ let postos = [];
 // ========= CARREGAR POSTOS =========
 async function carregarPostos() {
   try {
-    const res = await fetch("/api/postos");
+    const res = await fetch("/data/postos.json");
     if (!res.ok) throw new Error("Falha ao buscar dados");
     postos = await res.json();
   } catch (e) {
