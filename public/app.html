@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
    await c.load();
    if(!c.user) return location.href="/signin.html";
 
-   document.body.style.display = "block"; // ✅ libera tela após login
+   document.body.style.display = "block"; // libera tela após login
 });
 
 async function sair(){
@@ -36,15 +36,14 @@ async function sair(){
 
 <link rel="stylesheet" href="style.css">
 
-<!-- PDF + JS -->
+<!-- PDFs -->
 <script src="pdfmake.min.js"></script>
 <script src="vfs_fonts.js"></script>
 <script src="pdf-geral.js"></script>
-<script src="app.js?v=202501"></script>
 
 <style>
   body{
-    display:none;   /* 🔐 anti-flash: esconde até validar login */
+    display:none; /* anti-flash */
   }
 </style>
 
@@ -54,7 +53,18 @@ async function sair(){
 
 <header style="display:flex;justify-content:space-between;align-items:center;">
   <h2>Postos UNISETER</h2>
-  <button onclick="sair()" style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">Sair</button>
+
+  <div>
+    <button onclick="location.href='home.html'"
+      style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+      ← Menu
+    </button>
+
+    <button onclick="sair()"
+      style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+      Sair
+    </button>
+  </div>
 </header>
 
 <div class="search-box">
@@ -66,6 +76,9 @@ async function sair(){
 
 <br>
 <button onclick="gerarPDFGeral()">📄 Gerar PDF Geral de Todos os Postos</button>
+
+<!-- ⚠️ app.js SEMPRE por último -->
+<script src="app.js?v=202501"></script>
 
 </body>
 </html>
