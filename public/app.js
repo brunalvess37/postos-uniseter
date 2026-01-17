@@ -35,22 +35,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   searchInput.oninput = function () {
-    const q = this.value.toLowerCase();
-    if (!q) {
-      suggestions.innerHTML = "";
-      return;
-    }
+  const q = this.value.toLowerCase();
 
-    const lista = postos.filter(p =>
-      p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
-      p.CIDADE?.toLowerCase().includes(q) ||
-      (p.ENDERECO_COMPLETO || "").toLowerCase().includes(q)
-    ).slice(0, 10);
+  if (!q) {
+    suggestions.innerHTML = "";
+    return;
+  }
 
-suggestions.innerHTML = lista.map(p => {
-  const index = postos.indexOf(p);
+  const lista = postos.filter(p =>
+    p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
+    p.CIDADE?.toLowerCase().includes(q) ||
+    (p.ENDERECO_COMPLETO || "").toLowerCase().includes(q)
+  ).slice(0, 10);
 
-  return `
+  suggestions.innerHTML = lista.map(p => {
+    const index = postos.indexOf(p);
+
+    return `
 <div class="suggestion-card" onclick="abrirDetalhes(${index})">
   <div class="suggestion-title">
     ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
@@ -60,8 +61,8 @@ suggestions.innerHTML = lista.map(p => {
   </div>
 </div>
 `;
-}).join("");
-
+  }).join("");
+};
 
 // ========= DETALHES =========
 function abrirDetalhes(i) {
