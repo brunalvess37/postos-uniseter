@@ -9,11 +9,36 @@ async function carregarPostos() {
 }
 
 // ========= UTIL: formatar contatos =========
-function formatarContato(nome, telefone) {
-  if (nome && telefone) return `${nome} — ${telefone}`;
-  if (telefone) return telefone;
-  if (nome) return nome;
-  return null;
+function montarListaContatos(p) {
+  const contatos = [];
+
+  if (p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"]) {
+    contatos.push({
+      nome: p["CONTATO 1 - Nome"],
+      telefone: p["CONTATO 1 - Telefone"]
+    });
+  }
+
+  if (p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"]) {
+    contatos.push({
+      nome: p["CONTATO 2 - Nome"],
+      telefone: p["CONTATO 2 - Telefone"]
+    });
+  }
+
+  if (!contatos.length) return "";
+
+  const html = contatos.map(c => {
+    if (c.telefone) {
+      return `<div><a href="tel:${c.telefone}">${c.nome ? c.nome + " — " : ""}${c.telefone}</a></div>`;
+    }
+    return `<div>${c.nome}</div>`;
+  }).join("");
+
+  return `
+    <p><b>Contato:</b></p>
+    ${html}
+  `;
 }
 
 // ========= DETALHES (GLOBAL) =========
@@ -26,35 +51,25 @@ function abrirDetalhes(i) {
     (p["ENDEREÇO III"] ? " - " + p["ENDEREÇO III"] : "") +
     (p["ENDEREÇO IV"] ? " - " + p["ENDEREÇO IV"] : "");
 
-  // contatos tratados corretamente
-  const contato1 = formatarContato(
-    p["CONTATO 1 - Nome"],
-    p["CONTATO 1 - Telefone"]
-  );
-  const contato2 = formatarContato(
-    p["CONTATO 2 - Nome"],
-    p["CONTATO 2 - Telefone"]
-  );
+  const contatosHTML = montarListaContatos(p);
 
   document.getElementById("details").innerHTML = `
     <h3>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</h3>
     <p><b>Cidade:</b> ${p.CIDADE}</p>
     <p><b>Endereço:</b> ${end}</p>
+    ${contatosHTML}
 
-    ${contato1 ? `<p><b>Contato:</b> <a href="tel:${p["CONTATO 1 - Telefone"] || ""}">${contato1}</a></p>` : ""}
-    ${contato2 ? `<p><b>Contato:</b> <a href="tel:${p["CONTATO 2 - Telefone"] || ""}">${contato2}</a></p>` : ""}
-
-    <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+    <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
       <button onclick="addRota(${i})">➕ Adicionar à rota</button>
       <button onclick="location='rota.html'">📍 Abrir rota</button>
     </div>
   `;
 
-  // limpa sugestões e busca
+  // limpa busca e sugestões
   document.getElementById("suggestions").innerHTML = "";
   document.getElementById("search").value = "";
 
-  // scroll suave até detalhes
+  // scroll suave
   document.getElementById("details").scrollIntoView({ behavior: "smooth" });
 }
 
@@ -107,7 +122,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       (p.ENDERECO_COMPLETO || "").toLowerCase().includes(q)
     ).slice(0, 10);
 
-    if (lista.length === 0) {
+    if (!lista.length) {
       suggestions.innerHTML = `
         <div class="suggestion-card">
           <div class="suggestion-city">Nenhum posto encontrado</div>
@@ -134,13 +149,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       `;
     }).join("");
 
-    // clique com mouse
     document.querySelectorAll(".suggestion-card").forEach(card => {
       card.onclick = () => abrirDetalhes(card.dataset.index);
     });
   };
 
-  // ===== NAVEGAÇÃO POR TECLADO =====
+  // ===== TECLADO =====
   searchInput.addEventListener("keydown", e => {
     const items = document.querySelectorAll(".suggestion-card");
     if (!items.length) return;
