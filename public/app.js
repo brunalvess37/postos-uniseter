@@ -1,9 +1,14 @@
-// ========= Carregar dados do Netlify Blobs =========
+// ========= Carregar dados  =========
 let postos = [];
 async function carregarPostos(){
-    try{
-        postos = await fetch("/.netlify/blobs/postos.json").then(r=>r.json());
-    }catch(e){ alert("Erro ao carregar dados."); }
+  try {
+    const res = await fetch("/api/postos");
+    if (!res.ok) throw new Error("Falha ao buscar dados");
+    postos = await res.json();
+  } catch (e) {
+    alert("Erro ao carregar dados.");
+    console.error(e);
+  }
 }
 carregarPostos();
 
