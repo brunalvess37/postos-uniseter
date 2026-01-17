@@ -24,7 +24,7 @@
       const c = window.Clerk;
       await c.load();
       if (!c.user) return location.href = "/signin.html";
-      document.body.style.display = "block"; // libera após login
+      document.body.style.display = "block";
     });
 
     async function sair() {
@@ -46,9 +46,73 @@
   <!-- 🔐 Anti-flash -->
   <style>
     body { display: none; }
+
+    /* ===== BUSCA (UX) ===== */
     .search-box {
       max-width: 520px;
-      margin-top: 20px;
+      margin: 24px auto 0;
+      position: relative;
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    /* Ícone lupa */
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #666;
+      pointer-events: none;
+    }
+
+    /* Campo de busca */
+    #search {
+      width: 100%;
+      padding: 14px 44px 14px 42px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: 2px solid #003c8d;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    #search:focus {
+      border-color: #005edb;
+      box-shadow: 0 0 0 3px rgba(0, 94, 219, 0.15);
+    }
+
+    #search::placeholder {
+      color: #777;
+      font-size: 15px;
+    }
+
+    /* Botão limpar */
+    .clear-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #999;
+      display: none;
+    }
+
+    .clear-btn:hover {
+      color: #333;
+    }
+
+    /* Mobile spacing */
+    @media (max-width: 600px) {
+      .search-box {
+        margin-top: 16px;
+      }
     }
   </style>
 
@@ -80,12 +144,28 @@
 
   <!-- ===== BUSCA ===== -->
   <div class="search-box">
-    <input
-      id="search"
-      type="text"
-      placeholder="Buscar posto por nome, cidade ou endereço…"
-      autocomplete="off"
-    >
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+
+      <input
+        id="search"
+        type="text"
+        placeholder="Buscar posto por nome, cidade ou endereço…"
+        autocomplete="off"
+        oninput="document.querySelector('.clear-btn').style.display = this.value ? 'block' : 'none';"
+      >
+
+      <button
+        class="clear-btn"
+        onclick="
+          document.getElementById('search').value='';
+          document.getElementById('suggestions').innerHTML='';
+          this.style.display='none';
+        ">
+        ✕
+      </button>
+    </div>
+
     <div id="suggestions"></div>
   </div>
 
