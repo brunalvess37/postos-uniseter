@@ -1,19 +1,16 @@
 // ========= Carregar dados do Cloudflare KV =========
 let postos = [];
 
-async function carregarPostos() {
+async function carregarPostos(){
   try {
     const res = await fetch("/api/postos");
-
-    if (!res.ok) throw new Error("Erro HTTP");
+    
+    if (!res.ok) throw new Error("Erro");
 
     postos = await res.json();
-
-    if (!Array.isArray(postos)) {
-      postos = [];
-      throw new Error("Formato inválido");
-    }
-
+    
+    console.log("Postos carregados:", postos);
+    
   } catch (e) {
     alert("Erro ao carregar dados.");
     console.error(e);
