@@ -47,14 +47,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       (p.ENDERECO_COMPLETO || "").toLowerCase().includes(q)
     ).slice(0, 10);
 
-    suggestions.innerHTML = lista.map(p => `
-      <div onclick="abrirDetalhes(${postos.indexOf(p)})">
-        ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]} - ${p.CIDADE}
-      </div>
-    `).join("");
-  };
-
-});
+    suggestions.innerHTML = lista.map(p => {
+      const index = postos.indexOf(p);
+      return `
+        <div class="suggestion-card" onclick="abrirDetalhes(${index})">
+          <div class="suggestion-title">
+            ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
+          </div>
+          <div class="suggestion-city">
+            ${p.CIDADE}
+          </div>
+        </div>
+      `;
+}).join("");
 
 // ========= DETALHES =========
 function abrirDetalhes(i) {
