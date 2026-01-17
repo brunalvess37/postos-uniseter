@@ -1,26 +1,21 @@
-export async function onRequestPost({ request, env }) {
+export async function onRequestGet({ env }) {
   try {
-    const body = await request.json();
+    const data = await env.POSTOS_KV.get("postos", "json");
 
-    if (!body.data || !Array.isArray(body.data)) {
-      return new Response("Dados inválidos", { status: 400 });
+    if (!data) {
+      return new Response("[]", {
+        headers: { "Content-Type": "application/json" }
+      });
     }
 
-    // Conteúdo final do JSON
-    const json = JSON.stringify(body.data, null, 2);
-
-    // Grava em /data/postos.json (Pages Assets)
-    await env.ASSETS.put(
-      "data/postos.json",
-      new TextEncoder().encode(json)
-    );
-
-    return new Response("Planilha importada com sucesso ✅", {
-      status: 200
+    return new Response(JSON.stringify(data), {
+      headers: { "Content-Type": "application/json" }
     });
 
   } catch (err) {
-    console.error(err);
-    return new Response("Erro ao salvar dados ❌", { status: 500 });
+    return new Response(
+      JSON.stringify({ error: "Erro ao ler dados do KV", detail: err.message }),
+      { status: 500 }
+    );
   }
 }
