@@ -3,7 +3,7 @@ let postos = [];
 
 async function carregarPostos() {
   const res = await fetch("/api/postos");
-  if (!res.ok) throw new Error("Erro");
+  if (!res.ok) throw new Error("Erro ao buscar dados");
   postos = await res.json();
   console.log("Postos carregados:", postos);
 }
@@ -27,9 +27,12 @@ function abrirDetalhes(i) {
     <button onclick="addRota(${i})">➕ Adicionar à rota</button>
     <button onclick="location='rota.html'">📍 Abrir rota</button>
   `;
+
+  // limpa sugestões após seleção
+  document.getElementById("suggestions").innerHTML = "";
 }
 
-// 🔑 expõe para onclick
+// 🔑 expõe para onclick inline
 window.abrirDetalhes = abrirDetalhes;
 
 // ========= ROTA =========
@@ -60,9 +63,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const searchInput = document.getElementById("search");
   const suggestions = document.getElementById("suggestions");
 
-  let activeIndex = -1; // 🔑 controle teclado
+  let activeIndex = -1; // controle teclado
 
-  // ===== BUSCA =====
+  // ===== BUSCA COM SUGESTÕES =====
   searchInput.oninput = function () {
     const q = this.value.toLowerCase();
     activeIndex = -1;
@@ -74,19 +77,25 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const lista = postos.filter(p =>
       p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
-      p.CIDADE?.toLowerCase().includes(q)
+      p.CIDADE?.toLowerCase().includes(q) ||
+      (p.ENDERECO_COMPLETO || "").toLowerCase().includes(q)
     ).slice(0, 10);
 
     suggestions.innerHTML = lista.map(p => {
       const index = postos.indexOf(p);
+
+      // destaque do termo buscado
+      const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"]
+        .replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
+
+      const cidade = p.CIDADE
+        .replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
+
       return `
         <div class="suggestion-card" data-index="${index}">
-          <div class="suggestion-title">
-            ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
-          </div>
-          <div class="suggestion-city">
-            ${p.CIDADE}
-          </div>
+          <div class="suggestion-title">${nome}</div>
+          <div class="suggestion-city">${cidade}</div>
+          <div class="suggestion-hint">Pressione Enter para abrir</div>
         </div>
       `;
     }).join("");
