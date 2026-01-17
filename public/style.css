@@ -9,7 +9,41 @@ body {
 }
 
 /* =========================================================
-   BUSCA + SUGESTÕES
+   BUSCA (INPUT) + SUGESTÕES
+========================================================= */
+
+/* Container da busca */
+.search-box {
+  position: relative;
+  margin-top: 12px;
+  margin-bottom: 16px;
+}
+
+/* Campo de busca */
+#search {
+  width: 100%;
+  padding: 14px 14px;
+  font-size: 16px;              /* 🔥 maior e legível no mobile */
+  border-radius: 10px;
+  border: 2px solid #003c8d;    /* 🔥 destaque visual */
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Foco no input */
+#search:focus {
+  border-color: #005edb;
+  box-shadow: 0 0 0 3px rgba(0, 94, 219, 0.15);
+}
+
+/* Placeholder mais visível */
+#search::placeholder {
+  color: #777;
+  font-size: 15px;
+}
+
+/* =========================================================
+   SUGESTÕES
 ========================================================= */
 
 /* Container das sugestões */
