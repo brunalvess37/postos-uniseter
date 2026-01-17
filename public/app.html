@@ -43,11 +43,11 @@
   <script src="vfs_fonts.js"></script>
   <script src="pdf-geral.js"></script>
 
-  <!-- 🔐 Anti-flash -->
+  <!-- 🔐 Anti-flash + UX busca -->
   <style>
     body { display: none; }
 
-    /* ===== BUSCA (UX) ===== */
+    /* ===== BUSCA ===== */
     .search-box {
       max-width: 520px;
       margin: 24px auto 0;
@@ -58,7 +58,6 @@
       position: relative;
     }
 
-    /* Ícone lupa */
     .search-icon {
       position: absolute;
       left: 14px;
@@ -69,7 +68,6 @@
       pointer-events: none;
     }
 
-    /* Campo de busca */
     #search {
       width: 100%;
       padding: 14px 44px 14px 42px;
@@ -90,7 +88,6 @@
       font-size: 15px;
     }
 
-    /* Botão limpar */
     .clear-btn {
       position: absolute;
       right: 12px;
@@ -108,7 +105,18 @@
       color: #333;
     }
 
-    /* Mobile spacing */
+    /* ===== ESTADOS ===== */
+    .search-state {
+      margin-top: 14px;
+      padding: 14px;
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      background: #fff;
+      border: 1px dashed #ccc;
+      border-radius: 10px;
+    }
+
     @media (max-width: 600px) {
       .search-box {
         margin-top: 16px;
@@ -152,7 +160,9 @@
         type="text"
         placeholder="Buscar posto por nome, cidade ou endereço…"
         autocomplete="off"
-        oninput="document.querySelector('.clear-btn').style.display = this.value ? 'block' : 'none';"
+        oninput="
+          document.querySelector('.clear-btn').style.display = this.value ? 'block' : 'none';
+        "
       >
 
       <button
@@ -160,12 +170,20 @@
         onclick="
           document.getElementById('search').value='';
           document.getElementById('suggestions').innerHTML='';
+          document.getElementById('details').innerHTML='';
+          document.getElementById('estado-inicial').style.display='block';
           this.style.display='none';
         ">
         ✕
       </button>
     </div>
 
+    <!-- Estado inicial -->
+    <div id="estado-inicial" class="search-state">
+      Digite o nome do posto, cidade ou endereço para iniciar a busca.
+    </div>
+
+    <!-- Sugestões -->
     <div id="suggestions"></div>
   </div>
 
