@@ -2,16 +2,20 @@
 let postos = [];
 
 // ========= CARREGAR POSTOS =========
-async function carregarPostos() {
+async function carregarPostos(){
   try {
     const res = await fetch("/data/postos.json");
-    if (!res.ok) throw new Error("Falha ao buscar dados");
+    if (!res.ok) throw new Error("Arquivo não encontrado");
+
     postos = await res.json();
+    console.log("Postos carregados:", postos.length);
   } catch (e) {
     alert("Erro ao carregar dados.");
-    console.error(e);
+    console.error("Falha ao carregar /data/postos.json", e);
   }
 }
+
+carregarPostos();
 
 // ========= DOM =========
 document.addEventListener("DOMContentLoaded", async () => {
