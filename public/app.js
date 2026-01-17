@@ -104,3 +104,4 @@ function addRota(i) {
 
   alert("Posto adicionado à rota!");
 }
+});
