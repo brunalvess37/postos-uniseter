@@ -1,17 +1,22 @@
-// ========= DADOS =========
+// ========= Carregar dados do Cloudflare KV =========
 let postos = [];
 
-// ========= CARREGAR POSTOS =========
-async function carregarPostos(){
+async function carregarPostos() {
   try {
-    const res = await fetch("/data/postos.json");
-    if (!res.ok) throw new Error("Arquivo não encontrado");
+    const res = await fetch("/api/postos");
+
+    if (!res.ok) throw new Error("Erro HTTP");
 
     postos = await res.json();
-    console.log("Postos carregados:", postos.length);
+
+    if (!Array.isArray(postos)) {
+      postos = [];
+      throw new Error("Formato inválido");
+    }
+
   } catch (e) {
     alert("Erro ao carregar dados.");
-    console.error("Falha ao carregar /data/postos.json", e);
+    console.error(e);
   }
 }
 
