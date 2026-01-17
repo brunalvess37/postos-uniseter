@@ -29,7 +29,7 @@ function abrirDetalhes(i) {
   `;
 }
 
-// 🔑 expõe para o onclick
+// 🔑 expõe para onclick
 window.abrirDetalhes = abrirDetalhes;
 
 // ========= ROTA =========
@@ -60,8 +60,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const searchInput = document.getElementById("search");
   const suggestions = document.getElementById("suggestions");
 
+  let activeIndex = -1; // 🔑 controle teclado
+
+  // ===== BUSCA =====
   searchInput.oninput = function () {
     const q = this.value.toLowerCase();
+    activeIndex = -1;
+
     if (!q) {
       suggestions.innerHTML = "";
       return;
@@ -75,11 +80,47 @@ document.addEventListener("DOMContentLoaded", async () => {
     suggestions.innerHTML = lista.map(p => {
       const index = postos.indexOf(p);
       return `
-        <div class="suggestion-card" onclick="abrirDetalhes(${index})">
-          <div class="suggestion-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
-          <div class="suggestion-city">${p.CIDADE}</div>
+        <div class="suggestion-card" data-index="${index}">
+          <div class="suggestion-title">
+            ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
+          </div>
+          <div class="suggestion-city">
+            ${p.CIDADE}
+          </div>
         </div>
       `;
     }).join("");
+
+    // clique com mouse
+    document.querySelectorAll(".suggestion-card").forEach(card => {
+      card.onclick = () => abrirDetalhes(card.dataset.index);
+    });
   };
+
+  // ===== NAVEGAÇÃO POR TECLADO =====
+  searchInput.addEventListener("keydown", e => {
+    const items = document.querySelectorAll(".suggestion-card");
+    if (!items.length) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      activeIndex = (activeIndex + 1) % items.length;
+    }
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeIndex = (activeIndex - 1 + items.length) % items.length;
+    }
+
+    if (e.key === "Enter" && activeIndex >= 0) {
+      e.preventDefault();
+      items[activeIndex].click();
+      return;
+    }
+
+    items.forEach((el, i) =>
+      el.classList.toggle("active", i === activeIndex)
+    );
+  });
+
 });
