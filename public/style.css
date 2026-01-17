@@ -1,9 +1,18 @@
+/* =========================================================
+   ESTILO GLOBAL
+========================================================= */
 body {
   font-family: Arial, sans-serif;
   padding: 20px;
+  background: #fafafa;
+  color: #222;
 }
 
-/* ===== Container das sugestões ===== */
+/* =========================================================
+   BUSCA + SUGESTÕES
+========================================================= */
+
+/* Container das sugestões */
 #suggestions {
   margin-top: 6px;
   border: 1px solid #ddd;
@@ -14,7 +23,7 @@ body {
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
-/* ===== Card individual ===== */
+/* Card individual */
 .suggestion-card {
   padding: 12px 14px;
   cursor: pointer;
@@ -28,7 +37,7 @@ body {
   border-bottom: none;
 }
 
-/* Hover mouse */
+/* Hover (mouse) */
 .suggestion-card:hover {
   background: #f4f7fb;
 }
@@ -38,7 +47,13 @@ body {
   transform: scale(0.98);
 }
 
-/* ===== Nome do posto ===== */
+/* Item ativo via teclado */
+.suggestion-card.active {
+  background: #e8f0ff;
+  border-left: 4px solid #003c8d;
+}
+
+/* Nome do posto */
 .suggestion-title {
   font-weight: 600;
   color: #003c8d;
@@ -46,14 +61,21 @@ body {
   line-height: 1.2;
 }
 
-/* ===== Cidade ===== */
+/* Cidade */
 .suggestion-city {
   font-size: 12px;
   color: #666;
   margin-top: 2px;
 }
 
-/* ===== Destaque do termo pesquisado ===== */
+/* Hint de teclado */
+.suggestion-hint {
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+}
+
+/* Destaque do termo pesquisado */
 mark {
   background: #e8f0ff;
   color: #0033cc;
@@ -61,15 +83,40 @@ mark {
   border-radius: 3px;
 }
 
-/* ===== Item ativo via teclado ===== */
-.suggestion-card.active {
-  background: #e8f0ff;
-  border-left: 4px solid #003c8d;
+/* =========================================================
+   DETALHES DO POSTO
+========================================================= */
+
+#details {
+  margin-top: 20px;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-/* ===== Hint de teclado ===== */
-.suggestion-hint {
-  font-size: 11px;
-  color: #888;
-  margin-top: 4px;
+#details h3 {
+  margin-top: 0;
+  color: #003c8d;
+}
+
+#details p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+/* Botões dentro dos detalhes */
+#details button {
+  margin-top: 10px;
+  margin-right: 6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  cursor: pointer;
+  background: #f5f5f5;
+}
+
+#details button:hover {
+  background: #eaeaea;
 }
