@@ -2,83 +2,103 @@
 <html lang="pt-BR">
 <head>
 
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
+  <!-- 🔥 Anti-cache -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Postos UNISETER — Buscar Postos</title>
+  <title>Postos UNISETER — Buscar Postos</title>
 
-<!-- Clerk -->
-<script async crossorigin="anonymous"
-src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
+  <!-- 🔐 Clerk -->
+  <script async crossorigin="anonymous"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
+  </script>
 
-<!-- BLOQUEIO DE ACESSO -->
-<script>
-document.addEventListener("DOMContentLoaded", async ()=>{
-   const c = window.Clerk;
-   await c.load();
-   if(!c.user) return location.href="/signin.html";
+  <!-- 🔐 Bloqueio de acesso -->
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const c = window.Clerk;
+      await c.load();
+      if (!c.user) return location.href = "/signin.html";
+      document.body.style.display = "block"; // libera após login
+    });
 
-   document.body.style.display = "block"; // libera tela após login
-});
+    async function sair() {
+      const c = window.Clerk;
+      await c.load();
+      await c.signOut();
+      location.href = "/signin.html";
+    }
+  </script>
 
-async function sair(){
-   const c = window.Clerk;
-   await c.load();
-   await c.signOut();
-   location.href="/signin.html";
-}
-</script>
+  <!-- 🎨 CSS global -->
+  <link rel="stylesheet" href="style.css?v=202501">
 
-<link rel="stylesheet" href="style.css">
+  <!-- 📄 PDFs -->
+  <script src="pdfmake.min.js"></script>
+  <script src="vfs_fonts.js"></script>
+  <script src="pdf-geral.js"></script>
 
-<!-- PDFs -->
-<script src="pdfmake.min.js"></script>
-<script src="vfs_fonts.js"></script>
-<script src="pdf-geral.js"></script>
-
-<style>
-  body{
-    display:none; /* anti-flash */
-  }
-</style>
+  <!-- 🔐 Anti-flash -->
+  <style>
+    body { display: none; }
+    .search-box {
+      max-width: 520px;
+      margin-top: 20px;
+    }
+  </style>
 
 </head>
 
 <body>
 
-<header style="display:flex;justify-content:space-between;align-items:center;">
-  <h2>Postos UNISETER</h2>
+  <!-- ===== HEADER ===== -->
+  <header style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  ">
+    <h2 style="margin:0;">Postos UNISETER</h2>
 
-  <div>
-    <button onclick="location.href='home.html'"
-      style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
-      ← Menu
-    </button>
+    <div style="display:flex;gap:8px;">
+      <button onclick="location.href='home.html'"
+        style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+        ← Menu
+      </button>
 
-    <button onclick="sair()"
-      style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
-      Sair
-    </button>
+      <button onclick="sair()"
+        style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+        Sair
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== BUSCA ===== -->
+  <div class="search-box">
+    <input
+      id="search"
+      type="text"
+      placeholder="Buscar posto por nome, cidade ou endereço…"
+      autocomplete="off"
+    >
+    <div id="suggestions"></div>
   </div>
-</header>
 
-<div class="search-box">
-  <input id="search" type="text" placeholder="Buscar posto...">
-  <div id="suggestions"></div>
-</div>
+  <!-- ===== DETALHES ===== -->
+  <div id="details" style="margin-top:20px;"></div>
 
-<div id="details"></div>
+  <!-- ===== AÇÕES ===== -->
+  <div style="margin-top:20px;">
+    <button onclick="gerarPDFGeral()">📄 Gerar PDF Geral de Todos os Postos</button>
+  </div>
 
-<br>
-<button onclick="gerarPDFGeral()">📄 Gerar PDF Geral de Todos os Postos</button>
-
-<!-- ⚠️ app.js SEMPRE por último -->
-<script src="app.js?v=202501"></script>
+  <!-- ⚠️ JS PRINCIPAL SEMPRE POR ÚLTIMO -->
+  <script src="app.js?v=202501"></script>
 
 </body>
 </html>
