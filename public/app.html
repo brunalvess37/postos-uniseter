@@ -47,7 +47,6 @@
   <style>
     body { display: none; }
 
-    /* ===== BUSCA ===== */
     .search-box {
       max-width: 520px;
       margin: 24px auto 0;
@@ -105,18 +104,6 @@
       color: #333;
     }
 
-    /* ===== ESTADOS ===== */
-    .search-state {
-      margin-top: 14px;
-      padding: 14px;
-      text-align: center;
-      font-size: 14px;
-      color: #666;
-      background: #fff;
-      border: 1px dashed #ccc;
-      border-radius: 10px;
-    }
-
     @media (max-width: 600px) {
       .search-box {
         margin-top: 16px;
@@ -160,9 +147,7 @@
         type="text"
         placeholder="Buscar posto por nome, cidade ou endereço…"
         autocomplete="off"
-        oninput="
-          document.querySelector('.clear-btn').style.display = this.value ? 'block' : 'none';
-        "
+        oninput="document.querySelector('.clear-btn').style.display = this.value ? 'block' : 'none';"
       >
 
       <button
@@ -171,19 +156,12 @@
           document.getElementById('search').value='';
           document.getElementById('suggestions').innerHTML='';
           document.getElementById('details').innerHTML='';
-          document.getElementById('estado-inicial').style.display='block';
           this.style.display='none';
         ">
         ✕
       </button>
     </div>
 
-    <!-- Estado inicial -->
-    <div id="estado-inicial" class="search-state">
-      Digite o nome do posto, cidade ou endereço para iniciar a busca.
-    </div>
-
-    <!-- Sugestões -->
     <div id="suggestions"></div>
   </div>
 
