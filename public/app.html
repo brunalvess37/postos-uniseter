@@ -38,7 +38,7 @@
   <!-- 🎨 CSS global -->
   <link rel="stylesheet" href="style.css?v=202501">
 
-  <!-- 📄 PDFs -->
+  <!-- 📄 PDFs (mantidos pois outras telas usam) -->
   <script src="pdfmake.min.js"></script>
   <script src="vfs_fonts.js"></script>
   <script src="pdf-geral.js"></script>
@@ -127,7 +127,7 @@
     <div style="display:flex;gap:8px;">
       <button onclick="location.href='home.html'"
         style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
-        ← Menu
+        Menu
       </button>
 
       <button onclick="sair()"
@@ -168,13 +168,9 @@
   <!-- ===== DETALHES ===== -->
   <div id="details" style="margin-top:20px;"></div>
 
-  <!-- ===== AÇÕES ===== -->
-  <div style="margin-top:20px;">
-    <button onclick="gerarPDFGeral()">📄 Gerar PDF Geral de Todos os Postos</button>
-  </div>
-
   <!-- ⚠️ JS PRINCIPAL SEMPRE POR ÚLTIMO -->
   <script src="app.js?v=202501"></script>
 
 </body>
 </html>
+
