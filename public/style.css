@@ -145,7 +145,7 @@ mark {
   background: var(--card);
   border-radius: 12px;
   border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px var(--shadow);
 }
 
 #details h3 {
@@ -171,6 +171,9 @@ mark {
   cursor: pointer;
   background: var(--card);
   color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 #details button:hover {
@@ -191,6 +194,10 @@ button svg {
   font-size: 20px;
   cursor: pointer;
   color: gold;
+}
+
+#details h3 button:hover {
+  transform: scale(1.1);
 }
 
 /* =========================================================
