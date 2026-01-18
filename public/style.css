@@ -1,154 +1,159 @@
 /* =========================================================
+   VARIÁVEIS DE TEMA
+========================================================= */
+:root {
+  --bg: #fafafa;
+  --card: #ffffff;
+  --text: #222;
+  --muted: #666;
+  --border: #ddd;
+  --primary: #003c8d;
+  --primary-soft: #e8f0ff;
+  --shadow: rgba(0,0,0,0.12);
+}
+
+body.dark {
+  --bg: #0f172a;
+  --card: #020617;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --border: #1e293b;
+  --primary: #60a5fa;
+  --primary-soft: #1e3a8a;
+  --shadow: rgba(0,0,0,0.5);
+}
+
+/* =========================================================
    ESTILO GLOBAL
 ========================================================= */
 body {
   font-family: Arial, sans-serif;
   padding: 20px;
-  background: #fafafa;
-  color: #222;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.2s, color 0.2s;
 }
 
 /* =========================================================
-   BUSCA (INPUT + UX)
+   BUSCA
 ========================================================= */
-
-/* Container geral da busca */
 .search-box {
   position: relative;
   margin-top: 12px;
   margin-bottom: 20px;
 }
 
-/* Campo de busca principal */
 #search {
   width: 100%;
-  padding: 14px 44px 14px 42px; /* espaço para lupa + X */
+  padding: 14px 44px 14px 42px;
   font-size: 16px;
   border-radius: 12px;
-  border: 2px solid #003c8d;
+  border: 2px solid var(--primary);
   outline: none;
+  background: var(--card);
+  color: var(--text);
   box-sizing: border-box;
-  background: #fff;
 }
 
-/* Foco */
-#search:focus {
-  border-color: #005edb;
-  box-shadow: 0 0 0 3px rgba(0, 94, 219, 0.15);
-}
-
-/* Placeholder */
 #search::placeholder {
-  color: #777;
-  font-size: 15px;
+  color: var(--muted);
+}
+
+#search:focus {
+  box-shadow: 0 0 0 3px rgba(96,165,250,0.3);
 }
 
 /* =========================================================
-   ESTADOS DA BUSCA
+   ESTADOS / LOADER
 ========================================================= */
-
 .search-state {
   margin-top: 14px;
   padding: 14px;
   text-align: center;
   font-size: 14px;
-  color: #666;
-  background: #ffffff;
-  border: 1px dashed #ccc;
+  color: var(--muted);
+  background: var(--card);
+  border: 1px dashed var(--border);
   border-radius: 10px;
 }
 
 /* =========================================================
    SUGESTÕES
 ========================================================= */
-
-/* Container das sugestões */
 #suggestions {
   margin-top: 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 10px;
   max-height: 320px;
   overflow-y: auto;
-  background: #ffffff;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  background: var(--card);
+  box-shadow: 0 8px 18px var(--shadow);
 }
 
-/* Card individual */
 .suggestion-card {
   padding: 12px 14px;
   cursor: pointer;
-  border-bottom: 1px solid #eee;
-  background: #fff;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
   transition: background 0.15s ease, transform 0.05s ease;
 }
 
-/* Remove borda do último */
 .suggestion-card:last-child {
   border-bottom: none;
 }
 
-/* Hover */
 .suggestion-card:hover {
-  background: #f4f7fb;
+  background: var(--primary-soft);
 }
 
-/* Clique */
-.suggestion-card:active {
-  transform: scale(0.98);
-}
-
-/* Item ativo via teclado */
 .suggestion-card.active {
-  background: #e8f0ff;
-  border-left: 4px solid #003c8d;
+  background: var(--primary-soft);
+  border-left: 4px solid var(--primary);
 }
 
-/* Nome do posto */
 .suggestion-title {
   font-weight: 600;
-  color: #003c8d;
+  color: var(--primary);
   font-size: 14px;
-  line-height: 1.2;
 }
 
-/* Cidade */
 .suggestion-city {
   font-size: 12px;
-  color: #666;
+  color: var(--muted);
   margin-top: 2px;
 }
 
-/* Hint de teclado */
 .suggestion-hint {
   font-size: 11px;
-  color: #888;
+  color: var(--muted);
   margin-top: 4px;
 }
 
-/* Destaque do termo pesquisado */
 mark {
-  background: #e8f0ff;
-  color: #0033cc;
+  background: var(--primary-soft);
+  color: var(--primary);
   padding: 0 2px;
   border-radius: 3px;
 }
 
 /* =========================================================
-   DETALHES DO POSTO
+   DETALHES
 ========================================================= */
-
 #details {
   margin-top: 20px;
   padding: 16px;
-  background: #ffffff;
+  background: var(--card);
   border-radius: 12px;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 #details h3 {
   margin-top: 0;
-  color: #003c8d;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 #details p {
@@ -156,19 +161,36 @@ mark {
   font-size: 14px;
 }
 
-/* Botões dentro dos detalhes */
+/* =========================================================
+   BOTÕES
+========================================================= */
 #details button {
-  margin-top: 10px;
-  margin-right: 6px;
   padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #bbb;
+  border-radius: 8px;
+  border: 1px solid var(--border);
   cursor: pointer;
-  background: #f5f5f5;
+  background: var(--card);
+  color: var(--text);
 }
 
 #details button:hover {
-  background: #eaeaea;
+  background: var(--primary-soft);
+}
+
+/* Ícones SVG */
+button svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+}
+
+/* Favorito */
+#details h3 button {
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: gold;
 }
 
 /* =========================================================
@@ -177,9 +199,5 @@ mark {
 @media (max-width: 600px) {
   body {
     padding: 16px;
-  }
-
-  #search {
-    font-size: 16px; /* evita zoom automático */
   }
 }
