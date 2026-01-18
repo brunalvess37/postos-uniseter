@@ -54,10 +54,12 @@ function toggleFavorito(id) {
 function montarListaContatos(p) {
   const contatos = [];
 
-  [["CONTATO 1 - Nome", "CONTATO 1 - Telefone"], ["CONTATO 2 - Nome", "CONTATO 2 - Telefone"]]
-    .forEach(([n, t]) => {
-      if (p[n] || p[t]) contatos.push({ nome: p[n], telefone: p[t] });
-    });
+  [
+    ["CONTATO 1 - Nome", "CONTATO 1 - Telefone"],
+    ["CONTATO 2 - Nome", "CONTATO 2 - Telefone"]
+  ].forEach(([n, t]) => {
+    if (p[n] || p[t]) contatos.push({ nome: p[n], telefone: p[t] });
+  });
 
   if (!contatos.length) return "";
 
@@ -91,7 +93,7 @@ function abrirDetalhes(i) {
   document.getElementById("details").innerHTML = `
     <h3>
       ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
-      <button onclick="toggleFavorito(${i})" style="margin-left:8px;">
+      <button onclick="toggleFavorito(${i})">
         ${isFavorito(i) ? "★" : "☆"}
       </button>
     </h3>
@@ -125,6 +127,7 @@ window.abrirDetalhes = abrirDetalhes;
 function addRota(i) {
   const dados = JSON.parse(localStorage.getItem("rota_postos") || "{}");
   const rota = dados.rota || [];
+
   rota.push({ ...postos[i] });
 
   localStorage.setItem("rota_postos", JSON.stringify({
@@ -148,6 +151,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function renderHistorico() {
     if (!historico.length) return;
+
     suggestions.innerHTML = historico.map(h => `
       <div class="suggestion-card" data-historico="${h}">
         <div class="suggestion-city">🧾 ${h}</div>
@@ -202,15 +206,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       `;
     }).join("");
 
-    document.querySelectorAll(".suggestion-card").forEach(card => {
-      if (card.dataset.index !== undefined) {
-        card.onclick = () => abrirDetalhes(card.dataset.index);
-      }
+    document.querySelectorAll(".suggestion-card[data-index]").forEach(card => {
+      card.onclick = () => abrirDetalhes(card.dataset.index);
     });
   });
 
   searchInput.addEventListener("keydown", e => {
-    const items = document.querySelectorAll(".suggestion-card");
+    const items = document.querySelectorAll(".suggestion-card[data-index]");
     if (!items.length) return;
 
     if (e.key === "ArrowDown") {
