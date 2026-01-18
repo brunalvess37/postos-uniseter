@@ -1,49 +1,75 @@
-// ========= Carregar dados do Cloudflare KV =========
+// ========= ESTADO GLOBAL =========
 let postos = [];
+let favoritos = JSON.parse(localStorage.getItem("postos_favoritos") || "[]");
+let historico = JSON.parse(localStorage.getItem("historico_busca") || "[]");
 
+// ========= LOADER =========
+const loader = document.createElement("div");
+loader.className = "search-state";
+loader.textContent = "Carregando postos…";
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelector(".search-box")?.appendChild(loader);
+});
+
+// ========= CARREGAR DADOS =========
 async function carregarPostos() {
-  const res = await fetch("/api/postos");
-  if (!res.ok) throw new Error("Erro ao buscar dados");
-  postos = await res.json();
-  console.log("Postos carregados:", postos);
+  try {
+    const res = await fetch("/api/postos");
+    if (!res.ok) throw new Error("Erro ao buscar dados");
+    postos = await res.json();
+  } catch (e) {
+    alert("Erro ao carregar postos.");
+    console.error(e);
+  } finally {
+    loader.remove();
+  }
 }
 
-// ========= UTIL: formatar contatos =========
+// ========= FAVORITOS =========
+function isFavorito(id) {
+  return favoritos.includes(id);
+}
+
+function toggleFavorito(id) {
+  if (isFavorito(id)) {
+    favoritos = favoritos.filter(f => f !== id);
+  } else {
+    favoritos.push(id);
+  }
+  localStorage.setItem("postos_favoritos", JSON.stringify(favoritos));
+  abrirDetalhes(id);
+}
+
+// ========= CONTATOS =========
 function montarListaContatos(p) {
   const contatos = [];
 
-  if (p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"]) {
-    contatos.push({
-      nome: p["CONTATO 1 - Nome"],
-      telefone: p["CONTATO 1 - Telefone"]
+  [["CONTATO 1 - Nome", "CONTATO 1 - Telefone"], ["CONTATO 2 - Nome", "CONTATO 2 - Telefone"]]
+    .forEach(([nomeKey, telKey]) => {
+      if (p[nomeKey] || p[telKey]) {
+        contatos.push({
+          nome: p[nomeKey],
+          telefone: p[telKey]
+        });
+      }
     });
-  }
-
-  if (p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"]) {
-    contatos.push({
-      nome: p["CONTATO 2 - Nome"],
-      telefone: p["CONTATO 2 - Telefone"]
-    });
-  }
 
   if (!contatos.length) return "";
 
-  const html = contatos.map(c => {
-    if (c.telefone) {
-      return `<div><a href="tel:${c.telefone}">${c.nome ? c.nome + " — " : ""}${c.telefone}</a></div>`;
-    }
-    return `<div>${c.nome}</div>`;
-  }).join("");
-
   return `
     <p><b>Contato:</b></p>
-    ${html}
+    ${contatos.map(c =>
+      c.telefone
+        ? `<div><a href="tel:${c.telefone}">${c.nome ? c.nome + " — " : ""}${c.telefone}</a></div>`
+        : `<div>${c.nome}</div>`
+    ).join("")}
   `;
 }
 
-// ========= DETALHES (GLOBAL) =========
+// ========= DETALHES =========
 function abrirDetalhes(i) {
   const p = postos[i];
+  const favorito = isFavorito(i);
 
   const end =
     (p["ENDEREÇO I"] || "") +
@@ -51,42 +77,50 @@ function abrirDetalhes(i) {
     (p["ENDEREÇO III"] ? " - " + p["ENDEREÇO III"] : "") +
     (p["ENDEREÇO IV"] ? " - " + p["ENDEREÇO IV"] : "");
 
-  const contatosHTML = montarListaContatos(p);
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${p.Latitude},${p.Longitude}`;
+  const wazeUrl = `https://waze.com/ul?ll=${p.Latitude},${p.Longitude}&navigate=yes`;
 
   document.getElementById("details").innerHTML = `
-    <h3>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</h3>
+    <h3>
+      ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
+      <button onclick="toggleFavorito(${i})" style="margin-left:8px;">
+        ${favorito ? "★" : "☆"}
+      </button>
+    </h3>
+
     <p><b>Cidade:</b> ${p.CIDADE}</p>
     <p><b>Endereço:</b> ${end}</p>
-    ${contatosHTML}
 
-    <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+    ${montarListaContatos(p)}
+
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <a href="${mapsUrl}" target="_blank">
+        <button>📍 Google Maps</button>
+      </a>
+      <a href="${wazeUrl}" target="_blank">
+        <button>🚗 Waze</button>
+      </a>
+    </div>
+
+    <div style="margin-top:12px;">
       <button onclick="addRota(${i})">➕ Adicionar à rota</button>
       <button onclick="location='rota.html'">📍 Abrir rota</button>
     </div>
   `;
 
-  // limpa busca e sugestões
   document.getElementById("suggestions").innerHTML = "";
   document.getElementById("search").value = "";
-
-  // scroll suave
   document.getElementById("details").scrollIntoView({ behavior: "smooth" });
 }
 
-// 🔑 expõe para onclick inline
 window.abrirDetalhes = abrirDetalhes;
 
 // ========= ROTA =========
 function addRota(i) {
-  let dados = JSON.parse(localStorage.getItem("rota_postos") || "{}");
-  let rota = dados.rota || [];
+  const dados = JSON.parse(localStorage.getItem("rota_postos") || "{}");
+  const rota = dados.rota || [];
 
-  rota.push({
-    nome: postos[i]["POSTOS DE SERVIÇOS / GRUPO SETER"],
-    lat: postos[i].Latitude,
-    lon: postos[i].Longitude,
-    ...postos[i]
-  });
+  rota.push({ ...postos[i] });
 
   localStorage.setItem("rota_postos", JSON.stringify({
     rota,
@@ -104,80 +138,49 @@ document.addEventListener("DOMContentLoaded", async () => {
   const searchInput = document.getElementById("search");
   const suggestions = document.getElementById("suggestions");
 
-  let activeIndex = -1;
+  // ===== HISTÓRICO =====
+  function renderHistorico() {
+    if (!historico.length) return;
+    suggestions.innerHTML = historico.map(h => `
+      <div class="suggestion-card">
+        <div class="suggestion-city">🧾 ${h}</div>
+      </div>
+    `).join("");
+  }
 
-  // ===== BUSCA COM SUGESTÕES =====
+  searchInput.addEventListener("focus", () => {
+    if (!searchInput.value) renderHistorico();
+  });
+
+  // ===== BUSCA =====
   searchInput.oninput = function () {
     const q = this.value.toLowerCase();
-    activeIndex = -1;
+    suggestions.innerHTML = "";
 
     if (!q) {
-      suggestions.innerHTML = "";
+      renderHistorico();
       return;
+    }
+
+    if (!historico.includes(q)) {
+      historico.unshift(q);
+      historico = historico.slice(0, 5);
+      localStorage.setItem("historico_busca", JSON.stringify(historico));
     }
 
     const lista = postos.filter(p =>
       p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
-      p.CIDADE?.toLowerCase().includes(q) ||
-      (p.ENDERECO_COMPLETO || "").toLowerCase().includes(q)
+      p.CIDADE?.toLowerCase().includes(q)
     ).slice(0, 10);
-
-    if (!lista.length) {
-      suggestions.innerHTML = `
-        <div class="suggestion-card">
-          <div class="suggestion-city">Nenhum posto encontrado</div>
-        </div>
-      `;
-      return;
-    }
 
     suggestions.innerHTML = lista.map(p => {
       const index = postos.indexOf(p);
-
-      const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"]
-        .replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
-
-      const cidade = p.CIDADE
-        .replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
-
       return `
-        <div class="suggestion-card" data-index="${index}">
-          <div class="suggestion-title">${nome}</div>
-          <div class="suggestion-city">${cidade}</div>
-          <div class="suggestion-hint">Pressione Enter para abrir</div>
+        <div class="suggestion-card" onclick="abrirDetalhes(${index})">
+          <div class="suggestion-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
+          <div class="suggestion-city">${p.CIDADE}</div>
         </div>
       `;
     }).join("");
-
-    document.querySelectorAll(".suggestion-card").forEach(card => {
-      card.onclick = () => abrirDetalhes(card.dataset.index);
-    });
   };
-
-  // ===== TECLADO =====
-  searchInput.addEventListener("keydown", e => {
-    const items = document.querySelectorAll(".suggestion-card");
-    if (!items.length) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      activeIndex = (activeIndex + 1) % items.length;
-    }
-
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      activeIndex = (activeIndex - 1 + items.length) % items.length;
-    }
-
-    if (e.key === "Enter" && activeIndex >= 0) {
-      e.preventDefault();
-      items[activeIndex].click();
-      return;
-    }
-
-    items.forEach((el, i) =>
-      el.classList.toggle("active", i === activeIndex)
-    );
-  });
-
 });
