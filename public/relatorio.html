@@ -18,27 +18,19 @@ data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMu
 <link rel="stylesheet" href="style.css?v=202501">
 
 <style>
-body{ display:none; font-family:Arial; padding:20px; }
-.container{ max-width:600px; margin:auto; }
-.card{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:16px; }
-label{ font-weight:bold; display:block; margin:8px 0 4px; }
-button{ padding:10px 14px; border-radius:8px; cursor:pointer; }
-.primary{ background:var(--primary); color:white; border:none; }
-
-.lista-postos{
-  max-height:260px;
-  overflow:auto;
+body{ display:none; padding:20px; }
+.container{ max-width:640px; margin:auto; }
+.card{
+  background:var(--card);
   border:1px solid var(--border);
-  border-radius:8px;
-  padding:8px;
-  display:none;
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:16px;
 }
-.lista-postos label{
-  font-weight:normal;
-  display:flex;
-  gap:6px;
-  margin:4px 0;
-}
+label{ font-weight:bold; display:block; margin:8px 0 4px; }
+button{ padding:10px 16px; border-radius:8px; cursor:pointer; }
+.primary{ background:var(--primary); color:white; border:none; width:100%; }
+.radio-group label{ font-weight:normal; }
 </style>
 
 </head>
@@ -57,36 +49,26 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 <div class="container">
 
 <h2>Gerar Relatório</h2>
-<p style="color:var(--muted)">Escolha os filtros do relatório</p>
+<p style="color:var(--muted)">Defina os critérios do relatório</p>
 
 <div class="card">
-  <label>Tipo</label>
-  <label><input type="radio" name="tipo" value="todos" checked> Todos os postos</label>
-  <label><input type="radio" name="tipo" value="favoritos"> Apenas favoritos</label>
-  <label><input type="radio" name="tipo" value="manual"> Seleção manual</label>
-</div>
-
-<div class="card" id="card-manual">
-  <label>Selecione os postos</label>
-  <div class="lista-postos" id="listaPostos"></div>
-</div>
-
-<div class="card">
-  <label>Cidade</label>
-  <select id="cidade"><option value="">Todas</option></select>
-
-  <label>Zona</label>
-  <select id="zona"><option value="">Todas</option></select>
+  <label>Tipo de relatório</label>
+  <div class="radio-group">
+    <label><input type="radio" name="tipo" value="todos" checked> Todos os postos</label>
+    <label><input type="radio" name="tipo" value="favoritos"> Apenas favoritos</label>
+    <label><input type="radio" name="tipo" value="manual"> Seleção manual (tela Buscar Postos)</label>
+  </div>
 </div>
 
 <div class="card">
   <label>Ordenação</label>
-  <label><input type="radio" name="ordem" value="cidade-zona" checked> Cidade + Zona</label>
-  <label><input type="radio" name="ordem" value="cidade-posto"> Cidade + Nome</label>
-  <label><input type="radio" name="ordem" value="posto"> Nome do Posto</label>
+  <div class="radio-group">
+    <label><input type="radio" name="ordem" value="posto" checked> Nome do Posto</label>
+    <label><input type="radio" name="ordem" value="zona"> Zona</label>
+  </div>
 </div>
 
-<div class="card" style="text-align:center">
+<div class="card">
   <button class="primary" onclick="gerar()">Gerar PDF</button>
 </div>
 
@@ -97,52 +79,12 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 <script src="pdf-geral.js?v=202501"></script>
 
 <script>
-let todosPostos = [];
-
-async function carregarFiltros(){
-  todosPostos = await fetch("/api/postos").then(r=>r.json());
-
-  [...new Set(todosPostos.map(p=>p.CIDADE).filter(Boolean))].sort()
-    .forEach(v=>cidade.add(new Option(v,v)));
-
-  [...new Set(todosPostos.map(p=>p.ZONA).filter(Boolean))].sort()
-    .forEach(v=>zona.add(new Option(v,v)));
-
-  const lista = document.getElementById("listaPostos");
-  lista.innerHTML = todosPostos.map((p,i)=>`
-    <label>
-      <input type="checkbox" value="${i}">
-      ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]} — ${p.CIDADE || ""}
-    </label>
-  `).join("");
-}
-
-document.querySelectorAll("input[name=tipo]").forEach(r=>{
-  r.addEventListener("change", ()=>{
-    const manual = document.querySelector("input[name=tipo]:checked").value === "manual";
-    document.getElementById("listaPostos").style.display = manual ? "block" : "none";
-  });
-});
-
 function gerar(){
-  const tipo = document.querySelector("input[name=tipo]:checked").value;
-
-  let selecionados = [];
-  if(tipo === "manual"){
-    selecionados = [...document.querySelectorAll("#listaPostos input:checked")]
-      .map(i=>Number(i.value));
-  }
-
   gerarPDFGeral({
-    tipo,
-    cidade: cidade.value,
-    zona: zona.value,
-    ordem: document.querySelector("input[name=ordem]:checked").value,
-    selecionados
+    tipo: document.querySelector("input[name=tipo]:checked").value,
+    ordem: document.querySelector("input[name=ordem]:checked").value
   });
 }
-
-carregarFiltros();
 </script>
 
 </body>
