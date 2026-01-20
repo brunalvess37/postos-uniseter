@@ -6,8 +6,8 @@ async function gerarPDFGeral() {
   // ==========================
   // CONFIGURAÇÃO DO RELATÓRIO
   // ==========================
-  // modos possíveis: "cidade" | "zona"
-  const modoAgrupamento = "cidade"; // futuro: "zona"
+  // "cidade" | "zona"
+  const modoAgrupamento = "cidade";
 
   // ==========================
   // CARREGAR DADOS
@@ -78,7 +78,6 @@ async function gerarPDFGeral() {
   const dataGeracao = new Date().toLocaleString("pt-BR");
   const conteudo = [];
 
-  // Título
   conteudo.push(
     {
       text: "RELATÓRIO POSTOS UNISETER",
@@ -89,12 +88,12 @@ async function gerarPDFGeral() {
       text: `Gerado em: ${dataGeracao}`,
       alignment: "right",
       fontSize: 10,
-      margin: [0, 0, 0, 12]
+      margin: [0, 0, 0, 14]
     }
   );
 
   // ==========================
-  // AGRUPAMENTO COM SUBTÍTULO DESTACADO
+  // AGRUPAMENTO COM FAIXA DESTACADA
   // ==========================
   let grupoAtual = null;
 
@@ -104,11 +103,17 @@ async function gerarPDFGeral() {
     if (chaveGrupo !== grupoAtual) {
       grupoAtual = chaveGrupo;
 
-      // Subtítulo destacado
+      // FAIXA DE DESTAQUE (100% largura)
       conteudo.push({
-        text: (grupoAtual || "—").toUpperCase(),
-        style: "grupoDestaque",
-        margin: [0, 14, 0, 8]
+        table: {
+          widths: ["*"],
+          body: [[{
+            text: (grupoAtual || "—").toUpperCase(),
+            style: "faixaGrupo"
+          }]]
+        },
+        layout: "noBorders",
+        margin: [0, 14, 0, 6]
       });
 
       // Cabeçalho da tabela
@@ -160,12 +165,13 @@ async function gerarPDFGeral() {
         bold: true,
         margin: [0, 0, 0, 6]
       },
-      grupoDestaque: {
-        fontSize: 13,
+      faixaGrupo: {
+        fontSize: 14,
         bold: true,
-        fillColor: "#e8f0ff",
-        margin: [0, 10, 0, 6],
-        alignment: "left"
+        color: "#ffffff",
+        fillColor: "#003c8d",
+        alignment: "center",
+        margin: [0, 6, 0, 6]
       },
       th: {
         bold: true,
