@@ -71,13 +71,11 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   await c.load();
   if(!c.user) return location.href="/signin.html";
   document.body.style.display="block";
-
   atualizarEstadoBotoes();
 });
 
 function atualizarEstadoBotoes(){
   const tipo = document.querySelector("input[name=tipo]:checked").value;
-
   document.getElementById("btnGerar").disabled = (tipo === "manual");
   document.getElementById("btnManual").classList.toggle("hidden", tipo !== "manual");
 }
@@ -119,6 +117,11 @@ function atualizarEstadoBotoes(){
 
 </div>
 
+<!-- ✅ DEPENDÊNCIAS DO PDF (ESSENCIAL) -->
+<script src="pdfmake.min.js?v=202501"></script>
+<script src="vfs_fonts.js?v=202501"></script>
+
+<!-- LÓGICA DO RELATÓRIO -->
 <script src="pdf-geral.js?v=202501"></script>
 
 <script>
