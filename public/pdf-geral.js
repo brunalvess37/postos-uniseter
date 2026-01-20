@@ -4,7 +4,13 @@
 async function gerarPDFGeral() {
 
   // ==========================
-  // CARREGAR DADOS DO SISTEMA
+  // CONFIGURAÇÃO DO RELATÓRIO
+  // ==========================
+  // modos possíveis: "cidade" | "zona"
+  const modoAgrupamento = "cidade"; // futuro: trocar para "zona" quando aplicar filtro
+
+  // ==========================
+  // CARREGAR DADOS
   // ==========================
   let dados = [];
   try {
@@ -23,15 +29,14 @@ async function gerarPDFGeral() {
   }
 
   // ==========================
-  // ORDENAÇÃO PADRÃO
-  // Cidade + Zona + Nome
+  // ORDENAÇÃO
   // ==========================
   dados.sort((a, b) => {
-    if (a.CIDADE !== b.CIDADE)
-      return (a.CIDADE || "").localeCompare(b.CIDADE || "");
+    const chaveA = modoAgrupamento === "zona" ? a.ZONA : a.CIDADE;
+    const chaveB = modoAgrupamento === "zona" ? b.ZONA : b.CIDADE;
 
-    if ((a.ZONA || "") !== (b.ZONA || ""))
-      return (a.ZONA || "").localeCompare(b.ZONA || "");
+    if ((chaveA || "") !== (chaveB || ""))
+      return (chaveA || "").localeCompare(chaveB || "");
 
     return (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
       .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
@@ -71,8 +76,10 @@ async function gerarPDFGeral() {
   // CONTEÚDO DO PDF
   // ==========================
   const dataGeracao = new Date().toLocaleString("pt-BR");
+  const conteudo = [];
 
-  const conteudo = [
+  // Título
+  conteudo.push(
     {
       text: "RELATÓRIO POSTOS UNISETER",
       style: "titulo",
@@ -80,56 +87,70 @@ async function gerarPDFGeral() {
     },
     {
       text: `Gerado em: ${dataGeracao}`,
-      style: "subtitulo",
       alignment: "right",
+      fontSize: 10,
       margin: [0, 0, 0, 10]
-    },
-    {
-      text: `Total de postos: ${dados.length}`,
-      margin: [0, 0, 0, 12]
-    },
-    {
-      table: {
-        headerRows: 1,
-        widths: ["18%", "22%", "10%", "30%", "20%"],
-        body: [
-          [
-            { text: "POSTO", style: "th" },
-            { text: "TIPO", style: "th" },
-            { text: "CIDADE / ZONA", style: "th" },
-            { text: "ENDEREÇO", style: "th" },
-            { text: "CONTATOS", style: "th" }
-          ],
-          ...dados.map(p => [
-            p["POSTOS DE SERVIÇOS / GRUPO SETER"] || "",
-            p.TIPO || "",
-            `${p.CIDADE || ""}${p.ZONA ? " / " + p.ZONA : ""}`,
-            enderecoCompleto(p),
-            contatosFormatados(p)
-          ])
-        ]
-      },
-      layout: "lightHorizontalLines"
     }
-  ];
+  );
 
   // ==========================
-  // DEFINIÇÃO DO DOCUMENTO
+  // AGRUPAMENTO
+  // ==========================
+  let grupoAtual = null;
+
+  dados.forEach(p => {
+    const chaveGrupo = modoAgrupamento === "zona" ? p.ZONA : p.CIDADE;
+
+    if (chaveGrupo !== grupoAtual) {
+      grupoAtual = chaveGrupo;
+
+      conteudo.push({
+        text: grupoAtual || "—",
+        style: "grupo",
+        margin: [0, 12, 0, 6]
+      });
+
+      conteudo.push({
+        table: {
+          headerRows: 1,
+          widths: ["25%", "12%", "33%", "15%", "15%"],
+          body: [
+            [
+              { text: "POSTO", style: "th" },
+              { text: "TIPO", style: "th" },
+              { text: "ENDEREÇO", style: "th" },
+              { text: "OBSERVAÇÃO", style: "th" },
+              { text: "CONTATOS", style: "th" }
+            ]
+          ]
+        },
+        layout: "lightHorizontalLines"
+      });
+    }
+
+    conteudo[conteudo.length - 1].table.body.push([
+      p["POSTOS DE SERVIÇOS / GRUPO SETER"] || "",
+      p.TIPO || "",
+      enderecoCompleto(p),
+      p.OBSERVAÇÃO || "",
+      contatosFormatados(p)
+    ]);
+  });
+
+  // ==========================
+  // DOCUMENTO FINAL
   // ==========================
   const docDefinition = {
     pageSize: "A4",
     pageOrientation: "landscape",
-
     content: conteudo,
 
-    footer: function (currentPage, pageCount) {
-      return {
-        text: `Página ${currentPage} de ${pageCount}`,
-        alignment: "center",
-        fontSize: 9,
-        margin: [0, 10, 0, 0]
-      };
-    },
+    footer: (currentPage, pageCount) => ({
+      text: `Página ${currentPage} de ${pageCount}`,
+      alignment: "center",
+      fontSize: 9,
+      margin: [0, 10, 0, 0]
+    }),
 
     styles: {
       titulo: {
@@ -137,9 +158,9 @@ async function gerarPDFGeral() {
         bold: true,
         margin: [0, 0, 0, 6]
       },
-      subtitulo: {
-        fontSize: 10,
-        italics: true
+      grupo: {
+        fontSize: 13,
+        bold: true
       },
       th: {
         bold: true,
