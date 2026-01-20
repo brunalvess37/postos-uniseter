@@ -1,33 +1,23 @@
 // ==========================================
-// RELATÓRIO POSTOS UNISETER — VERSÃO FINAL
-// Layout aprovado + filtros consolidados
+// RELATÓRIO POSTOS UNISETER — LAYOUT FINAL
 // ==========================================
 async function gerarPDFGeral(filtros) {
 
-  // ==========================
-  // CARREGAR DADOS
-  // ==========================
   let dados = await fetch("/api/postos").then(r => r.json());
 
-  // ==========================
-  // FAVORITOS
-  // ==========================
+  // ===== FAVORITOS =====
   if (filtros.tipo === "favoritos") {
     const fav = JSON.parse(localStorage.getItem("postos_favoritos") || "[]");
     dados = dados.filter((_, i) => fav.includes(i));
   }
 
-  // ==========================
-  // SELEÇÃO MANUAL
-  // ==========================
+  // ===== SELEÇÃO MANUAL =====
   if (filtros.tipo === "manual") {
     const selecionados = JSON.parse(localStorage.getItem("postos_selecionados") || "[]");
-
     if (!selecionados.length) {
       alert("Nenhum posto selecionado na tela Buscar Postos.");
       return;
     }
-
     dados = selecionados.map(i => dados[i]).filter(Boolean);
   }
 
@@ -36,24 +26,18 @@ async function gerarPDFGeral(filtros) {
     return;
   }
 
-  // ==========================
-  // ORDENAÇÃO
-  // ==========================
+  // ===== ORDENAÇÃO =====
   dados.sort((a, b) => {
     if (filtros.ordem === "zona") {
       return (a.ZONA || "").localeCompare(b.ZONA || "") ||
         (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
           .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
     }
-
     return (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
       .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
   });
 
-  // ==========================
-  // FUNÇÕES AUXILIARES
-  // ==========================
-  function enderecoCompleto(p) {
+  function endereco(p) {
     return [
       p["ENDEREÇO I"],
       p["ENDEREÇO II"],
@@ -62,121 +46,72 @@ async function gerarPDFGeral(filtros) {
     ].filter(Boolean).join(" - ");
   }
 
-  function contatosFormatados(p) {
-    const contatos = [];
-
-    if (p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"]) {
-      contatos.push(
-        `${p["CONTATO 1 - Nome"] || ""}${p["CONTATO 1 - Telefone"] ? " (" + p["CONTATO 1 - Telefone"] + ")" : ""}`
-      );
-    }
-
-    if (p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"]) {
-      contatos.push(
-        `${p["CONTATO 2 - Nome"] || ""}${p["CONTATO 2 - Telefone"] ? " (" + p["CONTATO 2 - Telefone"] + ")" : ""}`
-      );
-    }
-
-    return contatos.join(" • ");
+  function contatos(p) {
+    const c = [];
+    if (p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"])
+      c.push(`${p["CONTATO 1 - Nome"] || ""} ${p["CONTATO 1 - Telefone"] || ""}`);
+    if (p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"])
+      c.push(`${p["CONTATO 2 - Nome"] || ""} ${p["CONTATO 2 - Telefone"] || ""}`);
+    return c.join(" • ");
   }
 
-  // ==========================
-  // CONTEÚDO DO PDF (LAYOUT)
-  // ==========================
   let grupoAtual = null;
   const conteudo = [];
 
   dados.forEach(p => {
-
-    const grupo =
-      filtros.ordem === "zona"
-        ? (p.ZONA || "Zona não informada")
-        : (p.CIDADE || "Cidade não informada");
+    const grupo = filtros.ordem === "zona"
+      ? (p.ZONA || "Zona não informada")
+      : (p.CIDADE || "Cidade não informada");
 
     if (grupo !== grupoAtual) {
       grupoAtual = grupo;
       conteudo.push({
-        text: grupo,
+        text: grupo.toUpperCase(),
         style: "grupo",
-        margin: [0, 14, 0, 8]
+        margin: [0, 18, 0, 10]
       });
     }
 
     conteudo.push({
-      margin: [0, 0, 0, 12],
+      margin: [0, 0, 0, 14],
       stack: [
+        { text: p["POSTOS DE SERVIÇOS / GRUPO SETER"], style: "posto" },
+        { text: p.TIPO || "", style: "tipo" },
+        { text: endereco(p), style: "endereco" },
+        p.OBSERVAÇÃO ? { text: p.OBSERVAÇÃO, style: "obs" } : {},
+        contatos(p) ? { text: contatos(p), style: "contato" } : {},
         {
-          text: p["POSTOS DE SERVIÇOS / GRUPO SETER"],
-          bold: true,
-          fontSize: 11
-        },
-        {
-          text: p.TIPO || "",
-          italics: true,
-          fontSize: 9,
-          margin: [0, 1, 0, 2]
-        },
-        {
-          text: enderecoCompleto(p),
-          fontSize: 9
-        },
-        p.OBSERVAÇÃO
-          ? {
-              text: p.OBSERVAÇÃO,
-              fontSize: 9,
-              margin: [0, 2, 0, 0]
-            }
-          : {},
-        contatosFormatados(p)
-          ? {
-              text: contatosFormatados(p),
-              fontSize: 9,
-              margin: [0, 2, 0, 0]
-            }
-          : {}
+          canvas: [{ type: "line", x1: 0, y1: 6, x2: 515, y2: 6, lineWidth: 0.5, lineColor: "#dddddd" }]
+        }
       ]
     });
   });
 
-  // ==========================
-  // DOCUMENTO FINAL
-  // ==========================
   const doc = {
     pageSize: "A4",
-
     content: [
-      {
-        text: "RELATÓRIO POSTOS UNISETER",
-        style: "titulo"
-      },
+      { text: "RELATÓRIO POSTOS UNISETER", style: "titulo" },
       {
         text: `Gerado em ${new Date().toLocaleString("pt-BR")}`,
         alignment: "right",
-        fontSize: 9,
-        margin: [0, 0, 0, 14]
+        margin: [0, 0, 0, 20],
+        fontSize: 9
       },
       ...conteudo
     ],
-
     footer: (p, t) => ({
       text: `Página ${p} de ${t}`,
       alignment: "center",
       fontSize: 9
     }),
-
     styles: {
-      titulo: {
-        fontSize: 16,
-        bold: true,
-        alignment: "center",
-        margin: [0, 0, 0, 12]
-      },
-      grupo: {
-        fontSize: 12,
-        bold: true,
-        fillColor: "#e8f0ff",
-        margin: [0, 10, 0, 6]
-      }
+      titulo: { fontSize: 16, bold: true, alignment: "center" },
+      grupo: { fontSize: 13, bold: true, fillColor: "#eef3ff", margin: [0, 8, 0, 6] },
+      posto: { fontSize: 11, bold: true },
+      tipo: { fontSize: 9, italics: true, margin: [0, 1, 0, 2] },
+      endereco: { fontSize: 9 },
+      obs: { fontSize: 9, italics: true, margin: [0, 2, 0, 0] },
+      contato: { fontSize: 9, margin: [0, 2, 0, 0] }
     }
   };
 
