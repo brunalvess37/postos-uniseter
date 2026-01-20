@@ -1,1 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gerar Relatório — Postos UNISETER</title>
+
+<!-- Clerk -->
+<script async crossorigin="anonymous"
+src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
+
+<link rel="stylesheet" href="style.css?v=202501">
+
+<style>
+body{
+  display:none;
+  font-family: Arial, sans-serif;
+  padding:20px;
+}
+
+.container{
+  max-width:600px;
+  margin:0 auto;
+}
+
+h2{
+  margin-bottom:10px;
+}
+
+.card{
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:16px;
+}
+
+label{
+  font-weight:bold;
+  display:block;
+  margin-bottom:6px;
+}
+
+select, input[type="radio"]{
+  margin-bottom:10px;
+}
+
+button{
+  padding:10px 14px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  cursor:pointer;
+  background: var(--card);
+}
+
+button.primary{
+  background: var(--primary);
+  color:white;
+  border:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<script>
+document.addEventListener("DOMContentLoaded", async ()=>{
+  const c = window.Clerk;
+  await c.load();
+  if(!c.user) return location.href="/signin.html";
+  document.body.style.display="block";
+});
+</script>
+
+<div class="container">
+
+  <h2>Gerar Relatório</h2>
+  <p style="color:var(--muted)">Configure abaixo os filtros do relatório</p>
+
+  <!-- ===== TIPO DE RELATÓRIO ===== -->
+  <div class="card">
+    <label>Tipo de relatório</label>
+
+    <label>
+      <input type="radio" name="tipo" value="todos" checked>
+      Todos os postos
+    </label>
+
+    <label>
+      <input type="radio" name="tipo" value="favoritos">
+      Somente favoritos
+    </label>
+  </div>
+
+  <!-- ===== FILTROS ===== -->
+  <div class="card">
+    <label>Filtrar por cidade</label>
+    <select id="filtroCidade">
+      <option value="">Todas as cidades</option>
+    </select>
+
+    <label>Filtrar por zona</label>
+    <select id="filtroZona">
+      <option value="">Todas as zonas</option>
+    </select>
+  </div>
+
+  <!-- ===== ORDENAÇÃO ===== -->
+  <div class="card">
+    <label>Ordenação</label>
+
+    <label>
+      <input type="radio" name="ordem" value="cidade-zona" checked>
+      Cidade + Zona
+    </label>
+
+    <label>
+      <input type="radio" name="ordem" value="cidade-posto">
+      Cidade + Nome do Posto
+    </label>
+
+    <label>
+      <input type="radio" name="ordem" value="posto">
+      Nome do Posto
+    </label>
+  </div>
+
+  <!-- ===== AÇÕES ===== -->
+  <div class="card" style="text-align:center">
+    <button class="primary" onclick="gerarRelatorio()">
+      Gerar Relatório PDF
+    </button>
+  </div>
+
+  <button onclick="location.href='home.html'">← Voltar ao Menu</button>
+
+</div>
+
+<script>
+async function carregarFiltros(){
+  const res = await fetch("/api/postos");
+  const dados = await res.json();
+
+  const cidades = [...new Set(dados.map(p=>p.CIDADE).filter(Boolean))].sort();
+  const zonas = [...new Set(dados.map(p=>p.ZONA).filter(Boolean))].sort();
+
+  const selCidade = document.getElementById("filtroCidade");
+  cidades.forEach(c=>{
+    const o = document.createElement("option");
+    o.value = c;
+    o.textContent = c;
+    selCidade.appendChild(o);
+  });
+
+  const selZona = document.getElementById("filtroZona");
+  zonas.forEach(z=>{
+    const o = document.createElement("option");
+    o.value = z;
+    o.textContent = z;
+    selZona.appendChild(o);
+  });
+}
+
+function gerarRelatorio(){
+  alert("Na próxima etapa vamos ligar esta tela ao PDF.");
+}
+
+carregarFiltros();
+</script>
+
+</body>
+</html>
 
