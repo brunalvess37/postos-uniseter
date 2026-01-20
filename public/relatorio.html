@@ -24,6 +24,21 @@ body{ display:none; font-family:Arial; padding:20px; }
 label{ font-weight:bold; display:block; margin:8px 0 4px; }
 button{ padding:10px 14px; border-radius:8px; cursor:pointer; }
 .primary{ background:var(--primary); color:white; border:none; }
+
+.lista-postos{
+  max-height:260px;
+  overflow:auto;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px;
+  display:none;
+}
+.lista-postos label{
+  font-weight:normal;
+  display:flex;
+  gap:6px;
+  margin:4px 0;
+}
 </style>
 
 </head>
@@ -48,6 +63,12 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   <label>Tipo</label>
   <label><input type="radio" name="tipo" value="todos" checked> Todos os postos</label>
   <label><input type="radio" name="tipo" value="favoritos"> Apenas favoritos</label>
+  <label><input type="radio" name="tipo" value="manual"> Seleção manual</label>
+</div>
+
+<div class="card" id="card-manual">
+  <label>Selecione os postos</label>
+  <div class="lista-postos" id="listaPostos"></div>
 </div>
 
 <div class="card">
@@ -76,22 +97,48 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 <script src="pdf-geral.js?v=202501"></script>
 
 <script>
-async function carregarFiltros(){
-  const dados = await fetch("/api/postos").then(r=>r.json());
+let todosPostos = [];
 
-  [...new Set(dados.map(p=>p.CIDADE).filter(Boolean))].sort()
+async function carregarFiltros(){
+  todosPostos = await fetch("/api/postos").then(r=>r.json());
+
+  [...new Set(todosPostos.map(p=>p.CIDADE).filter(Boolean))].sort()
     .forEach(v=>cidade.add(new Option(v,v)));
 
-  [...new Set(dados.map(p=>p.ZONA).filter(Boolean))].sort()
+  [...new Set(todosPostos.map(p=>p.ZONA).filter(Boolean))].sort()
     .forEach(v=>zona.add(new Option(v,v)));
+
+  const lista = document.getElementById("listaPostos");
+  lista.innerHTML = todosPostos.map((p,i)=>`
+    <label>
+      <input type="checkbox" value="${i}">
+      ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]} — ${p.CIDADE || ""}
+    </label>
+  `).join("");
 }
 
+document.querySelectorAll("input[name=tipo]").forEach(r=>{
+  r.addEventListener("change", ()=>{
+    const manual = document.querySelector("input[name=tipo]:checked").value === "manual";
+    document.getElementById("listaPostos").style.display = manual ? "block" : "none";
+  });
+});
+
 function gerar(){
+  const tipo = document.querySelector("input[name=tipo]:checked").value;
+
+  let selecionados = [];
+  if(tipo === "manual"){
+    selecionados = [...document.querySelectorAll("#listaPostos input:checked")]
+      .map(i=>Number(i.value));
+  }
+
   gerarPDFGeral({
-    tipo: document.querySelector("input[name=tipo]:checked").value,
+    tipo,
     cidade: cidade.value,
     zona: zona.value,
-    ordem: document.querySelector("input[name=ordem]:checked").value
+    ordem: document.querySelector("input[name=ordem]:checked").value,
+    selecionados
   });
 }
 
