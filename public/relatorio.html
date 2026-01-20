@@ -12,8 +12,9 @@
 <title>Gerar Relatório — Postos UNISETER</title>
 
 <script async crossorigin="anonymous"
-src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
+  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+  data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
+</script>
 
 <link rel="stylesheet" href="style.css?v=202501">
 
@@ -85,7 +86,7 @@ function atualizarEstadoBotoes(){
 
 <header>
   <h2>Gerar Relatório</h2>
-  <button onclick="location.href='home.html'">← Menu</button>
+  <button type="button" onclick="location.href='home.html'">← Menu</button>
 </header>
 
 <p style="color:var(--muted)">Defina os critérios do relatório</p>
@@ -108,8 +109,18 @@ function atualizarEstadoBotoes(){
 </div>
 
 <div class="card">
-  <button id="btnGerar" class="primary" onclick="gerar()">Gerar PDF</button>
-  <button id="btnManual" class="secondary hidden"
+  <button
+    id="btnGerar"
+    type="button"
+    class="primary"
+    onclick="gerar()">
+    Gerar PDF
+  </button>
+
+  <button
+    id="btnManual"
+    type="button"
+    class="secondary hidden"
     onclick="location.href='relatorio-selecao.html'">
     Selecionar postos
   </button>
@@ -117,11 +128,11 @@ function atualizarEstadoBotoes(){
 
 </div>
 
-<!-- ✅ DEPENDÊNCIAS DO PDF (ESSENCIAL) -->
+<!-- DEPENDÊNCIAS DO PDF -->
 <script src="pdfmake.min.js?v=202501"></script>
 <script src="vfs_fonts.js?v=202501"></script>
 
-<!-- LÓGICA DO RELATÓRIO -->
+<!-- PDF (IMUTÁVEL) -->
 <script src="pdf-geral.js?v=202501"></script>
 
 <script>
