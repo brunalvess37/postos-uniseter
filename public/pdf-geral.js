@@ -1,21 +1,34 @@
 // ==========================================
 // RELATÓRIO POSTOS UNISETER
+// (VISUAL APROVADO — NÃO ALTERAR)
 // ==========================================
-async function gerarPDFGeral(filtros = {}){
+async function gerarPDFGeral(filtros){
 
-  // 🔒 valores padrão (EVITA QUEBRA SILENCIOSA)
-  filtros.tipo  = filtros.tipo  || "todos";
-  filtros.ordem = filtros.ordem || "posto";
-
-  let dados = await fetch("/api/postos").then(r=>r.json());
-
-  // ===== FAVORITOS =====
-  if(filtros.tipo === "favoritos"){
-    const fav = JSON.parse(localStorage.getItem("postos_favoritos") || "[]");
-    dados = dados.filter((_,i)=>fav.includes(i));
+  // ==========================
+  // CARREGAR DADOS
+  // ==========================
+  let dados = [];
+  try {
+    const res = await fetch("/api/postos");
+    if(!res.ok) throw new Error("Erro ao buscar dados");
+    dados = await res.json();
+  } catch(e){
+    alert("Erro ao carregar dados para o relatório.");
+    console.error(e);
+    return;
   }
 
-  // ===== SELEÇÃO MANUAL =====
+  // ==========================
+  // FILTRO: FAVORITOS
+  // ==========================
+  if(filtros.tipo === "favoritos"){
+    const fav = JSON.parse(localStorage.getItem("postos_favoritos") || "[]");
+    dados = dados.filter((_, i) => fav.includes(i));
+  }
+
+  // ==========================
+  // FILTRO: SELEÇÃO MANUAL
+  // ==========================
   if(filtros.tipo === "manual"){
     const selecionados = JSON.parse(
       localStorage.getItem("postos_selecionados") || "[]"
@@ -34,7 +47,9 @@ async function gerarPDFGeral(filtros = {}){
     return;
   }
 
-  // ===== ORDENAÇÃO =====
+  // ==========================
+  // ORDENAÇÃO
+  // ==========================
   dados.sort((a,b)=>{
     if(filtros.ordem === "zona"){
       return (a.ZONA || "").localeCompare(b.ZONA || "") ||
@@ -46,40 +61,10 @@ async function gerarPDFGeral(filtros = {}){
       .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
   });
 
-  // ===== FUNÇÕES AUXILIARES =====
-  function enderecoCompleto(p){
-    return [
-      p["ENDEREÇO I"],
-      p["ENDEREÇO II"],
-      p["ENDEREÇO III"],
-      p["ENDEREÇO IV"]
-    ].filter(Boolean).join(" - ");
-  }
-
-  function contatosFormatados(p){
-    const contatos = [];
-
-    if(p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"]){
-      contatos.push(
-        `${p["CONTATO 1 - Nome"] || ""}${
-          p["CONTATO 1 - Telefone"] ? " — " + p["CONTATO 1 - Telefone"] : ""
-        }`
-      );
-    }
-
-    if(p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"]){
-      contatos.push(
-        `${p["CONTATO 2 - Nome"] || ""}${
-          p["CONTATO 2 - Telefone"] ? " — " + p["CONTATO 2 - Telefone"] : ""
-        }`
-      );
-    }
-
-    return contatos.join("\n");
-  }
-
-  // ===== AGRUPAMENTO =====
-  let grupoAtual = null;
+  // ==========================
+  // CONTEÚDO (VISUAL APROVADO)
+  // ==========================
+  let atual = "";
   const conteudo = [];
 
   dados.forEach(p => {
@@ -89,28 +74,44 @@ async function gerarPDFGeral(filtros = {}){
         ? (p.ZONA || "Zona não informada")
         : (p.CIDADE || "Cidade não informada");
 
-    if(grupo !== grupoAtual){
-      grupoAtual = grupo;
+    if(grupo !== atual){
+      atual = grupo;
       conteudo.push({
-        text: grupo.toUpperCase(),
+        text: grupo,
         style: "grupo",
         margin: [0,12,0,6]
       });
     }
+
+    const endereco = [
+      p["ENDEREÇO I"],
+      p["ENDEREÇO II"],
+      p["ENDEREÇO III"],
+      p["ENDEREÇO IV"]
+    ].filter(Boolean).join(" - ");
+
+    const contatos = [
+      p["CONTATO 1 - Nome"],
+      p["CONTATO 1 - Telefone"],
+      p["CONTATO 2 - Nome"],
+      p["CONTATO 2 - Telefone"]
+    ].filter(Boolean).join(" ");
 
     conteudo.push({
       margin:[0,0,0,10],
       text:[
         { text: p["POSTOS DE SERVIÇOS / GRUPO SETER"] + "\n", bold:true },
         (p.TIPO || "") + "\n",
-        enderecoCompleto(p) + "\n",
+        endereco + "\n",
         (p.OBSERVAÇÃO || "") + "\n",
-        contatosFormatados(p)
+        contatos
       ]
     });
   });
 
-  // ===== DOCUMENTO =====
+  // ==========================
+  // DOCUMENTO PDF
+  // ==========================
   const doc = {
     pageSize: "A4",
 
@@ -140,8 +141,7 @@ async function gerarPDFGeral(filtros = {}){
       grupo:{
         fontSize:13,
         bold:true,
-        fillColor:"#e8f0ff",
-        margin:[0,8,0,4]
+        fillColor:"#e8f0ff"
       }
     }
   };
