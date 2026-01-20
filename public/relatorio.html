@@ -20,6 +20,14 @@ data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMu
 <style>
 body{ display:none; padding:20px; }
 .container{ max-width:640px; margin:auto; }
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+}
+
 .card{
   background:var(--card);
   border:1px solid var(--border);
@@ -27,10 +35,30 @@ body{ display:none; padding:20px; }
   padding:16px;
   margin-bottom:16px;
 }
+
 label{ font-weight:bold; display:block; margin:8px 0 4px; }
-button{ padding:10px 16px; border-radius:8px; cursor:pointer; }
-.primary{ background:var(--primary); color:white; border:none; width:100%; }
 .radio-group label{ font-weight:normal; }
+
+button{
+  padding:10px 16px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.primary{
+  background:var(--primary);
+  color:white;
+  border:none;
+  width:100%;
+}
+
+.secondary{
+  background:transparent;
+  border:1px solid var(--border);
+  width:100%;
+}
+
+.hidden{ display:none; }
 </style>
 
 </head>
@@ -43,20 +71,33 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   await c.load();
   if(!c.user) return location.href="/signin.html";
   document.body.style.display="block";
+
+  atualizarEstadoBotoes();
 });
+
+function atualizarEstadoBotoes(){
+  const tipo = document.querySelector("input[name=tipo]:checked").value;
+
+  document.getElementById("btnGerar").disabled = (tipo === "manual");
+  document.getElementById("btnManual").classList.toggle("hidden", tipo !== "manual");
+}
 </script>
 
 <div class="container">
 
-<h2>Gerar Relatório</h2>
+<header>
+  <h2>Gerar Relatório</h2>
+  <button onclick="location.href='home.html'">← Menu</button>
+</header>
+
 <p style="color:var(--muted)">Defina os critérios do relatório</p>
 
 <div class="card">
   <label>Tipo de relatório</label>
-  <div class="radio-group">
+  <div class="radio-group" onchange="atualizarEstadoBotoes()">
     <label><input type="radio" name="tipo" value="todos" checked> Todos os postos</label>
     <label><input type="radio" name="tipo" value="favoritos"> Apenas favoritos</label>
-    <label><input type="radio" name="tipo" value="manual"> Seleção manual (tela Buscar Postos)</label>
+    <label><input type="radio" name="tipo" value="manual"> Seleção manual</label>
   </div>
 </div>
 
@@ -69,10 +110,12 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 </div>
 
 <div class="card">
-  <button class="primary" onclick="gerar()">Gerar PDF</button>
+  <button id="btnGerar" class="primary" onclick="gerar()">Gerar PDF</button>
+  <button id="btnManual" class="secondary hidden"
+    onclick="location.href='relatorio-selecao.html'">
+    Selecionar postos
+  </button>
 </div>
-
-<button onclick="location.href='home.html'">← Voltar ao menu</button>
 
 </div>
 
