@@ -7,7 +7,7 @@ async function gerarPDFGeral() {
   // CONFIGURAÇÃO DO RELATÓRIO
   // ==========================
   // modos possíveis: "cidade" | "zona"
-  const modoAgrupamento = "cidade"; // futuro: trocar para "zona" quando aplicar filtro
+  const modoAgrupamento = "cidade"; // futuro: "zona"
 
   // ==========================
   // CARREGAR DADOS
@@ -89,12 +89,12 @@ async function gerarPDFGeral() {
       text: `Gerado em: ${dataGeracao}`,
       alignment: "right",
       fontSize: 10,
-      margin: [0, 0, 0, 10]
+      margin: [0, 0, 0, 12]
     }
   );
 
   // ==========================
-  // AGRUPAMENTO
+  // AGRUPAMENTO COM SUBTÍTULO DESTACADO
   // ==========================
   let grupoAtual = null;
 
@@ -104,12 +104,14 @@ async function gerarPDFGeral() {
     if (chaveGrupo !== grupoAtual) {
       grupoAtual = chaveGrupo;
 
+      // Subtítulo destacado
       conteudo.push({
-        text: grupoAtual || "—",
-        style: "grupo",
-        margin: [0, 12, 0, 6]
+        text: (grupoAtual || "—").toUpperCase(),
+        style: "grupoDestaque",
+        margin: [0, 14, 0, 8]
       });
 
+      // Cabeçalho da tabela
       conteudo.push({
         table: {
           headerRows: 1,
@@ -158,9 +160,12 @@ async function gerarPDFGeral() {
         bold: true,
         margin: [0, 0, 0, 6]
       },
-      grupo: {
+      grupoDestaque: {
         fontSize: 13,
-        bold: true
+        bold: true,
+        fillColor: "#e8f0ff",
+        margin: [0, 10, 0, 6],
+        alignment: "left"
       },
       th: {
         bold: true,
