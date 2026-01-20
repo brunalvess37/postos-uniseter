@@ -1,40 +1,29 @@
 // ==========================================
-// RELATÓRIO POSTOS UNISETER
-// (VISUAL APROVADO — NÃO ALTERAR)
+// RELATÓRIO POSTOS UNISETER — VERSÃO FINAL
+// Layout aprovado + filtros consolidados
 // ==========================================
-async function gerarPDFGeral(filtros){
+async function gerarPDFGeral(filtros) {
 
   // ==========================
   // CARREGAR DADOS
   // ==========================
-  let dados = [];
-  try {
-    const res = await fetch("/api/postos");
-    if(!res.ok) throw new Error("Erro ao buscar dados");
-    dados = await res.json();
-  } catch(e){
-    alert("Erro ao carregar dados para o relatório.");
-    console.error(e);
-    return;
-  }
+  let dados = await fetch("/api/postos").then(r => r.json());
 
   // ==========================
-  // FILTRO: FAVORITOS
+  // FAVORITOS
   // ==========================
-  if(filtros.tipo === "favoritos"){
+  if (filtros.tipo === "favoritos") {
     const fav = JSON.parse(localStorage.getItem("postos_favoritos") || "[]");
     dados = dados.filter((_, i) => fav.includes(i));
   }
 
   // ==========================
-  // FILTRO: SELEÇÃO MANUAL
+  // SELEÇÃO MANUAL
   // ==========================
-  if(filtros.tipo === "manual"){
-    const selecionados = JSON.parse(
-      localStorage.getItem("postos_selecionados") || "[]"
-    );
+  if (filtros.tipo === "manual") {
+    const selecionados = JSON.parse(localStorage.getItem("postos_selecionados") || "[]");
 
-    if(!selecionados.length){
+    if (!selecionados.length) {
       alert("Nenhum posto selecionado na tela Buscar Postos.");
       return;
     }
@@ -42,7 +31,7 @@ async function gerarPDFGeral(filtros){
     dados = selecionados.map(i => dados[i]).filter(Boolean);
   }
 
-  if(!dados.length){
+  if (!dados.length) {
     alert("Nenhum posto encontrado para gerar relatório.");
     return;
   }
@@ -50,8 +39,8 @@ async function gerarPDFGeral(filtros){
   // ==========================
   // ORDENAÇÃO
   // ==========================
-  dados.sort((a,b)=>{
-    if(filtros.ordem === "zona"){
+  dados.sort((a, b) => {
+    if (filtros.ordem === "zona") {
       return (a.ZONA || "").localeCompare(b.ZONA || "") ||
         (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
           .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
@@ -62,9 +51,39 @@ async function gerarPDFGeral(filtros){
   });
 
   // ==========================
-  // CONTEÚDO (VISUAL APROVADO)
+  // FUNÇÕES AUXILIARES
   // ==========================
-  let atual = "";
+  function enderecoCompleto(p) {
+    return [
+      p["ENDEREÇO I"],
+      p["ENDEREÇO II"],
+      p["ENDEREÇO III"],
+      p["ENDEREÇO IV"]
+    ].filter(Boolean).join(" - ");
+  }
+
+  function contatosFormatados(p) {
+    const contatos = [];
+
+    if (p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"]) {
+      contatos.push(
+        `${p["CONTATO 1 - Nome"] || ""}${p["CONTATO 1 - Telefone"] ? " (" + p["CONTATO 1 - Telefone"] + ")" : ""}`
+      );
+    }
+
+    if (p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"]) {
+      contatos.push(
+        `${p["CONTATO 2 - Nome"] || ""}${p["CONTATO 2 - Telefone"] ? " (" + p["CONTATO 2 - Telefone"] + ")" : ""}`
+      );
+    }
+
+    return contatos.join(" • ");
+  }
+
+  // ==========================
+  // CONTEÚDO DO PDF (LAYOUT)
+  // ==========================
+  let grupoAtual = null;
   const conteudo = [];
 
   dados.forEach(p => {
@@ -74,74 +93,89 @@ async function gerarPDFGeral(filtros){
         ? (p.ZONA || "Zona não informada")
         : (p.CIDADE || "Cidade não informada");
 
-    if(grupo !== atual){
-      atual = grupo;
+    if (grupo !== grupoAtual) {
+      grupoAtual = grupo;
       conteudo.push({
         text: grupo,
         style: "grupo",
-        margin: [0,12,0,6]
+        margin: [0, 14, 0, 8]
       });
     }
 
-    const endereco = [
-      p["ENDEREÇO I"],
-      p["ENDEREÇO II"],
-      p["ENDEREÇO III"],
-      p["ENDEREÇO IV"]
-    ].filter(Boolean).join(" - ");
-
-    const contatos = [
-      p["CONTATO 1 - Nome"],
-      p["CONTATO 1 - Telefone"],
-      p["CONTATO 2 - Nome"],
-      p["CONTATO 2 - Telefone"]
-    ].filter(Boolean).join(" ");
-
     conteudo.push({
-      margin:[0,0,0,10],
-      text:[
-        { text: p["POSTOS DE SERVIÇOS / GRUPO SETER"] + "\n", bold:true },
-        (p.TIPO || "") + "\n",
-        endereco + "\n",
-        (p.OBSERVAÇÃO || "") + "\n",
-        contatos
+      margin: [0, 0, 0, 12],
+      stack: [
+        {
+          text: p["POSTOS DE SERVIÇOS / GRUPO SETER"],
+          bold: true,
+          fontSize: 11
+        },
+        {
+          text: p.TIPO || "",
+          italics: true,
+          fontSize: 9,
+          margin: [0, 1, 0, 2]
+        },
+        {
+          text: enderecoCompleto(p),
+          fontSize: 9
+        },
+        p.OBSERVAÇÃO
+          ? {
+              text: p.OBSERVAÇÃO,
+              fontSize: 9,
+              margin: [0, 2, 0, 0]
+            }
+          : {},
+        contatosFormatados(p)
+          ? {
+              text: contatosFormatados(p),
+              fontSize: 9,
+              margin: [0, 2, 0, 0]
+            }
+          : {}
       ]
     });
   });
 
   // ==========================
-  // DOCUMENTO PDF
+  // DOCUMENTO FINAL
   // ==========================
   const doc = {
     pageSize: "A4",
 
     content: [
-      { text: "RELATÓRIO POSTOS UNISETER", style:"titulo" },
+      {
+        text: "RELATÓRIO POSTOS UNISETER",
+        style: "titulo"
+      },
       {
         text: `Gerado em ${new Date().toLocaleString("pt-BR")}`,
         alignment: "right",
-        margin:[0,0,0,12]
+        fontSize: 9,
+        margin: [0, 0, 0, 14]
       },
       ...conteudo
     ],
 
-    footer: (p,t)=>({
-      text:`Página ${p} de ${t}`,
-      alignment:"center",
-      fontSize:9
+    footer: (p, t) => ({
+      text: `Página ${p} de ${t}`,
+      alignment: "center",
+      fontSize: 9
     }),
 
-    styles:{
-      titulo:{
-        fontSize:16,
-        bold:true,
-        alignment:"center",
-        margin:[0,0,0,10]
+    styles: {
+      titulo: {
+        fontSize: 16,
+        bold: true,
+        alignment: "center",
+        margin: [0, 0, 0, 12]
       },
-      grupo:{
-        fontSize:13,
-        bold:true,
-        fillColor:"#e8f0ff"
+      grupo: {
+        fontSize: 12,
+        bold: true,
+        fillColor: "#e8f0ff",
+        margin: [0, 10, 0, 6]
       }
     }
   };
