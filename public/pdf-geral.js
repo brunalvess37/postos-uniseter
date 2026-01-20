@@ -1,7 +1,11 @@
 // ==========================================
 // RELATÓRIO POSTOS UNISETER
 // ==========================================
-async function gerarPDFGeral(filtros){
+async function gerarPDFGeral(filtros = {}){
+
+  // 🔒 valores padrão (EVITA QUEBRA SILENCIOSA)
+  filtros.tipo  = filtros.tipo  || "todos";
+  filtros.ordem = filtros.ordem || "posto";
 
   let dados = await fetch("/api/postos").then(r=>r.json());
 
@@ -13,7 +17,9 @@ async function gerarPDFGeral(filtros){
 
   // ===== SELEÇÃO MANUAL =====
   if(filtros.tipo === "manual"){
-    const selecionados = JSON.parse(localStorage.getItem("postos_selecionados") || "[]");
+    const selecionados = JSON.parse(
+      localStorage.getItem("postos_selecionados") || "[]"
+    );
 
     if(!selecionados.length){
       alert("Nenhum posto selecionado na tela Buscar Postos.");
@@ -55,13 +61,17 @@ async function gerarPDFGeral(filtros){
 
     if(p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"]){
       contatos.push(
-        `${p["CONTATO 1 - Nome"] || ""}${p["CONTATO 1 - Telefone"] ? " — " + p["CONTATO 1 - Telefone"] : ""}`
+        `${p["CONTATO 1 - Nome"] || ""}${
+          p["CONTATO 1 - Telefone"] ? " — " + p["CONTATO 1 - Telefone"] : ""
+        }`
       );
     }
 
     if(p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"]){
       contatos.push(
-        `${p["CONTATO 2 - Nome"] || ""}${p["CONTATO 2 - Telefone"] ? " — " + p["CONTATO 2 - Telefone"] : ""}`
+        `${p["CONTATO 2 - Nome"] || ""}${
+          p["CONTATO 2 - Telefone"] ? " — " + p["CONTATO 2 - Telefone"] : ""
+        }`
       );
     }
 
