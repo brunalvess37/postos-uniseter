@@ -101,36 +101,38 @@ async function sair(){
 <div class="menu-grid">
 
   <div class="menu-card" onclick="location='app.html'">
-    <img src="https://img.icons8.com/ios-filled/100/search.png"> Buscar Postos
+    <img src="https://img.icons8.com/ios-filled/100/search.png">
+    Buscar Postos
   </div>
 
   <div class="menu-card" onclick="location='rota.html'">
-    <img src="https://img.icons8.com/ios-filled/100/route.png"> Rota do Dia
+    <img src="https://img.icons8.com/ios-filled/100/route.png">
+    Rota do Dia
   </div>
 
-  <div class="menu-card" onclick="gerarPDFGeral()">
-    <img src="https://img.icons8.com/ios-filled/100/pdf.png"> PDF Geral
+  <!-- ✅ RENOMEADO E REDIRECIONADO -->
+  <div class="menu-card" onclick="location='relatorio.html'">
+    <img src="https://img.icons8.com/ios-filled/100/pdf.png">
+    Gerar Relatório
   </div>
 
   <div class="menu-card" onclick="location='rota.html'">
-    <img src="https://img.icons8.com/ios-filled/100/car.png"> Waze / Navegar
+    <img src="https://img.icons8.com/ios-filled/100/car.png">
+    Waze / Navegar
   </div>
 
   <!-- 🔒 Só aparece para você -->
   <div class="menu-card" id="admin-card" onclick="location='admin.html'">
-    <img src="https://img.icons8.com/ios-filled/100/upload.png"> Atualizar Planilha
+    <img src="https://img.icons8.com/ios-filled/100/upload.png">
+    Atualizar Planilha
   </div>
 
   <div class="menu-card" onclick="alert('Em breve — Estatísticas e Insights!')">
-    <img src="https://img.icons8.com/ios-filled/100/combo-chart.png"> Relatórios Avançados
+    <img src="https://img.icons8.com/ios-filled/100/combo-chart.png">
+    Relatórios Avançados
   </div>
 
 </div>
-
-<!-- Scripts com anti-cache 🔥 -->
-<script src="pdfmake.min.js?v=202501"></script>
-<script src="vfs_fonts.js?v=202501"></script>
-<script src="pdf-geral.js?v=202501"></script>
 
 </body>
 </html>
