@@ -1,7 +1,7 @@
 // ==========================================
-// RELATÓRIO POSTOS UNISETER — VERSÃO FINAL
+// RELATÓRIO POSTOS UNISETER (LAYOUT APROVADO)
 // ==========================================
-async function gerarPDFGeral(filtros) {
+async function gerarPDFGeral(filtros){
 
   let dados = await fetch("/api/postos").then(r => r.json());
 
@@ -15,7 +15,7 @@ async function gerarPDFGeral(filtros) {
   if (filtros.tipo === "manual") {
     const selecionados = JSON.parse(localStorage.getItem("postos_selecionados") || "[]");
     if (!selecionados.length) {
-      alert("Nenhum posto selecionado.");
+      alert("Nenhum posto selecionado na tela Buscar Postos.");
       return;
     }
     dados = selecionados.map(i => dados[i]).filter(Boolean);
@@ -26,19 +26,21 @@ async function gerarPDFGeral(filtros) {
     return;
   }
 
-  // ===== ORDENAÇÃO GLOBAL (CRÍTICA) =====
+  // ===== ORDENAÇÃO (ANTES DO AGRUPAMENTO) =====
   dados.sort((a, b) => {
-    const grupoA = filtros.ordem === "zona" ? (a.ZONA || "") : (a.CIDADE || "");
-    const grupoB = filtros.ordem === "zona" ? (b.ZONA || "") : (b.CIDADE || "");
+    if (filtros.ordem === "zona") {
+      return (a.ZONA || "").localeCompare(b.ZONA || "") ||
+             (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
+               .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
+    }
 
-    if (grupoA !== grupoB) return grupoA.localeCompare(grupoB);
-
-    return (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
-      .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
+    return (a.CIDADE || "").localeCompare(b.CIDADE || "") ||
+           (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
+             .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
   });
 
   // ===== FUNÇÕES AUXILIARES =====
-  function enderecoCompleto(p) {
+  function enderecoCompleto(p){
     return [
       p["ENDEREÇO I"],
       p["ENDEREÇO II"],
@@ -48,27 +50,25 @@ async function gerarPDFGeral(filtros) {
     ].filter(Boolean).join(" - ");
   }
 
-  function contatosFormatados(p) {
+  function contatosFormatados(p){
     const contatos = [];
 
     if (p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"]) {
       contatos.push(
-        `${p["CONTATO 1 - Nome"] || ""} ${p["CONTATO 1 - Telefone"] || ""}`.trim()
+        `${p["CONTATO 1 - Nome"] || ""}${p["CONTATO 1 - Telefone"] ? " (" + p["CONTATO 1 - Telefone"] + ")" : ""}`
       );
     }
 
     if (p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"]) {
       contatos.push(
-        `${p["CONTATO 2 - Nome"] || ""} ${p["CONTATO 2 - Telefone"] || ""}`.trim()
+        `${p["CONTATO 2 - Nome"] || ""}${p["CONTATO 2 - Telefone"] ? " (" + p["CONTATO 2 - Telefone"] + ")" : ""}`
       );
     }
 
-    return contatos.length
-      ? [{ text: "Contato:\n", bold: true }, contatos.join("\n")]
-      : [];
+    return contatos.join(" / ");
   }
 
-  // ===== CONTEÚDO =====
+  // ===== CONTEÚDO DO PDF =====
   let grupoAtual = null;
   const conteudo = [];
 
@@ -80,72 +80,68 @@ async function gerarPDFGeral(filtros) {
 
     if (grupo !== grupoAtual) {
       grupoAtual = grupo;
-
       conteudo.push({
         text: grupo.toUpperCase(),
-        style: "grupo",
+        style: "faixaGrupo",
         margin: [0, 16, 0, 8]
       });
     }
 
-    const bloco = [
-      { text: p["POSTOS DE SERVIÇOS / GRUPO SETER"] + "\n", bold: true, fontSize: 11 },
-      { text: (p.TIPO || "") + "\n", italics: true },
-      { text: enderecoCompleto(p) + "\n" }
-    ];
-
-    if (p.OBSERVAÇÃO) {
-      bloco.push({ text: p.OBSERVAÇÃO + "\n" });
-    }
-
-    bloco.push(...contatosFormatados(p));
-
     conteudo.push({
       margin: [0, 0, 0, 12],
-      stack: bloco
+      text: [
+        { text: p["POSTOS DE SERVIÇOS / GRUPO SETER"] + "\n", bold: true },
+        (p.TIPO || "") + "\n",
+        enderecoCompleto(p) + "\n",
+        p.OBSERVAÇÃO ? p.OBSERVAÇÃO + "\n" : "",
+        contatosFormatados(p) ? "Contato: " + contatosFormatados(p) : ""
+      ]
     });
   });
 
   // ===== DOCUMENTO =====
   const doc = {
     pageSize: "A4",
-    pageMargins: [40, 80, 40, 60],
 
-    header: () => ({
+    header: {
+      margin: [40, 20, 40, 0],
       columns: [
         {
           text: "RELATÓRIO POSTOS UNISETER",
-          alignment: "center",
-          fontSize: 14,
-          bold: true
-        },
-        {
-          text: `Gerado em ${new Date().toLocaleString("pt-BR")}`,
-          alignment: "right",
-          fontSize: 9
+          style: "titulo",
+          alignment: "center"
         }
-      ],
-      margin: [40, 30, 40, 20]
-    }),
+      ]
+    },
 
     footer: (p, t) => ({
       text: `Página ${p} de ${t}`,
       alignment: "center",
       fontSize: 9,
-      margin: [0, 20, 0, 0]
+      margin: [0, 10, 0, 0]
     }),
 
-    content: conteudo,
+    content: [
+      {
+        text: `Gerado em ${new Date().toLocaleString("pt-BR")}`,
+        alignment: "right",
+        margin: [0, 10, 0, 20],
+        fontSize: 10
+      },
+      ...conteudo
+    ],
 
     styles: {
-      grupo: {
-        fontSize: 12,
+      titulo: {
+        fontSize: 16,
+        bold: true
+      },
+      faixaGrupo: {
+        fontSize: 13,
         bold: true,
         color: "#ffffff",
-        fillColor: "#003c8d",
-        alignment: "left",
-        margin: [0, 8, 0, 8],
-        padding: [8, 6, 8, 6]
+        fillColor: "#003A8F",
+        margin: [0, 0, 0, 6]
       }
     }
   };
