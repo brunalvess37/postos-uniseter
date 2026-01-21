@@ -54,10 +54,10 @@ async function gerarPDFGeral(filtros) {
   }
 
   function contatosFormatados(p) {
-    const contatos = [];
+    const linhas = [];
 
     if (p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"]) {
-      contatos.push(
+      linhas.push(
         `${p["CONTATO 1 - Nome"] || ""}${p["CONTATO 1 - Telefone"]
           ? " — " + p["CONTATO 1 - Telefone"]
           : ""}`
@@ -65,14 +65,19 @@ async function gerarPDFGeral(filtros) {
     }
 
     if (p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"]) {
-      contatos.push(
+      linhas.push(
         `${p["CONTATO 2 - Nome"] || ""}${p["CONTATO 2 - Telefone"]
           ? " — " + p["CONTATO 2 - Telefone"]
           : ""}`
       );
     }
 
-    return contatos.join("\n");
+    if (!linhas.length) return "";
+
+    return [
+      { text: "Contato:\n", bold: true },
+      linhas.join("\n")
+    ];
   }
 
   // ===== CONTEÚDO =====
@@ -86,24 +91,35 @@ async function gerarPDFGeral(filtros) {
         ? p.ZONA
         : p.CIDADE;
 
+    // ===== FAIXA DE AGRUPAMENTO (AZUL REAL) =====
     if (grupo !== grupoAtual) {
       grupoAtual = grupo;
 
       conteudo.push({
-        text: grupo.toUpperCase(),
-        style: "grupo"
+        margin: [0, 16, 0, 10],
+        table: {
+          widths: ["*"],
+          body: [[
+            {
+              text: grupo.toUpperCase(),
+              style: "grupo"
+            }
+          ]]
+        },
+        layout: "noBorders"
       });
     }
 
+    // ===== POSTO =====
     conteudo.push({
-      margin: [0, 6, 0, 14],
-      text: [
-        { text: p["POSTOS DE SERVIÇOS / GRUPO SETER"] + "\n", bold: true },
-        (p.TIPO || "") + "\n",
-        enderecoCompleto(p) + "\n",
-        (p.OBSERVAÇÃO ? p.OBSERVAÇÃO + "\n" : ""),
+      margin: [0, 0, 0, 14],
+      stack: [
+        { text: p["POSTOS DE SERVIÇOS / GRUPO SETER"], style: "posto" },
+        { text: p.TIPO || "", italics: true, margin: [0, 2, 0, 2] },
+        { text: enderecoCompleto(p), margin: [0, 2, 0, 2] },
+        p.OBSERVAÇÃO ? { text: p.OBSERVAÇÃO, margin: [0, 2, 0, 2] } : null,
         contatosFormatados(p)
-      ]
+      ].filter(Boolean)
     });
   });
 
@@ -149,8 +165,12 @@ async function gerarPDFGeral(filtros) {
         bold: true,
         color: "white",
         fillColor: "#003c8d",
-        margin: [0, 16, 0, 8],
-        padding: [8, 6, 8, 6]
+        margin: [0, 0, 0, 0],
+        alignment: "left"
+      },
+      posto: {
+        fontSize: 11,
+        bold: true
       }
     }
   };
