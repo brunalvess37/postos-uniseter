@@ -1,7 +1,7 @@
 // ==========================================
-// RELATÓRIO POSTOS UNISETER — VERSÃO ESTÁVEL
+// RELATÓRIO POSTOS UNISETER — PDF FINAL
 // ==========================================
-async function gerarPDFGeral(filtros){
+async function gerarPDFGeral(filtros) {
 
   let dados = await fetch("/api/postos").then(r => r.json());
 
@@ -13,11 +13,15 @@ async function gerarPDFGeral(filtros){
 
   // ===== SELEÇÃO MANUAL =====
   if (filtros.tipo === "manual") {
-    const selecionados = JSON.parse(localStorage.getItem("postos_selecionados") || "[]");
+    const selecionados = JSON.parse(
+      localStorage.getItem("postos_selecionados") || "[]"
+    );
+
     if (!selecionados.length) {
-      alert("Nenhum posto selecionado na tela Buscar Postos.");
+      alert("Nenhum posto selecionado.");
       return;
     }
+
     dados = selecionados.map(i => dados[i]).filter(Boolean);
   }
 
@@ -26,17 +30,20 @@ async function gerarPDFGeral(filtros){
     return;
   }
 
-  // ===== ORDENAÇÃO CORRETA (A CHAVE DA SOLUÇÃO) =====
-  const campoGrupo = filtros.ordem === "zona" ? "ZONA" : "CIDADE";
-
+  // ===== ORDENAÇÃO (CORREÇÃO DEFINITIVA) =====
   dados.sort((a, b) => {
-    const gA = (a[campoGrupo] || "").toUpperCase();
-    const gB = (b[campoGrupo] || "").toUpperCase();
 
-    if (gA !== gB) return gA.localeCompare(gB);
+    // 🔹 AGRUPAMENTO POR ZONA
+    if (filtros.ordem === "zona") {
+      return (a.ZONA || "").localeCompare(b.ZONA || "") ||
+        (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
+          .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
+    }
 
-    return (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
-      .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
+    // 🔹 AGRUPAMENTO POR CIDADE (ANTES ESTAVA ERRADO)
+    return (a.CIDADE || "").localeCompare(b.CIDADE || "") ||
+      (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
+        .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
   });
 
   // ===== FUNÇÕES AUXILIARES =====
@@ -55,80 +62,101 @@ async function gerarPDFGeral(filtros){
 
     if (p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"]) {
       linhas.push(
-        `${p["CONTATO 1 - Nome"] || ""}${p["CONTATO 1 - Telefone"] ? " (" + p["CONTATO 1 - Telefone"] + ")" : ""}`
+        `${p["CONTATO 1 - Nome"] || ""}${p["CONTATO 1 - Telefone"]
+          ? " — " + p["CONTATO 1 - Telefone"]
+          : ""}`
       );
     }
 
     if (p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"]) {
       linhas.push(
-        `${p["CONTATO 2 - Nome"] || ""}${p["CONTATO 2 - Telefone"] ? " (" + p["CONTATO 2 - Telefone"] + ")" : ""}`
+        `${p["CONTATO 2 - Nome"] || ""}${p["CONTATO 2 - Telefone"]
+          ? " — " + p["CONTATO 2 - Telefone"]
+          : ""}`
       );
     }
 
-    return linhas.join("\n");
+    if (!linhas.length) return "";
+
+    return [
+      { text: "Contato:\n", bold: true },
+      linhas.join("\n")
+    ];
   }
 
-  // ===== CONSTRUÇÃO DO CONTEÚDO (SEM PAGEBREAK) =====
+  // ===== CONTEÚDO =====
   let grupoAtual = null;
   const conteudo = [];
 
   dados.forEach(p => {
 
-    const grupo = (p[campoGrupo] || "NÃO INFORMADO").toUpperCase();
+    const grupo =
+      filtros.ordem === "zona"
+        ? p.ZONA
+        : p.CIDADE;
 
+    // ===== FAIXA DE AGRUPAMENTO (AZUL) =====
     if (grupo !== grupoAtual) {
       grupoAtual = grupo;
+
       conteudo.push({
-        text: grupo,
-        style: "grupo",
-        margin: [0, 12, 0, 8]
+        margin: [0, 16, 0, 10],
+        table: {
+          widths: ["*"],
+          body: [[
+            {
+              text: grupo.toUpperCase(),
+              style: "grupo"
+            }
+          ]]
+        },
+        layout: "noBorders"
       });
     }
 
-    const linhas = [
-      { text: p["POSTOS DE SERVIÇOS / GRUPO SETER"] + "\n", bold: true },
-      (p.TIPO || "") + "\n",
-      enderecoCompleto(p)
-    ];
-
-    if (p.OBSERVAÇÃO) {
-      linhas.push("\n" + p.OBSERVAÇÃO);
-    }
-
-    const contatos = contatosFormatados(p);
-    if (contatos) {
-      linhas.push("\nContato:\n" + contatos);
-    }
-
+    // ===== POSTO =====
     conteudo.push({
-      margin: [0, 0, 0, 12],
-      text: linhas
+      margin: [0, 0, 0, 14],
+      stack: [
+        { text: p["POSTOS DE SERVIÇOS / GRUPO SETER"], style: "posto" },
+        { text: p.TIPO || "", italics: true, margin: [0, 2, 0, 2] },
+        { text: enderecoCompleto(p), margin: [0, 2, 0, 2] },
+        p.OBSERVAÇÃO ? { text: p.OBSERVAÇÃO, margin: [0, 2, 0, 2] } : null,
+        contatosFormatados(p)
+      ].filter(Boolean)
     });
   });
 
-  // ===== DOCUMENTO FINAL =====
+  // ===== DOCUMENTO PDF =====
   const doc = {
     pageSize: "A4",
+    pageMargins: [40, 90, 40, 60],
 
-    content: [
-      {
-        text: "RELATÓRIO POSTOS UNISETER",
-        style: "titulo",
-        margin: [0, 0, 0, 6]
-      },
-      {
-        text: `Gerado em ${new Date().toLocaleString("pt-BR")}`,
-        alignment: "right",
-        margin: [0, 0, 0, 14]
-      },
-      ...conteudo
-    ],
+    header: {
+      margin: [40, 20, 40, 10],
+      stack: [
+        {
+          text: "RELATÓRIO POSTOS UNISETER",
+          style: "titulo"
+        },
+        {
+          text: `Gerado em ${new Date().toLocaleString("pt-BR")}`,
+          alignment: "right",
+          fontSize: 9
+        }
+      ]
+    },
 
-    footer: (p, t) => ({
-      text: `Página ${p} de ${t}`,
-      alignment: "center",
-      fontSize: 9
-    }),
+    footer: function (currentPage, pageCount) {
+      return {
+        text: `Página ${currentPage} de ${pageCount}`,
+        alignment: "center",
+        fontSize: 9,
+        margin: [0, 10, 0, 0]
+      };
+    },
+
+    content: conteudo,
 
     styles: {
       titulo: {
@@ -139,8 +167,13 @@ async function gerarPDFGeral(filtros){
       grupo: {
         fontSize: 13,
         bold: true,
-        color: "#ffffff",
-        fillColor: "#003a8f"
+        color: "white",
+        fillColor: "#003c8d",
+        alignment: "left"
+      },
+      posto: {
+        fontSize: 11,
+        bold: true
       }
     }
   };
