@@ -1,37 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-
-  <!-- 🔥 Anti-cache -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-
-  <meta charset="UTF-8">
-  <title>Postos UNISETER</title>
-
-  <!-- 🔐 Clerk -->
-  <script async crossorigin="anonymous"
-    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-    data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
-  </script>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const c = window.Clerk;
-      await c.load();
-
-      if (c.user) {
-        // ✅ Usuário logado → página principal
-        location.href = "app.html";
-      } else {
-        // ❌ Não logado → login
-        location.href = "signin.html";
-      }
-    });
-  </script>
-
-</head>
-<body>
-</body>
-</html>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="refresh" content="0; url=signin.html">
