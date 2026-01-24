@@ -186,22 +186,31 @@ document.addEventListener("DOMContentLoaded", async () => {
       localStorage.setItem("historico_busca", JSON.stringify(historico));
     }
 
+    // 🔎 BUSCA: NOME + CIDADE + BAIRRO (ENDEREÇO III)
     const lista = postos.filter(p =>
       p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
-      p.CIDADE?.toLowerCase().includes(q)
+      p.CIDADE?.toLowerCase().includes(q) ||
+      p["ENDEREÇO III"]?.toLowerCase().includes(q)
     ).slice(0, 10);
 
     suggestions.innerHTML = lista.map(p => {
       const i = postos.indexOf(p);
+
       const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"]
-        .replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
+        ?.replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
+
       const cidade = p.CIDADE
-        .replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
+        ?.replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
+
+      const bairro = p["ENDEREÇO III"]
+        ?.replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
 
       return `
         <div class="suggestion-card" data-index="${i}">
           <div class="suggestion-title">${nome}</div>
-          <div class="suggestion-city">${cidade}</div>
+          <div class="suggestion-city">
+            ${cidade}${bairro ? " — " + bairro : ""}
+          </div>
         </div>
       `;
     }).join("");
