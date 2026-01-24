@@ -14,7 +14,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   const sendBtn = document.getElementById("sendBtn");
   const status = document.getElementById("status");
 
+  const importArquivo = document.getElementById("importArquivo");
+  const importData = document.getElementById("importData");
+
   let fileData = null;
+  let fileName = null;
+
+  // ==========================
+  // 🔎 Carregar última importação
+  // ==========================
+  const ultima = JSON.parse(localStorage.getItem("ultima_importacao_planilha") || "null");
+  if (ultima) {
+    importArquivo.textContent = `📄 Arquivo: ${ultima.arquivo}`;
+    importData.textContent = `🕒 Data: ${ultima.data}`;
+  } else {
+    importArquivo.textContent = "📄 Arquivo: —";
+    importData.textContent = "🕒 Data: —";
+  }
 
   // Estado inicial
   sendBtn.disabled = true;
@@ -26,14 +42,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const file = input.files[0];
     if (!file) return;
 
+    fileName = file.name;
     status.textContent = "⏳ Lendo planilha...";
-    
+
     const arrayBuffer = await file.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer);
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     fileData = XLSX.utils.sheet_to_json(sheet);
 
-    // Habilita botão
     sendBtn.disabled = false;
     sendBtn.style.opacity = "1";
     sendBtn.style.cursor = "pointer";
@@ -59,6 +75,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const msg = await res.text();
       alert(msg);
+
+      // ✅ Salva info da importação
+      const registro = {
+        arquivo: fileName,
+        data: new Date().toLocaleString("pt-BR")
+      };
+      localStorage.setItem("ultima_importacao_planilha", JSON.stringify(registro));
+
+      importArquivo.textContent = `📄 Arquivo: ${registro.arquivo}`;
+      importData.textContent = `🕒 Data: ${registro.data}`;
+
       status.textContent = "✅ Planilha enviada com sucesso.";
       sendBtn.textContent = "📤 Enviar Planilha";
 
@@ -71,3 +98,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
 });
+
+// 🔓 Logout
+async function sair(){
+  await Clerk.load();
+  await Clerk.signOut();
+  location.href="/signin.html";
+}
