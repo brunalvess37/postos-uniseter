@@ -18,42 +18,35 @@
 src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
 data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
 
-<script>
-document.addEventListener("DOMContentLoaded", async ()=>{
-
-  const adminEmail = "brunalvess@hotmail.com";  // 🔥 Admin master
-  await Clerk.load();
-
-  // 🔐 Se não estiver logado → login
-  if(!Clerk.user) return location.href="/signin.html";
-
-  // 🔒 Se logado mas NÃO for admin → bloquear
-  if(Clerk.user.primaryEmailAddress.emailAddress !== adminEmail){
-      alert("❌ Acesso restrito — somente administradores");
-      return location.href="/home.html";
-  }
-  document.body.style.display = "block"; // ✅ libera tela só para admin
-});
-
-async function sair(){
-  await Clerk.load();
-  await Clerk.signOut();
-  location.href="/signin.html";
-}
-</script>
-
 <style>
 body{
   display:none;   /* 🔐 anti-flash */
 }
   
 header{
-  display:flex; justify-content:space-between; align-items:center;
-  padding:10px; border-bottom:1px solid #ccc;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px;
+  border-bottom:1px solid #ccc;
 }
+
 button{
-  padding:8px 14px; border-radius:8px; border:1px solid #ccc;
-  cursor:pointer; margin-right:5px;
+  padding:8px 14px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  cursor:pointer;
+  margin-right:5px;
+}
+
+.import-info{
+  background:#f7f9fc;
+  border:1px dashed #ccc;
+  border-radius:8px;
+  padding:10px;
+  margin:12px 0;
+  font-size:13px;
+  color:#444;
 }
 </style>
 </head>
@@ -66,9 +59,17 @@ button{
   <button onclick="sair()">Sair</button>
 </header>
 
+<!-- ✅ ÚLTIMA IMPORTAÇÃO -->
+<div id="importInfo" class="import-info">
+  <b>Última importação:</b><br>
+  <span id="importArquivo">—</span><br>
+  <span id="importData">—</span>
+</div>
+
 <p>Selecione o arquivo XLSX com os postos cadastrados</p>
 
-<input id='file' type='file' accept='.xls,.xlsx'>
+<input id="file" type="file" accept=".xls,.xlsx">
+
 <button id="sendBtn"
         disabled
         style="margin-top:10px;opacity:.5;cursor:not-allowed;">
@@ -79,8 +80,6 @@ button{
   Selecione uma planilha para habilitar o envio.
 </p>
 
-
-<!-- Agora com anti-cache e upload Cloudflare -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="admin.js?v=202501"></script>
 
