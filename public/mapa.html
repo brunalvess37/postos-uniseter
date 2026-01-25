@@ -110,33 +110,19 @@ async function initMapa(){
 
   const zonas = [...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
   const cores = {};
-  zonas.forEach((z,i)=> cores[z] = `hsl(${i*45%360},70%,45%)`);
+  zonas.forEach((z,i)=> cores[z] = `hsl(${i*47%360},70%,45%)`);
 
   const markers = [];
 
-  function icon(zona, emRota){
+  function icon(zona, destaque=false){
     return L.divIcon({
       html:`<div style="
-        width:14px;height:14px;border-radius:50%;
+        width:${destaque?20:14}px;
+        height:${destaque?20:14}px;
+        border-radius:50%;
         background:${cores[zona]||"#666"};
-        border:${emRota?"3px solid black":"2px solid white"};
+        border:${destaque?"4px solid black":"2px solid white"};
       "></div>`
-    });
-  }
-
-  function renderZonas(){
-    document.getElementById("zonas").innerHTML = zonas.map(z=>`
-      <label>
-        <input type="checkbox" checked data-zona="${z}"> ${z}
-      </label>
-    `).join("");
-
-    document.querySelectorAll("[data-zona]").forEach(cb=>{
-      cb.onchange = ()=>{
-        markers.forEach(m=>{
-          m.marker.setOpacity(cb.checked && m.zona===cb.dataset.zona ? 1 : 0);
-        });
-      };
     });
   }
 
@@ -146,8 +132,6 @@ async function initMapa(){
     const endereco = [
       p["ENDEREÇO I"],p["ENDEREÇO II"],p["ENDEREÇO III"],p["ENDEREÇO IV"],p.CIDADE
     ].filter(Boolean).join(" - ");
-
-    const emRota = rotaAtual.some(r=>r["POSTOS DE SERVIÇOS / GRUPO SETER"]===p["POSTOS DE SERVIÇOS / GRUPO SETER"]);
 
     const popup = `
       <div>
@@ -162,16 +146,15 @@ async function initMapa(){
     `;
 
     const marker = L.marker([p.Latitude,p.Longitude],{
-      icon:icon(p.ZONA,emRota)
+      icon:icon(p.ZONA)
     }).addTo(map).bindPopup(popup);
 
-    markers.push({marker,zona:p.ZONA,posto:p});
+    markers.push({marker,posto:p,zona:p.ZONA});
   });
 
-  renderZonas();
-
   document.getElementById("search").oninput = e=>{
-    const q = e.target.value.toLowerCase();
+    const q = e.target.value.toLowerCase().trim();
+
     markers.forEach(m=>{
       const p = m.posto;
       const match =
@@ -179,10 +162,20 @@ async function initMapa(){
         p["ENDEREÇO III"]?.toLowerCase().includes(q) ||
         p.CIDADE?.toLowerCase().includes(q);
 
-      m.marker.setOpacity(match||!q?1:0);
+      if(!q){
+        m.marker.setOpacity(1);
+        m.marker.setIcon(icon(m.zona));
+        return;
+      }
+
       if(match){
+        m.marker.setOpacity(1);
+        m.marker.setIcon(icon(m.zona,true));
         map.setView(m.marker.getLatLng(),13);
         m.marker.openPopup();
+      }else{
+        m.marker.setOpacity(0.35);
+        m.marker.setIcon(icon(m.zona));
       }
     });
   };
