@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+  <!-- 🔥 Anti-cache -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Mapa — Postos UNISETER</title>
+
+  <!-- 🔐 Clerk -->
+  <script async crossorigin="anonymous"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
+  </script>
+
+  <!-- 🎨 CSS global -->
+  <link rel="stylesheet" href="style.css?v=202501">
+
+  <!-- 🗺️ Leaflet -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    body{
+      display:none;
+      padding:20px;
+    }
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+    }
+
+    #map{
+      width:100%;
+      height:calc(100vh - 120px);
+      border-radius:12px;
+      border:1px solid var(--border);
+    }
+
+    button{
+      padding:8px 14px;
+      border-radius:8px;
+      border:1px solid var(--border);
+      cursor:pointer;
+    }
+
+    .popup-title{
+      font-weight:bold;
+      color:#003c8d;
+      margin-bottom:4px;
+    }
+
+    .popup-address{
+      font-size:12px;
+      margin-bottom:8px;
+    }
+
+    .popup-btn{
+      padding:6px 10px;
+      border-radius:6px;
+      border:1px solid #003c8d;
+      background:#003c8d;
+      color:white;
+      cursor:pointer;
+      font-size:12px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const c = window.Clerk;
+  await c.load();
+
+  if(!c.user){
+    return location.href = "/signin.html";
+  }
+
+  document.body.style.display = "block";
+  initMapa();
+});
+</script>
+
+<header>
+  <h2 style="margin:0;">Mapa</h2>
+  <button type="button" onclick="location.href='app.html'">← Voltar</button>
+</header>
+
+<div id="map"></div>
+
+<script>
+async function initMapa(){
+
+  // ===== MAPA BASE =====
+  const map = L.map("map").setView([-22.905, -47.060], 10);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap"
+  }).addTo(map);
+
+  // ===== CORES POR ZONA =====
+  const coresZona = {
+    "Z1": "#d32f2f",
+    "Z2": "#1976d2",
+    "Z3": "#388e3c",
+    "Z4": "#f57c00",
+    "Z5": "#7b1fa2",
+    "default": "#555"
+  };
+
+  function iconeZona(zona){
+    const cor = coresZona[zona] || coresZona.default;
+
+    return L.divIcon({
+      className: "",
+      html: `<div style="
+        background:${cor};
+        width:14px;
+        height:14px;
+        border-radius:50%;
+        border:2px solid white;
+      "></div>`,
+      iconSize: [14,14]
+    });
+  }
+
+  // ===== CARREGAR POSTOS =====
+  const postos = await fetch("/api/postos").then(r=>r.json());
+
+  postos.forEach((p, index) => {
+
+    if(!p.Latitude || !p.Longitude) return;
+
+    const endereco = [
+      p["ENDEREÇO I"],
+      p["ENDEREÇO II"],
+      p["ENDEREÇO III"],
+      p["ENDEREÇO IV"],
+      p.CIDADE
+    ].filter(Boolean).join(" - ");
+
+    const popupHtml = `
+      <div>
+        <div class="popup-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
+        <div class="popup-address">${endereco}</div>
+        <button class="popup-btn" onclick="addRota(${index})">
+          ➕ Incluir na rota
+        </button>
+      </div>
+    `;
+
+    L.marker(
+      [p.Latitude, p.Longitude],
+      { icon: iconeZona(p.ZONA) }
+    )
+    .addTo(map)
+    .bindPopup(popupHtml);
+
+  });
+}
+
+// ===== ADICIONAR À ROTA (MESMA LÓGICA DO APP) =====
+function addRota(i){
+  fetch("/api/postos")
+    .then(r=>r.json())
+    .then(postos=>{
+      const dados = JSON.parse(localStorage.getItem("rota_postos") || "{}");
+      const rota = dados.rota || [];
+
+      rota.push({ ...postos[i] });
+
+      localStorage.setItem("rota_postos", JSON.stringify({
+        rota,
+        data: new Date().toLocaleString("pt-BR")
+      }));
+
+      alert("Posto adicionado à rota!");
+    });
+}
+</script>
+
+</body>
+</html>
