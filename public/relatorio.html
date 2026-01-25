@@ -67,10 +67,22 @@ button{
 <body>
 
 <script>
+let usuarioRelatorio = null;
+
 document.addEventListener("DOMContentLoaded", async ()=>{
+
   const c = window.Clerk;
   await c.load();
+
   if(!c.user) return location.href="/signin.html";
+
+  usuarioRelatorio = {
+    nome: c.user.fullName || "",
+    email: c.user.primaryEmailAddress
+      ? c.user.primaryEmailAddress.emailAddress
+      : ""
+  };
+
   document.body.style.display="block";
   atualizarEstadoBotoes();
 });
@@ -132,14 +144,15 @@ function atualizarEstadoBotoes(){
 <script src="pdfmake.min.js?v=202501"></script>
 <script src="vfs_fonts.js?v=202501"></script>
 
-<!-- PDF (IMUTÁVEL) -->
+<!-- PDF -->
 <script src="pdf-geral.js?v=202501"></script>
 
 <script>
 function gerar(){
   gerarPDFGeral({
     tipo: document.querySelector("input[name=tipo]:checked").value,
-    ordem: document.querySelector("input[name=ordem]:checked").value
+    ordem: document.querySelector("input[name=ordem]:checked").value,
+    usuario: usuarioRelatorio
   });
 }
 </script>
