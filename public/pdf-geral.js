@@ -58,19 +58,21 @@ async function gerarPDFGeral(filtros) {
   function contatosFormatados(p) {
     const linhas = [];
 
-    if (p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"]) {
+    // CONTATO 1
+    if (p["CONTATO 1 - Telefone"]) {
       linhas.push(
-        `• ${p["CONTATO 1 - Nome"] || ""}${p["CONTATO 1 - Telefone"]
-          ? " — " + p["CONTATO 1 - Telefone"]
-          : ""}`
+        p["CONTATO 1 - Nome"]
+          ? `• ${p["CONTATO 1 - Nome"]} — ${p["CONTATO 1 - Telefone"]}`
+          : `• ${p["CONTATO 1 - Telefone"]}`
       );
     }
 
-    if (p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"]) {
+    // CONTATO 2
+    if (p["CONTATO 2 - Telefone"]) {
       linhas.push(
-        `• ${p["CONTATO 2 - Nome"] || ""}${p["CONTATO 2 - Telefone"]
-          ? " — " + p["CONTATO 2 - Telefone"]
-          : ""}`
+        p["CONTATO 2 - Nome"]
+          ? `• ${p["CONTATO 2 - Nome"]} — ${p["CONTATO 2 - Telefone"]}`
+          : `• ${p["CONTATO 2 - Telefone"]}`
       );
     }
 
