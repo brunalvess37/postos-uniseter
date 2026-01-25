@@ -30,17 +30,15 @@ async function gerarPDFGeral(filtros) {
     return;
   }
 
-  // ===== ORDENAÇÃO (CORREÇÃO DEFINITIVA) =====
+  // ===== ORDENAÇÃO =====
   dados.sort((a, b) => {
 
-    // 🔹 AGRUPAMENTO POR ZONA
     if (filtros.ordem === "zona") {
       return (a.ZONA || "").localeCompare(b.ZONA || "") ||
         (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
           .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
     }
 
-    // 🔹 AGRUPAMENTO POR CIDADE (ANTES ESTAVA ERRADO)
     return (a.CIDADE || "").localeCompare(b.CIDADE || "") ||
       (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
         .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
@@ -62,7 +60,7 @@ async function gerarPDFGeral(filtros) {
 
     if (p["CONTATO 1 - Nome"] || p["CONTATO 1 - Telefone"]) {
       linhas.push(
-        `${p["CONTATO 1 - Nome"] || ""}${p["CONTATO 1 - Telefone"]
+        `• ${p["CONTATO 1 - Nome"] || ""}${p["CONTATO 1 - Telefone"]
           ? " — " + p["CONTATO 1 - Telefone"]
           : ""}`
       );
@@ -70,16 +68,16 @@ async function gerarPDFGeral(filtros) {
 
     if (p["CONTATO 2 - Nome"] || p["CONTATO 2 - Telefone"]) {
       linhas.push(
-        `${p["CONTATO 2 - Nome"] || ""}${p["CONTATO 2 - Telefone"]
+        `• ${p["CONTATO 2 - Nome"] || ""}${p["CONTATO 2 - Telefone"]
           ? " — " + p["CONTATO 2 - Telefone"]
           : ""}`
       );
     }
 
-    if (!linhas.length) return "";
+    if (!linhas.length) return null;
 
     return [
-      { text: "Contato:\n", bold: true },
+      { text: "Contato:", bold: true, margin: [0, 6, 0, 2] },
       linhas.join("\n")
     ];
   }
@@ -95,12 +93,12 @@ async function gerarPDFGeral(filtros) {
         ? p.ZONA
         : p.CIDADE;
 
-    // ===== FAIXA DE AGRUPAMENTO (AZUL) =====
+    // ===== FAIXA DE AGRUPAMENTO =====
     if (grupo !== grupoAtual) {
       grupoAtual = grupo;
 
       conteudo.push({
-        margin: [0, 16, 0, 10],
+        margin: [0, 18, 0, 12],
         table: {
           widths: ["*"],
           body: [[
@@ -114,14 +112,22 @@ async function gerarPDFGeral(filtros) {
       });
     }
 
-    // ===== POSTO =====
+    // ===== BLOCO DO POSTO =====
     conteudo.push({
-      margin: [0, 0, 0, 14],
+      margin: [0, 0, 0, 18],
       stack: [
         { text: p["POSTOS DE SERVIÇOS / GRUPO SETER"], style: "posto" },
-        { text: p.TIPO || "", italics: true, margin: [0, 2, 0, 2] },
-        { text: enderecoCompleto(p), margin: [0, 2, 0, 2] },
-        p.OBSERVAÇÃO ? { text: p.OBSERVAÇÃO, margin: [0, 2, 0, 2] } : null,
+        {
+          text: p.TIPO || "",
+          italics: true,
+          color: "#666",
+          margin: [0, 2, 0, 6]
+        },
+        { text: "Endereço:", bold: true },
+        { text: enderecoCompleto(p), margin: [0, 2, 0, 4] },
+        p.OBSERVAÇÃO
+          ? { text: p.OBSERVAÇÃO, color: "#555", margin: [0, 2, 0, 4] }
+          : null,
         contatosFormatados(p)
       ].filter(Boolean)
     });
@@ -169,11 +175,13 @@ async function gerarPDFGeral(filtros) {
         bold: true,
         color: "white",
         fillColor: "#003c8d",
-        alignment: "left"
+        alignment: "center",
+        margin: [0, 6, 0, 6]
       },
       posto: {
-        fontSize: 11,
-        bold: true
+        fontSize: 13,
+        bold: true,
+        color: "#003c8d"
       }
     }
   };
