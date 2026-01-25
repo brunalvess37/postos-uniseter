@@ -139,6 +139,17 @@ async function gerarPDFGeral(filtros) {
     });
   });
 
+  // ===== USUÁRIO =====
+  let linhaUsuario = null;
+  if (filtros.usuario) {
+    const nome = filtros.usuario.nome || "";
+    const email = filtros.usuario.email || "";
+
+    if (nome || email) {
+      linhaUsuario = `Usuário: ${[nome, email].filter(Boolean).join(" - ")}`;
+    }
+  }
+
   // ===== DOCUMENTO PDF =====
   const doc = {
     pageSize: "A4",
@@ -155,8 +166,15 @@ async function gerarPDFGeral(filtros) {
           text: `Gerado em ${new Date().toLocaleString("pt-BR")}`,
           alignment: "right",
           fontSize: 9
-        }
-      ]
+        },
+        linhaUsuario
+          ? {
+              text: linhaUsuario,
+              alignment: "right",
+              fontSize: 9
+            }
+          : null
+      ].filter(Boolean)
     },
 
     footer: function (currentPage, pageCount) {
