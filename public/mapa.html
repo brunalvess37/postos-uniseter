@@ -22,58 +22,51 @@
   <link rel="stylesheet" href="style.css?v=202501">
 
   <!-- 🗺️ Leaflet -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
-    body{
-      display:none;
-      padding:20px;
+    body{ display:none; padding:20px; }
+    header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+
+    #controls{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
     }
 
-    header{
+    #search{
+      padding:8px;
+      border-radius:8px;
+      border:1px solid var(--border);
+      width:260px;
+    }
+
+    #zonas{
       display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:12px;
+      gap:10px;
+      flex-wrap:wrap;
+      font-size:13px;
     }
 
     #map{
       width:100%;
-      height:calc(100vh - 120px);
+      height:calc(100vh - 200px);
       border-radius:12px;
       border:1px solid var(--border);
     }
 
-    button{
-      padding:8px 14px;
-      border-radius:8px;
-      border:1px solid var(--border);
-      cursor:pointer;
-    }
+    .popup-title{ font-weight:bold; color:#003c8d; }
+    .popup-address{ font-size:12px; margin:4px 0 8px; }
 
-    .popup-title{
-      font-weight:bold;
-      color:#003c8d;
-      margin-bottom:4px;
-    }
-
-    .popup-address{
+    .popup-actions button{
+      margin-right:6px;
+      padding:5px 8px;
       font-size:12px;
-      margin-bottom:8px;
-    }
-
-    .popup-btn{
-      padding:6px 10px;
       border-radius:6px;
       border:1px solid #003c8d;
-      background:#003c8d;
-      color:white;
       cursor:pointer;
-      font-size:12px;
     }
   </style>
 
@@ -85,111 +78,127 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const c = window.Clerk;
   await c.load();
-
-  if(!c.user){
-    return location.href = "/signin.html";
-  }
-
-  document.body.style.display = "block";
+  if(!c.user) return location.href="/signin.html";
+  document.body.style.display="block";
   initMapa();
 });
 </script>
 
 <header>
   <h2 style="margin:0;">Mapa</h2>
-  <button type="button" onclick="location.href='app.html'">← Voltar</button>
+  <button onclick="location.href='app.html'">← Voltar</button>
 </header>
+
+<div id="controls">
+  <input id="search" placeholder="Buscar por nome, bairro ou cidade">
+  <div id="zonas"></div>
+</div>
 
 <div id="map"></div>
 
 <script>
 async function initMapa(){
 
-  // ===== MAPA BASE =====
   const map = L.map("map").setView([-22.905, -47.060], 10);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap"
   }).addTo(map);
 
-  // ===== CORES POR ZONA =====
-  const coresZona = {
-    "Z1": "#d32f2f",
-    "Z2": "#1976d2",
-    "Z3": "#388e3c",
-    "Z4": "#f57c00",
-    "Z5": "#7b1fa2",
-    "default": "#555"
-  };
+  const postos = await fetch("/api/postos").then(r=>r.json());
+  const rotaAtual = JSON.parse(localStorage.getItem("rota_postos")||"{}").rota || [];
 
-  function iconeZona(zona){
-    const cor = coresZona[zona] || coresZona.default;
+  const zonas = [...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
+  const cores = {};
+  zonas.forEach((z,i)=> cores[z] = `hsl(${i*45%360},70%,45%)`);
 
+  const markers = [];
+
+  function icon(zona, emRota){
     return L.divIcon({
-      className: "",
-      html: `<div style="
-        background:${cor};
-        width:14px;
-        height:14px;
-        border-radius:50%;
-        border:2px solid white;
-      "></div>`,
-      iconSize: [14,14]
+      html:`<div style="
+        width:14px;height:14px;border-radius:50%;
+        background:${cores[zona]||"#666"};
+        border:${emRota?"3px solid black":"2px solid white"};
+      "></div>`
     });
   }
 
-  // ===== CARREGAR POSTOS =====
-  const postos = await fetch("/api/postos").then(r=>r.json());
+  function renderZonas(){
+    document.getElementById("zonas").innerHTML = zonas.map(z=>`
+      <label>
+        <input type="checkbox" checked data-zona="${z}"> ${z}
+      </label>
+    `).join("");
 
-  postos.forEach((p, index) => {
+    document.querySelectorAll("[data-zona]").forEach(cb=>{
+      cb.onchange = ()=>{
+        markers.forEach(m=>{
+          m.marker.setOpacity(cb.checked && m.zona===cb.dataset.zona ? 1 : 0);
+        });
+      };
+    });
+  }
 
+  postos.forEach((p,i)=>{
     if(!p.Latitude || !p.Longitude) return;
 
     const endereco = [
-      p["ENDEREÇO I"],
-      p["ENDEREÇO II"],
-      p["ENDEREÇO III"],
-      p["ENDEREÇO IV"],
-      p.CIDADE
+      p["ENDEREÇO I"],p["ENDEREÇO II"],p["ENDEREÇO III"],p["ENDEREÇO IV"],p.CIDADE
     ].filter(Boolean).join(" - ");
 
-    const popupHtml = `
+    const emRota = rotaAtual.some(r=>r["POSTOS DE SERVIÇOS / GRUPO SETER"]===p["POSTOS DE SERVIÇOS / GRUPO SETER"]);
+
+    const popup = `
       <div>
         <div class="popup-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
         <div class="popup-address">${endereco}</div>
-        <button class="popup-btn" onclick="addRota(${index})">
-          ➕ Incluir na rota
-        </button>
+        <div class="popup-actions">
+          <button onclick="addRota(${i})">➕ Rota</button>
+          <button onclick="window.open('https://maps.google.com/?q=${p.Latitude},${p.Longitude}')">Google</button>
+          <button onclick="window.open('https://waze.com/ul?ll=${p.Latitude},${p.Longitude}&navigate=yes')">Waze</button>
+        </div>
       </div>
     `;
 
-    L.marker(
-      [p.Latitude, p.Longitude],
-      { icon: iconeZona(p.ZONA) }
-    )
-    .addTo(map)
-    .bindPopup(popupHtml);
+    const marker = L.marker([p.Latitude,p.Longitude],{
+      icon:icon(p.ZONA,emRota)
+    }).addTo(map).bindPopup(popup);
 
+    markers.push({marker,zona:p.ZONA,posto:p});
   });
+
+  renderZonas();
+
+  document.getElementById("search").oninput = e=>{
+    const q = e.target.value.toLowerCase();
+    markers.forEach(m=>{
+      const p = m.posto;
+      const match =
+        p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
+        p["ENDEREÇO III"]?.toLowerCase().includes(q) ||
+        p.CIDADE?.toLowerCase().includes(q);
+
+      m.marker.setOpacity(match||!q?1:0);
+      if(match){
+        map.setView(m.marker.getLatLng(),13);
+        m.marker.openPopup();
+      }
+    });
+  };
 }
 
-// ===== ADICIONAR À ROTA (MESMA LÓGICA DO APP) =====
 function addRota(i){
-  fetch("/api/postos")
-    .then(r=>r.json())
-    .then(postos=>{
-      const dados = JSON.parse(localStorage.getItem("rota_postos") || "{}");
-      const rota = dados.rota || [];
-
-      rota.push({ ...postos[i] });
-
-      localStorage.setItem("rota_postos", JSON.stringify({
-        rota,
-        data: new Date().toLocaleString("pt-BR")
-      }));
-
-      alert("Posto adicionado à rota!");
-    });
+  fetch("/api/postos").then(r=>r.json()).then(postos=>{
+    const dados = JSON.parse(localStorage.getItem("rota_postos")||"{}");
+    const rota = dados.rota||[];
+    rota.push(postos[i]);
+    localStorage.setItem("rota_postos",JSON.stringify({
+      rota,
+      data:new Date().toLocaleString("pt-BR")
+    }));
+    alert("Posto adicionado à rota!");
+  });
 }
 </script>
 
