@@ -50,8 +50,7 @@ async function gerarPDFGeral(filtros) {
       p["ENDEREÇO I"],
       p["ENDEREÇO II"],
       p["ENDEREÇO III"],
-      p["ENDEREÇO IV"],
-      p.CIDADE
+      p["ENDEREÇO IV"]
     ].filter(Boolean).join(" - ");
   }
 
