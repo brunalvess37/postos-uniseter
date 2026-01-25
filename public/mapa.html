@@ -26,7 +26,10 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
-    body{ display:none; padding:20px; }
+    body{
+      display:none;
+      padding:20px;
+    }
 
     header{
       display:flex;
@@ -42,6 +45,7 @@
       border:1px solid var(--border);
     }
 
+    /* 🔍 Busca */
     .search-box{
       max-width:520px;
       margin:0 auto 12px;
@@ -79,6 +83,49 @@
 
     .suggestion-title{ font-weight:bold; }
     .suggestion-city{ font-size:12px; color:#555; }
+
+    /* 🪟 POPUP MOBILE FRIENDLY */
+    .leaflet-popup-content{
+      max-width:260px;
+      max-height:60vh;
+      overflow-y:auto;
+      margin:12px;
+    }
+
+    .popup-title{
+      font-weight:bold;
+      color:#003c8d;
+      margin-bottom:6px;
+      font-size:14px;
+    }
+
+    .popup-address{
+      font-size:12px;
+      color:#444;
+      margin-bottom:10px;
+    }
+
+    .popup-actions{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .popup-btn{
+      width:100%;
+      padding:8px;
+      border-radius:8px;
+      border:1px solid #003c8d;
+      background:#003c8d;
+      color:white;
+      font-size:13px;
+      cursor:pointer;
+    }
+
+    .popup-btn.secondary{
+      background:white;
+      color:#003c8d;
+    }
 
     button{
       padding:8px 14px;
@@ -125,7 +172,6 @@ async function initMapa(){
   const postos = await fetch("/api/postos").then(r=>r.json());
   const markers = [];
 
-  // 🎨 cores dinâmicas
   const zonas = [...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
   const cores = {};
   zonas.forEach((z,i)=>{
@@ -139,7 +185,7 @@ async function initMapa(){
         width:${ativo?18:12}px;
         height:${ativo?18:12}px;
         border-radius:50%;
-        opacity:${ativo?1:0.45};
+        opacity:${ativo?1:0.5};
         border:2px solid white;
       "></div>`
     });
@@ -152,12 +198,28 @@ async function initMapa(){
       p["ENDEREÇO I"],p["ENDEREÇO II"],p["ENDEREÇO III"],p["ENDEREÇO IV"],p.CIDADE
     ].filter(Boolean).join(" - ");
 
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${p.Latitude},${p.Longitude}`;
+    const wazeUrl = `https://waze.com/ul?ll=${p.Latitude},${p.Longitude}&navigate=yes`;
+
     const popup = `
-      <b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b><br>
-      <small>${endereco}</small><br><br>
-      <button onclick="addRota(${i})">➕ Incluir na rota</button><br><br>
-      <a href="https://www.google.com/maps/search/?api=1&query=${p.Latitude},${p.Longitude}" target="_blank">📍 Google Maps</a><br>
-      <a href="https://waze.com/ul?ll=${p.Latitude},${p.Longitude}&navigate=yes" target="_blank">🚗 Waze</a>
+      <div>
+        <div class="popup-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
+        <div class="popup-address">${endereco}</div>
+
+        <div class="popup-actions">
+          <button class="popup-btn" onclick="addRota(${i})">
+            ➕ Incluir na rota
+          </button>
+
+          <a href="${mapsUrl}" target="_blank">
+            <button class="popup-btn secondary">📍 Abrir no Google Maps</button>
+          </a>
+
+          <a href="${wazeUrl}" target="_blank">
+            <button class="popup-btn secondary">🚗 Navegar com Waze</button>
+          </a>
+        </div>
+      </div>
     `;
 
     const m = L.marker(
@@ -168,15 +230,13 @@ async function initMapa(){
     markers.push({ marker:m, posto:p, index:i });
   });
 
-  // 🔍 BUSCA COM SUGESTÕES (MESMA LÓGICA DO APP)
+  // 🔍 BUSCA COM SUGESTÕES
   const search = document.getElementById("search");
   const suggestions = document.getElementById("suggestions");
-  let active = -1;
 
   search.addEventListener("input", ()=>{
     const q = search.value.toLowerCase();
     suggestions.innerHTML="";
-    active=-1;
     if(!q) return;
 
     const lista = postos.filter(p =>
