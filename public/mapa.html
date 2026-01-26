@@ -45,7 +45,6 @@
       border:1px solid var(--border);
     }
 
-    /* 🔍 Busca */
     .search-box{
       max-width:520px;
       margin:0 auto 12px;
@@ -84,7 +83,6 @@
     .suggestion-title{ font-weight:bold; }
     .suggestion-city{ font-size:12px; color:#555; }
 
-    /* 🪟 POPUP MOBILE FRIENDLY */
     .leaflet-popup-content{
       max-width:260px;
       max-height:60vh;
@@ -154,7 +152,14 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 </header>
 
 <div class="search-box">
-  <input id="search" placeholder="Buscar posto, cidade ou bairro…">
+  <input
+    id="search"
+    placeholder="Buscar posto, cidade ou bairro…"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false"
+  >
   <div id="suggestions"></div>
 </div>
 
@@ -185,7 +190,7 @@ async function initMapa(){
         width:${ativo?18:12}px;
         height:${ativo?18:12}px;
         border-radius:50%;
-        opacity:${ativo?1:0.5};
+        opacity:${ativo?1:0.6};
         border:2px solid white;
       "></div>`
     });
@@ -207,17 +212,9 @@ async function initMapa(){
         <div class="popup-address">${endereco}</div>
 
         <div class="popup-actions">
-          <button class="popup-btn" onclick="addRota(${i})">
-            ➕ Incluir na rota
-          </button>
-
-          <a href="${mapsUrl}" target="_blank">
-            <button class="popup-btn secondary">📍 Abrir no Google Maps</button>
-          </a>
-
-          <a href="${wazeUrl}" target="_blank">
-            <button class="popup-btn secondary">🚗 Navegar com Waze</button>
-          </a>
+          <button class="popup-btn" onclick="addRota(${i})">➕ Incluir na rota</button>
+          <a href="${mapsUrl}" target="_blank"><button class="popup-btn secondary">📍 Google Maps</button></a>
+          <a href="${wazeUrl}" target="_blank"><button class="popup-btn secondary">🚗 Waze</button></a>
         </div>
       </div>
     `;
@@ -230,7 +227,6 @@ async function initMapa(){
     markers.push({ marker:m, posto:p, index:i });
   });
 
-  // 🔍 BUSCA COM SUGESTÕES
   const search = document.getElementById("search");
   const suggestions = document.getElementById("suggestions");
 
