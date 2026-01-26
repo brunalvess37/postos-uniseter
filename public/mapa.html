@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
   <div class="map-actions">
     <button id="btnGps" class="map-btn">📍 GPS</button>
-    <button id="btnRota" class="map-btn primary">🧭 Ver rota</button>
+    <button id="btnRota" class="map-btn">🧭 Ver rota</button>
     <button id="btnMaps" class="map-btn">🗺️ Maps</button>
     <button id="btnWaze" class="map-btn">🚗 Waze</button>
   </div>
@@ -91,12 +91,18 @@ L.control.zoom({position:"topright"}).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
 let gpsPoint=null, rotaLine=null, rotaMarkers=[];
+let rotaAtiva=false;
+
 const postos=await fetch("/api/postos").then(r=>r.json());
 
-function desenharRota(){
-  if(rotaLine) map.removeLayer(rotaLine);
+function limparRota(){
+  if(rotaLine){ map.removeLayer(rotaLine); rotaLine=null; }
   rotaMarkers.forEach(m=>map.removeLayer(m));
   rotaMarkers=[];
+}
+
+function desenharRota(){
+  limparRota();
 
   const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}").rota||[];
   if(!dados.length) return;
@@ -108,7 +114,18 @@ function desenharRota(){
 
   dados.forEach((p,i)=>{
     const m=L.marker([p.Latitude,p.Longitude],{
-      icon:L.divIcon({html:`<div style="background:#003c8d;color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px">${i+1}</div>`})
+      icon:L.divIcon({
+        html:`<div style="
+          background:#003c8d;
+          color:white;
+          border-radius:50%;
+          width:22px;
+          height:22px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:12px">${i+1}</div>`
+      })
     }).addTo(map);
     rotaMarkers.push(m);
   });
@@ -140,7 +157,8 @@ function montarListaDrag(){
       const a=+drag.dataset.i,b=+el.dataset.i;
       dados.splice(b,0,dados.splice(a,1)[0]);
       localStorage.setItem("rota_postos",JSON.stringify({rota:dados}));
-      montarListaDrag();desenharRota();
+      montarListaDrag();
+      desenharRota();
     };
   });
 }
@@ -149,13 +167,21 @@ btnGps.onclick=()=>{
   navigator.geolocation.getCurrentPosition(pos=>{
     gpsPoint=[pos.coords.latitude,pos.coords.longitude];
     map.setView(gpsPoint,15);
+    if(rotaAtiva) desenharRota();
   });
 };
 
 btnRota.onclick=()=>{
-  document.getElementById("rota-panel").style.display="block";
-  montarListaDrag();
-  desenharRota();
+  rotaAtiva=!rotaAtiva;
+  btnRota.classList.toggle("primary",rotaAtiva);
+  document.getElementById("rota-panel").style.display=rotaAtiva?"block":"none";
+
+  if(rotaAtiva){
+    montarListaDrag();
+    desenharRota();
+  }else{
+    limparRota();
+  }
 };
 
 btnMaps.onclick=()=>{
@@ -169,6 +195,7 @@ btnWaze.onclick=()=>{
   if(!r.length) return alert("Rota vazia");
   window.open(`https://waze.com/ul?ll=${r[0].Latitude},${r[0].Longitude}&navigate=yes`);
 };
+
 }
 </script>
 
