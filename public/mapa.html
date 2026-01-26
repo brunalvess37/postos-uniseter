@@ -94,6 +94,16 @@ let gpsPoint=null, rotaLine=null, rotaMarkers=[];
 let rotaAtiva=false;
 
 const postos=await fetch("/api/postos").then(r=>r.json());
+const postoMarkers=[];
+
+/* 🔹 MARCADORES DOS POSTOS (FIX PRINCIPAL) */
+postos.forEach((p,i)=>{
+  if(!p.Latitude || !p.Longitude) return;
+
+  const m=L.marker([p.Latitude,p.Longitude]).addTo(map)
+    .bindPopup(`<b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b>`);
+  postoMarkers.push(m);
+});
 
 function limparRota(){
   if(rotaLine){ map.removeLayer(rotaLine); rotaLine=null; }
