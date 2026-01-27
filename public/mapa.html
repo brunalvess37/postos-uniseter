@@ -1,29 +1,67 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 
-  <title>Mapa — Postos UNISETER</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <script async crossorigin="anonymous"
-    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-    data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
-  </script>
+<title>Mapa — Postos UNISETER</title>
 
-  <link rel="stylesheet" href="style.css?v=202501">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script async crossorigin="anonymous"
+src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA"></script>
 
-  <style>
-    body{display:none;padding:20px;}
-    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-    #map{width:100%;height:calc(100vh - 200px);border-radius:12px;border:1px solid var(--border);}
-  </style>
+<link rel="stylesheet" href="style.css?v=202501">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+body{display:none;padding:20px;}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+
+#map{height:calc(100vh - 240px);border-radius:12px;border:1px solid var(--border);}
+
+.search-box{max-width:520px;margin:0 auto 12px;position:relative;}
+#search{width:100%;padding:12px;border-radius:10px;border:2px solid #003c8d;font-size:15px;}
+#suggestions{
+  position:absolute;width:100%;background:white;border-radius:8px;
+  box-shadow:0 4px 10px rgba(0,0,0,.15);
+  max-height:260px;overflow:auto;z-index:1000;
+}
+.suggestion-card{padding:8px 10px;cursor:pointer;}
+.suggestion-card:hover{background:#eef3ff;}
+.suggestion-title{font-weight:bold;}
+.suggestion-city{font-size:12px;color:#555;}
+
+.map-actions{
+  position:absolute;right:16px;bottom:16px;
+  display:flex;flex-direction:column;gap:8px;z-index:1000;
+}
+.map-btn{
+  background:white;border:1px solid #003c8d;color:#003c8d;
+  padding:8px 12px;border-radius:8px;cursor:pointer;
+}
+.map-btn.primary{background:#003c8d;color:white;}
+
+#rota-panel{
+  position:absolute;left:16px;bottom:16px;
+  background:white;border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,.2);
+  width:260px;max-height:300px;
+  overflow:auto;display:none;z-index:1000;
+}
+#rota-panel h4{margin:10px;font-size:14px;}
+.rota-item{
+  padding:8px 10px;border-top:1px solid #eee;
+  cursor:grab;font-size:13px;
+}
+.rota-item.dragging{opacity:.4;}
+</style>
+
 </head>
 
 <body>
@@ -38,94 +76,172 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 </script>
 
 <header>
-  <h2 style="margin:0;">Mapa</h2>
+  <h2>Mapa</h2>
   <button onclick="location.href='app.html'">← Voltar</button>
 </header>
 
-<div id="map"></div>
+<div class="search-box">
+  <input id="search" placeholder="Buscar posto, cidade ou bairro…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <div id="suggestions"></div>
+</div>
+
+<div style="position:relative">
+  <div id="map"></div>
+
+  <div class="map-actions">
+    <button id="btnGps" class="map-btn">📍 GPS</button>
+    <button id="btnRota" class="map-btn">🧭 Ver rota</button>
+    <button id="btnClear" class="map-btn">🗑️ Limpar rota</button>
+    <button id="btnMaps" class="map-btn">🗺️ Maps</button>
+    <button id="btnWaze" class="map-btn">🚗 Waze</button>
+  </div>
+
+  <div id="rota-panel">
+    <h4>Ordem da Rota</h4>
+    <div id="rota-list"></div>
+  </div>
+</div>
 
 <script>
 async function initMapa(){
 
-  const map = L.map("map",{ zoomControl:false }).setView([-22.905,-47.060],10);
-  L.control.zoom({ position:"topright" }).addTo(map);
+const map=L.map("map",{zoomControl:false}).setView([-22.905,-47.060],10);
+L.control.zoom({position:"topright"}).addTo(map);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+const layerPostos=L.layerGroup().addTo(map);
+const layerRota=L.layerGroup().addTo(map);
+const layerGps=L.layerGroup().addTo(map);
 
-  const postos = await fetch("/api/postos").then(r=>r.json());
-  const markers = [];
+let rotaAtiva=false;
+let gpsPoint=null;
+let rotaLine=null;
 
-  const zonas = [...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
-  const cores = {};
-  zonas.forEach((z,i)=>cores[z]=`hsl(${(i*360)/zonas.length},70%,45%)`);
+const postos=await fetch("/api/postos").then(r=>r.json());
+const markers=[];
 
-  function icon(cor,ativo=false){
-    return L.divIcon({
-      html:`<div style="
-        background:${cor};
-        width:${ativo?18:12}px;
-        height:${ativo?18:12}px;
-        border-radius:50%;
-        opacity:${ativo?1:0.6};
-        border:2px solid white;
-      "></div>`
-    });
-  }
+const zonas=[...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
+const cores={};
+zonas.forEach((z,i)=>cores[z]=`hsl(${(i*360)/zonas.length},70%,45%)`);
 
-  postos.forEach((p,i)=>{
-    if(!p.Latitude||!p.Longitude) return;
+function iconZona(cor){
+  return L.divIcon({html:`<div style="background:${cor};width:12px;height:12px;border-radius:50%;opacity:.7;border:2px solid white"></div>`});
+}
+function iconNumero(n){
+  return L.divIcon({html:`<div style="background:#003c8d;color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px">${n}</div>`});
+}
+function iconGps(){
+  return L.divIcon({html:`<div style="background:#d32f2f;width:16px;height:16px;border-radius:50%;border:3px solid white"></div>`});
+}
 
-    const popup = `
-      <b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b><br>
-      ${p.CIDADE}
-    `;
+postos.forEach((p,i)=>{
+  if(!p.Latitude||!p.Longitude) return;
 
-    const m = L.marker(
-      [p.Latitude,p.Longitude],
-      { icon: icon(cores[p.ZONA]||"#555") }
-    ).addTo(map).bindPopup(popup);
+  const m=L.marker([p.Latitude,p.Longitude],{
+    icon:iconZona(cores[p.ZONA]||"#555")
+  }).addTo(layerPostos).bindPopup(`
+    <b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b><br>
+    <button onclick="addRota(${i})">➕ Incluir na rota</button>
+  `);
 
-    markers.push(m);
+  markers.push({marker:m,posto:p,index:i});
+});
+
+function desenharRota(){
+  layerRota.clearLayers();
+  rotaLine=null;
+
+  const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}").rota||[];
+  if(!dados.length) return;
+
+  const pontos=[...(gpsPoint?[{Latitude:gpsPoint[0],Longitude:gpsPoint[1]}]:[]),...dados];
+  const latlngs=pontos.map(p=>[p.Latitude,p.Longitude]);
+
+  rotaLine=L.polyline(latlngs,{color:"#1976d2",weight:4}).addTo(layerRota);
+
+  dados.forEach((p,i)=>{
+    L.marker([p.Latitude,p.Longitude],{icon:iconNumero(i+1)}).addTo(layerRota);
   });
 
-  // ===============================
-  // 🧭 BOTÃO VER ROTA (TOGGLE CORRETO)
-  // ===============================
-  let rotaAtiva = false;
-  let rotaLine = null;
+  map.fitBounds(rotaLine.getBounds(),{padding:[40,40]});
+}
 
-  window.toggleRota = function(){
-    rotaAtiva = !rotaAtiva;
+function montarLista(){
+  const list=document.getElementById("rota-list");
+  list.innerHTML="";
+  const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}").rota||[];
 
-    if(!rotaAtiva){
-      if(rotaLine){
-        map.removeLayer(rotaLine);
-        rotaLine = null;
-      }
-      return;
-    }
+  dados.forEach((p,i)=>{
+    const div=document.createElement("div");
+    div.className="rota-item";
+    div.draggable=true;
+    div.dataset.i=i;
+    div.textContent=`${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
+    list.appendChild(div);
+  });
 
-    const dados = JSON.parse(localStorage.getItem("rota_postos")||"{}").rota || [];
-    if(!dados.length){
-      alert("Nenhum posto na rota.");
-      rotaAtiva = false;
-      return;
-    }
+  let drag;
+  list.querySelectorAll(".rota-item").forEach(el=>{
+    el.ondragstart=()=>{drag=el;el.classList.add("dragging");};
+    el.ondragend=()=>el.classList.remove("dragging");
+    el.ondragover=e=>e.preventDefault();
+    el.ondrop=()=>{
+      const dados=JSON.parse(localStorage.getItem("rota_postos")).rota;
+      const a=+drag.dataset.i,b=+el.dataset.i;
+      dados.splice(b,0,dados.splice(a,1)[0]);
+      localStorage.setItem("rota_postos",JSON.stringify({rota:dados}));
+      montarLista();desenharRota();
+    };
+  });
+}
 
-    const latlngs = dados.map(p=>[p.Latitude,p.Longitude]);
-    rotaLine = L.polyline(latlngs,{
-      color:"#003c8d",
-      weight:4,
-      opacity:0.9
-    }).addTo(map);
+btnGps.onclick=()=>{
+  navigator.geolocation.getCurrentPosition(pos=>{
+    gpsPoint=[pos.coords.latitude,pos.coords.longitude];
+    layerGps.clearLayers();
+    L.marker(gpsPoint,{icon:iconGps()}).addTo(layerGps);
+    map.setView(gpsPoint,15);
+    if(rotaAtiva) desenharRota();
+  });
+};
 
-    map.fitBounds(rotaLine.getBounds(),{padding:[40,40]});
-  }
+btnRota.onclick=()=>{
+  rotaAtiva=!rotaAtiva;
+  btnRota.classList.toggle("primary",rotaAtiva);
+  document.getElementById("rota-panel").style.display=rotaAtiva?"block":"none";
+  if(rotaAtiva){ montarLista(); desenharRota(); }
+  else layerRota.clearLayers();
+};
+
+btnClear.onclick=()=>{
+  localStorage.removeItem("rota_postos");
+  layerRota.clearLayers();
+  document.getElementById("rota-panel").style.display="none";
+  btnRota.classList.remove("primary");
+  rotaAtiva=false;
+};
+
+btnMaps.onclick=()=>{
+  const r=JSON.parse(localStorage.getItem("rota_postos")||"{}").rota||[];
+  if(!r.length) return alert("Rota vazia");
+  window.open("https://www.google.com/maps/dir/"+r.map(p=>`${p.Latitude},${p.Longitude}`).join("/"));
+};
+
+btnWaze.onclick=()=>{
+  const r=JSON.parse(localStorage.getItem("rota_postos")||"{}").rota||[];
+  if(!r.length) return alert("Rota vazia");
+  window.open(`https://waze.com/ul?ll=${r[0].Latitude},${r[0].Longitude}&navigate=yes`);
+};
+
+window.addRota=function(i){
+  const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}");
+  const rota=dados.rota||[];
+  rota.push({...postos[i]});
+  localStorage.setItem("rota_postos",JSON.stringify({rota}));
+  if(rotaAtiva){ montarLista(); desenharRota(); }
+};
 }
 </script>
-
-<!-- botão simples só para teste -->
-<button onclick="toggleRota()" style="margin-top:12px;">🧭 Ver rota</button>
 
 </body>
 </html>
