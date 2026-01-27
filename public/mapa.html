@@ -101,7 +101,6 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   padding:10px;
   border-top:1px solid #eee;
   font-size:14px;
-  cursor:grab;
 }
 </style>
 
@@ -174,10 +173,6 @@ function getRota(){
   return JSON.parse(localStorage.getItem("rota_postos")||"{\"rota\":[]}").rota;
 }
 
-function salvarRota(rota){
-  localStorage.setItem("rota_postos",JSON.stringify({rota}));
-}
-
 function desenharRota(){
   layerRota.clearLayers();
   const rota=getRota();
@@ -191,34 +186,15 @@ function renderRotaLista(){
   getRota().forEach((p,i)=>{
     const div=document.createElement("div");
     div.className="rota-item";
-    div.draggable=true;
-    div.dataset.index=i;
     div.textContent=`${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
     lista.appendChild(div);
-  });
-  habilitarDrag();
-}
-
-function habilitarDrag(){
-  let dragIndex=null;
-  document.querySelectorAll(".rota-item").forEach(item=>{
-    item.ondragstart=()=>dragIndex=+item.dataset.index;
-    item.ondragover=e=>e.preventDefault();
-    item.ondrop=()=>{
-      const rota=getRota();
-      const dropIndex=+item.dataset.index;
-      rota.splice(dropIndex,0,rota.splice(dragIndex,1)[0]);
-      salvarRota(rota);
-      renderRotaLista();
-      desenharRota();
-    };
   });
 }
 
 window.addRota=i=>{
-  const rota=getRota();
-  rota.push(postos[i]);
-  salvarRota(rota);
+  const dados=JSON.parse(localStorage.getItem("rota_postos")||"{\"rota\":[]}");
+  dados.rota.push(postos[i]);
+  localStorage.setItem("rota_postos",JSON.stringify(dados));
   desenharRota();
   renderRotaLista();
   alert("Posto adicionado à rota");
