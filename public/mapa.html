@@ -108,7 +108,6 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 .rota-item{
   padding:10px;
   border-top:1px solid #eee;
-  cursor:grab;
   font-size:14px;
 }
 
@@ -180,7 +179,9 @@ L.control.zoom({position:"topright"}).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
 const postos=await fetch("/api/postos").then(r=>r.json());
+
 const layerPostos=L.layerGroup().addTo(map);
+const layerRota=L.layerGroup().addTo(map);
 
 const zonas=[...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
 const cores={};
@@ -191,6 +192,58 @@ function iconPosto(cor){
     html:`<div style="background:${cor};width:12px;height:12px;border-radius:50%;border:2px solid white"></div>`
   });
 }
+
+/* ================= ROTA ================= */
+
+function getRota(){
+  return JSON.parse(localStorage.getItem("rota_postos")||"{\"rota\":[]}").rota;
+}
+
+function desenharRota(){
+  layerRota.clearLayers();
+  const rota=getRota();
+  if(rota.length<2) return;
+
+  const latlngs=rota.map(p=>[p.Latitude,p.Longitude]);
+  L.polyline(latlngs,{color:"#0066ff",weight:4}).addTo(layerRota);
+}
+
+function renderRotaLista(){
+  const lista=document.getElementById("rota-list");
+  lista.innerHTML="";
+  getRota().forEach((p,i)=>{
+    const div=document.createElement("div");
+    div.className="rota-item";
+    div.textContent=`${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
+    lista.appendChild(div);
+  });
+}
+
+window.addRota=i=>{
+  const dados=JSON.parse(localStorage.getItem("rota_postos")||"{\"rota\":[]}");
+  dados.rota.push(postos[i]);
+  localStorage.setItem("rota_postos",JSON.stringify(dados));
+  desenharRota();
+  renderRotaLista();
+  alert("Posto adicionado à rota");
+};
+
+/* ================= EVENTOS ================= */
+
+document.getElementById("btnRota").onclick=()=>{
+  desenharRota();
+  renderRotaLista();
+  document.getElementById("rota-sheet").classList.add("active");
+};
+
+document.getElementById("btnLimpar").onclick=()=>{
+  localStorage.removeItem("rota_postos");
+  layerRota.clearLayers();
+  document.getElementById("rota-list").innerHTML="";
+  document.getElementById("rota-sheet").classList.remove("active");
+};
+
+/* ================= POSTOS ================= */
 
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
@@ -213,18 +266,11 @@ postos.forEach((p,i)=>{
     .bindPopup(popup);
 
   m.on("popupopen",e=>{
-    const btn=e.popup.getElement().querySelector(".js-add-rota");
-    btn.onclick=()=>addRota(i);
+    e.popup.getElement()
+      .querySelector(".js-add-rota")
+      .onclick=()=>addRota(i);
   });
 });
-
-window.addRota=i=>{
-  const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}");
-  const rota=dados.rota||[];
-  rota.push(postos[i]);
-  localStorage.setItem("rota_postos",JSON.stringify({rota}));
-  alert("Posto adicionado à rota");
-};
 
 }
 </script>
