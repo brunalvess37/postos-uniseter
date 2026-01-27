@@ -2,119 +2,136 @@
 <html lang="pt-BR">
 <head>
 
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
+  <!-- 🔥 Anti-cache -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Mapa — Postos UNISETER</title>
+  <title>Mapa — Postos UNISETER</title>
 
-<script async crossorigin="anonymous"
-  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-  data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
-</script>
+  <!-- 🔐 Clerk -->
+  <script async crossorigin="anonymous"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
+  </script>
 
-<link rel="stylesheet" href="style.css?v=202501">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- 🎨 CSS global -->
+  <link rel="stylesheet" href="style.css?v=202501">
 
-<style>
-body{display:none;padding:20px;}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  <!-- 🗺️ Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-#map{
-  width:100%;
-  height:calc(100vh - 220px);
-  border-radius:12px;
-  border:1px solid var(--border);
-}
+  <style>
+    body{
+      display:none;
+      padding:20px;
+    }
 
-/* 🔍 BUSCA (IGUAL À BUSCAR POSTOS) */
-.search-box{max-width:520px;margin:0 auto 12px;position:relative;}
-#search{
-  width:100%;
-  padding:14px 44px 14px 42px;
-  border-radius:12px;
-  border:2px solid #003c8d;
-  font-size:16px;
-}
-#suggestions{
-  position:absolute;
-  width:100%;
-  background:white;
-  border-radius:10px;
-  box-shadow:0 4px 10px rgba(0,0,0,.15);
-  max-height:260px;
-  overflow:auto;
-  z-index:1000;
-}
-.suggestion-card{
-  padding:10px;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
-}
-.suggestion-card:hover{background:#eef3ff;}
-.suggestion-title{font-weight:bold;}
-.suggestion-city{font-size:12px;color:#555;}
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+    }
 
-/* 🧭 BOTÕES */
-.map-actions{
-  position:absolute;
-  right:16px;
-  bottom:16px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  z-index:1000;
-}
-.map-btn{
-  background:white;
-  border:1px solid #003c8d;
-  color:#003c8d;
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
-}
-.map-btn.primary{
-  background:#003c8d;
-  color:white;
-}
+    #map{
+      width:100%;
+      height:calc(100vh - 200px);
+      border-radius:12px;
+      border:1px solid var(--border);
+    }
 
-/* 📱 BOTTOM SHEET */
-#rota-sheet{
-  position:fixed;
-  left:0;
-  right:0;
-  bottom:-100%;
-  background:white;
-  border-radius:16px 16px 0 0;
-  box-shadow:0 -4px 12px rgba(0,0,0,.25);
-  max-height:55vh;
-  transition:.3s;
-  z-index:2000;
-  display:flex;
-  flex-direction:column;
-}
-#rota-sheet.active{bottom:0;}
+    .search-box{
+      max-width:520px;
+      margin:0 auto 12px;
+      position:relative;
+    }
 
-.sheet-handle{
-  width:40px;
-  height:5px;
-  background:#ccc;
-  border-radius:5px;
-  margin:10px auto;
-}
-#rota-list{overflow:auto;}
-.rota-item{
-  padding:10px;
-  border-top:1px solid #eee;
-  cursor:grab;
-  font-size:14px;
-}
-.rota-item.dragging{opacity:.4;}
-</style>
+    #search{
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:2px solid #003c8d;
+      font-size:15px;
+    }
+
+    #suggestions{
+      position:absolute;
+      width:100%;
+      background:white;
+      border-radius:8px;
+      box-shadow:0 4px 10px rgba(0,0,0,.15);
+      z-index:1000;
+      max-height:260px;
+      overflow:auto;
+    }
+
+    .suggestion-card{
+      padding:8px 10px;
+      cursor:pointer;
+    }
+
+    .suggestion-card:hover,
+    .suggestion-card.active{
+      background:#eef3ff;
+    }
+
+    .suggestion-title{ font-weight:bold; }
+    .suggestion-city{ font-size:12px; color:#555; }
+
+    .leaflet-popup-content{
+      max-width:260px;
+      max-height:60vh;
+      overflow-y:auto;
+      margin:12px;
+    }
+
+    .popup-title{
+      font-weight:bold;
+      color:#003c8d;
+      margin-bottom:6px;
+      font-size:14px;
+    }
+
+    .popup-address{
+      font-size:12px;
+      color:#444;
+      margin-bottom:10px;
+    }
+
+    .popup-actions{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .popup-btn{
+      width:100%;
+      padding:8px;
+      border-radius:8px;
+      border:1px solid #003c8d;
+      background:#003c8d;
+      color:white;
+      font-size:13px;
+      cursor:pointer;
+    }
+
+    .popup-btn.secondary{
+      background:white;
+      color:#003c8d;
+    }
+
+    button{
+      padding:8px 14px;
+      border-radius:8px;
+      border:1px solid var(--border);
+      cursor:pointer;
+    }
+  </style>
 
 </head>
 
@@ -130,159 +147,144 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 </script>
 
 <header>
-  <h2>Mapa</h2>
+  <h2 style="margin:0;">Mapa</h2>
   <button onclick="location.href='app.html'">← Voltar</button>
 </header>
 
 <div class="search-box">
-  <input id="search"
+  <input
+    id="search"
     placeholder="Buscar posto, cidade ou bairro…"
     autocomplete="off"
     autocorrect="off"
     autocapitalize="off"
-    spellcheck="false">
+    spellcheck="false"
+  >
   <div id="suggestions"></div>
 </div>
 
-<div style="position:relative">
-  <div id="map"></div>
-
-  <div class="map-actions">
-    <button id="btnGps" class="map-btn">📍 GPS</button>
-    <button id="btnRota" class="map-btn">🧭 Ver rota</button>
-    <button id="btnLimpar" class="map-btn">🗑️ Limpar rota</button>
-    <button id="btnMaps" class="map-btn">🗺️ Maps</button>
-    <button id="btnWaze" class="map-btn">🚗 Waze</button>
-  </div>
-</div>
-
-<!-- 📱 BOTTOM SHEET -->
-<div id="rota-sheet">
-  <div class="sheet-handle"></div>
-  <div style="padding:10px;font-weight:bold;">Ordem da Rota</div>
-  <div id="rota-list"></div>
-</div>
+<div id="map"></div>
 
 <script>
 async function initMapa(){
 
-const map=L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
-L.control.zoom({position:"topright"}).addTo(map);
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+  // ✅ ZOOM CONTROL REMOVIDO DO PADRÃO
+  const map = L.map("map", { zoomControl: false }).setView([-22.905, -47.060], 10);
 
-const postos=await fetch("/api/postos").then(r=>r.json());
+  // ✅ ZOOM NO CANTO DIREITO
+  L.control.zoom({
+    position: 'topright'
+  }).addTo(map);
 
-const layerPostos=L.layerGroup().addTo(map);
-const layerRota=L.layerGroup().addTo(map);
-const layerGps=L.layerGroup().addTo(map);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution:"&copy; OpenStreetMap"
+  }).addTo(map);
 
-let gpsPoint=null, rotaAtiva=false;
+  const postos = await fetch("/api/postos").then(r=>r.json());
+  const markers = [];
 
-const zonas=[...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
-const cores={};
-zonas.forEach((z,i)=>cores[z]=`hsl(${(i*360)/zonas.length},70%,45%)`);
+  const zonas = [...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
+  const cores = {};
+  zonas.forEach((z,i)=>{
+    cores[z] = `hsl(${(i*360)/zonas.length},70%,45%)`;
+  });
 
-function icon(cor,ativo=false){
-  return L.divIcon({
-    html:`<div style="background:${cor};width:${ativo?18:12}px;height:${ativo?18:12}px;border-radius:50%;border:2px solid white;opacity:${ativo?1:.6}"></div>`
+  function icon(cor, ativo=false){
+    return L.divIcon({
+      html:`<div style="
+        background:${cor};
+        width:${ativo?18:12}px;
+        height:${ativo?18:12}px;
+        border-radius:50%;
+        opacity:${ativo?1:0.7};
+        border:2px solid white;
+      "></div>`
+    });
+  }
+
+  postos.forEach((p,i)=>{
+    if(!p.Latitude || !p.Longitude) return;
+
+    const endereco = [
+      p["ENDEREÇO I"],p["ENDEREÇO II"],p["ENDEREÇO III"],p["ENDEREÇO IV"],p.CIDADE
+    ].filter(Boolean).join(" - ");
+
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${p.Latitude},${p.Longitude}`;
+    const wazeUrl = `https://waze.com/ul?ll=${p.Latitude},${p.Longitude}&navigate=yes`;
+
+    const popup = `
+      <div>
+        <div class="popup-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
+        <div class="popup-address">${endereco}</div>
+
+        <div class="popup-actions">
+          <button class="popup-btn" onclick="addRota(${i})">➕ Incluir na rota</button>
+          <a href="${mapsUrl}" target="_blank"><button class="popup-btn secondary">📍 Google Maps</button></a>
+          <a href="${wazeUrl}" target="_blank"><button class="popup-btn secondary">🚗 Waze</button></a>
+        </div>
+      </div>
+    `;
+
+    const m = L.marker(
+      [p.Latitude,p.Longitude],
+      { icon: icon(cores[p.ZONA]||"#555") }
+    ).addTo(map).bindPopup(popup);
+
+    markers.push({ marker:m, posto:p, index:i });
+  });
+
+  const search = document.getElementById("search");
+  const suggestions = document.getElementById("suggestions");
+
+  search.addEventListener("input", ()=>{
+    const q = search.value.toLowerCase();
+    suggestions.innerHTML="";
+    if(!q) return;
+
+    const lista = postos.filter(p =>
+      p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
+      p.CIDADE?.toLowerCase().includes(q) ||
+      p["ENDEREÇO III"]?.toLowerCase().includes(q)
+    ).slice(0,10);
+
+    suggestions.innerHTML = lista.map(p=>{
+      const i = postos.indexOf(p);
+      return `
+        <div class="suggestion-card" data-i="${i}">
+          <div class="suggestion-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
+          <div class="suggestion-city">${p.CIDADE} — ${p["ENDEREÇO III"]||""}</div>
+        </div>
+      `;
+    }).join("");
+
+    document.querySelectorAll(".suggestion-card").forEach(el=>{
+      el.onclick=()=>{
+        const i=+el.dataset.i;
+        const obj = markers.find(m=>m.index===i);
+
+        markers.forEach(m=>m.marker.setIcon(icon(cores[m.posto.ZONA]||"#555")));
+        obj.marker.setIcon(icon(cores[obj.posto.ZONA]||"#555",true));
+        map.setView(obj.marker.getLatLng(),14);
+        obj.marker.openPopup();
+        suggestions.innerHTML="";
+      };
+    });
   });
 }
 
-postos.forEach((p,i)=>{
-  if(!p.Latitude||!p.Longitude) return;
-
-  const popup=`<b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b><br>${p.CIDADE}<br>
-    <button onclick="addRota(${i})">➕ Rota</button>`;
-
-  const m=L.marker([p.Latitude,p.Longitude],{
-    icon:icon(cores[p.ZONA]||"#555")
-  }).bindPopup(popup).addTo(layerPostos);
-
-  p._marker=m;
-});
-
-/* 🔍 BUSCA */
-search.oninput=()=>{
-  const q=search.value.toLowerCase();
-  suggestions.innerHTML="";
-  if(!q) return;
-
-  postos.filter(p=>
-    p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q)||
-    p.CIDADE?.toLowerCase().includes(q)
-  ).slice(0,10).forEach(p=>{
-    const div=document.createElement("div");
-    div.className="suggestion-card";
-    div.innerHTML=`<div class="suggestion-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
-                   <div class="suggestion-city">${p.CIDADE}</div>`;
-    div.onclick=()=>{
-      map.setView([p.Latitude,p.Longitude],15);
-      p._marker.openPopup();
-      suggestions.innerHTML="";
-    };
-    suggestions.appendChild(div);
-  });
-};
-
-/* 📍 GPS */
-btnGps.onclick=()=>{
-  navigator.geolocation.getCurrentPosition(pos=>{
-    gpsPoint=[pos.coords.latitude,pos.coords.longitude];
-    layerGps.clearLayers();
-    L.marker(gpsPoint,{
-      icon:L.divIcon({html:`<div style="background:red;width:14px;height:14px;border-radius:50%;border:2px solid white"></div>`})
-    }).addTo(layerGps);
-    map.setView(gpsPoint,15);
-  });
-};
-
-/* 🧭 TOGGLE ROTA */
-btnRota.onclick=()=>{
-  rotaAtiva=!rotaAtiva;
-  btnRota.classList.toggle("primary",rotaAtiva);
-  document.getElementById("rota-sheet").classList.toggle("active",rotaAtiva);
-  layerRota.clearLayers();
-  if(rotaAtiva) desenharRota();
-};
-
-btnLimpar.onclick=()=>{
-  localStorage.removeItem("rota_postos");
-  layerRota.clearLayers();
-  document.getElementById("rota-list").innerHTML="";
-};
-
-function desenharRota(){
-  const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}").rota||[];
-  if(!dados.length) return;
-
-  const pontos=[...(gpsPoint?[{Latitude:gpsPoint[0],Longitude:gpsPoint[1]}]:[]),...dados];
-  const latlngs=pontos.map(p=>[p.Latitude,p.Longitude]);
-
-  L.polyline(latlngs,{color:"#003c8d",weight:4}).addTo(layerRota);
-
-  const list=document.getElementById("rota-list");
-  list.innerHTML="";
-  dados.forEach((p,i)=>{
-    const m=L.marker([p.Latitude,p.Longitude],{
-      icon:L.divIcon({html:`<div style="background:#003c8d;color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center">${i+1}</div>`})
-    }).addTo(layerRota);
-
-    const div=document.createElement("div");
-    div.className="rota-item";
-    div.draggable=true;
-    div.dataset.i=i;
-    div.textContent=`${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
-    list.appendChild(div);
-  });
-}
-
-window.addRota=i=>{
-  const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}");
-  const rota=dados.rota||[];
-  rota.push(postos[i]);
-  localStorage.setItem("rota_postos",JSON.stringify({rota}));
-  if(rotaAtiva) desenharRota();
-};
+function addRota(i){
+  fetch("/api/postos")
+    .then(r=>r.json())
+    .then(postos=>{
+      const dados = JSON.parse(localStorage.getItem("rota_postos")||"{}");
+      const rota = dados.rota || [];
+      rota.push({...postos[i]});
+      localStorage.setItem("rota_postos",JSON.stringify({
+        rota,
+        data:new Date().toLocaleString("pt-BR")
+      }));
+      alert("Posto adicionado à rota!");
+    });
 }
 </script>
 
