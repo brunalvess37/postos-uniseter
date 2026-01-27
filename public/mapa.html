@@ -111,6 +111,46 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   font-size:14px;
 }
 .rota-item.dragging{opacity:.4;}
+
+/* 📌 POPUP POSTO (NOVO PADRÃO APROVADO) */
+.leaflet-popup-content{
+  margin:0;
+  width:260px;
+}
+.popup-card{
+  padding:14px;
+}
+.popup-title{
+  font-weight:700;
+  color:#003c8d;
+  font-size:15px;
+  margin-bottom:6px;
+}
+.popup-address{
+  font-size:13px;
+  color:#444;
+  margin-bottom:12px;
+  line-height:1.4;
+}
+.popup-actions{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.popup-btn{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #003c8d;
+  background:#003c8d;
+  color:white;
+  font-size:14px;
+  cursor:pointer;
+}
+.popup-btn.secondary{
+  background:white;
+  color:#003c8d;
+}
 </style>
 
 </head>
@@ -178,9 +218,9 @@ const zonas=[...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
 const cores={};
 zonas.forEach((z,i)=>cores[z]=`hsl(${(i*360)/zonas.length},70%,45%)`);
 
-function iconPosto(cor,ativo=false){
+function iconPosto(cor){
   return L.divIcon({
-    html:`<div style="background:${cor};width:${ativo?18:12}px;height:${ativo?18:12}px;border-radius:50%;border:2px solid white;opacity:${ativo?1:.6}"></div>`
+    html:`<div style="background:${cor};width:12px;height:12px;border-radius:50%;border:2px solid white;opacity:.7"></div>`
   });
 }
 
@@ -191,12 +231,26 @@ const iconGps=L.divIcon({
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
 
+  const endereco=[
+    p["ENDEREÇO I"],p["ENDEREÇO II"],p["ENDEREÇO III"],p["ENDEREÇO IV"],p.CIDADE
+  ].filter(Boolean).join(" - ");
+
   const popup=`
-    <div>
-      <b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b><br>
-      ${p.CIDADE}<br><br>
-      <button onclick="addRota(${i})">➕ Incluir na rota</button>
-    </div>`;
+    <div class="popup-card">
+      <div class="popup-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
+      <div class="popup-address">${endereco}</div>
+
+      <div class="popup-actions">
+        <button class="popup-btn" onclick="addRota(${i})">➕ Incluir na rota</button>
+        <a href="https://www.google.com/maps/search/?api=1&query=${p.Latitude},${p.Longitude}" target="_blank">
+          <button class="popup-btn secondary">📍 Google Maps</button>
+        </a>
+        <a href="https://waze.com/ul?ll=${p.Latitude},${p.Longitude}&navigate=yes" target="_blank">
+          <button class="popup-btn secondary">🚗 Waze</button>
+        </a>
+      </div>
+    </div>
+  `;
 
   const m=L.marker([p.Latitude,p.Longitude],{
     icon:iconPosto(cores[p.ZONA]||"#555")
