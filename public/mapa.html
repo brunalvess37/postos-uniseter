@@ -222,25 +222,36 @@ window.addRota=i=>{
 
 /* ================= EVENTOS ================= */
 
+const rotaSheet = document.getElementById("rota-sheet");
+const rotaList  = document.getElementById("rota-list");
+let listaVisivel = true;
+
 document.getElementById("btnRota").onclick=()=>{
   desenharRota();
   renderRotaLista();
-  document.getElementById("rota-sheet").classList.add("active");
+  rotaSheet.classList.add("active");
+  rotaList.style.display = "block";   // garante expandido
+  listaVisivel = true;
 };
 
 document.getElementById("btnLimpar").onclick=()=>{
   localStorage.removeItem("rota_postos");
   layerRota.clearLayers();
-  document.getElementById("rota-list").innerHTML="";
-  document.getElementById("rota-sheet").classList.remove("active");
+  rotaList.innerHTML="";
+  rotaSheet.classList.remove("active");
+  listaVisivel = true;
 };
 
-/* === PASSO 1: FECHAR PELO HANDLE (SEGURO) === */
+/* === PASSO 2: MINIMIZADO LÓGICO === */
 const handle = document.querySelector(".sheet-handle");
 if (handle) {
-  handle.onclick = () => {
-    document.getElementById("rota-sheet").classList.remove("active");
-  };
+  handle.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    if (!rotaSheet.classList.contains("active")) return;
+
+    listaVisivel = !listaVisivel;
+    rotaList.style.display = listaVisivel ? "block" : "none";
+  });
 }
 
 /* ================= POSTOS ================= */
