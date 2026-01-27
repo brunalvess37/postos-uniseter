@@ -21,7 +21,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
-/* === ESTILOS EXISTENTES (INALTERADOS) === */
+/* === ESTILOS INALTERADOS === */
 body{display:none;padding:20px;}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 
@@ -32,7 +32,7 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   border:1px solid var(--border);
 }
 
-/* BUSCA */
+/* 🔍 BUSCA */
 .search-box{max-width:520px;margin:0 auto 12px;position:relative;}
 #search{
   width:100%;
@@ -51,8 +51,16 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   overflow:auto;
   z-index:1000;
 }
+.suggestion-card{
+  padding:10px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+}
+.suggestion-card:hover{background:#eef3ff;}
+.suggestion-title{font-weight:bold;}
+.suggestion-city{font-size:12px;color:#555;}
 
-/* BOTÕES */
+/* 🧭 BOTÕES */
 .map-actions{
   position:absolute;
   right:16px;
@@ -70,8 +78,9 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   border-radius:10px;
   cursor:pointer;
 }
+.map-btn.primary{background:#003c8d;color:white;}
 
-/* BOTTOM SHEET */
+/* 📱 BOTTOM SHEET */
 #rota-sheet{
   position:fixed;
   left:0;
@@ -86,11 +95,7 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   display:flex;
   flex-direction:column;
 }
-
-/* === NOVOS ESTADOS (NÃO ALTERAM VISUAL EXISTENTE) === */
-#rota-sheet.min{ bottom:-40vh; }
-#rota-sheet.mid{ bottom:-40vh; }
-#rota-sheet.max{ bottom:0; }
+#rota-sheet.active{bottom:0;}
 
 .sheet-handle{
   width:40px;
@@ -98,15 +103,31 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   background:#ccc;
   border-radius:5px;
   margin:10px auto;
-  cursor:pointer;
 }
 #rota-list{overflow:auto;}
 .rota-item{
   padding:10px;
   border-top:1px solid #eee;
   font-size:14px;
-  cursor:grab;
 }
+
+/* 📌 POPUP */
+.leaflet-popup-content{margin:0;width:260px;}
+.popup-card{padding:14px;}
+.popup-title{font-weight:700;color:#003c8d;font-size:15px;margin-bottom:6px;}
+.popup-address{font-size:13px;color:#444;margin-bottom:12px;}
+.popup-actions{display:flex;flex-direction:column;gap:8px;}
+.popup-btn{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #003c8d;
+  background:#003c8d;
+  color:white;
+  font-size:14px;
+  cursor:pointer;
+}
+.popup-btn.secondary{background:white;color:#003c8d;}
 </style>
 
 </head>
@@ -144,7 +165,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   </div>
 </div>
 
-<div id="rota-sheet" class="min">
+<div id="rota-sheet">
   <div class="sheet-handle"></div>
   <div style="padding:10px;font-weight:bold;">Ordem da Rota</div>
   <div id="rota-list"></div>
@@ -158,85 +179,72 @@ L.control.zoom({position:"topright"}).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
 const postos=await fetch("/api/postos").then(r=>r.json());
+
 const layerPostos=L.layerGroup().addTo(map);
 const layerRota=L.layerGroup().addTo(map);
 
-/* ===== ROTA ===== */
+const zonas=[...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
+const cores={};
+zonas.forEach((z,i)=>cores[z]=`hsl(${(i*360)/zonas.length},70%,45%)`);
+
+function iconPosto(cor){
+  return L.divIcon({
+    html:`<div style="background:${cor};width:12px;height:12px;border-radius:50%;border:2px solid white"></div>`
+  });
+}
+
+/* ================= ROTA ================= */
+
 function getRota(){
   return JSON.parse(localStorage.getItem("rota_postos")||"{\"rota\":[]}").rota;
 }
-function salvarRota(rota){
-  localStorage.setItem("rota_postos",JSON.stringify({rota}));
-}
+
 function desenharRota(){
   layerRota.clearLayers();
   const rota=getRota();
   if(rota.length<2) return;
-  L.polyline(rota.map(p=>[p.Latitude,p.Longitude]),{color:"#0066ff",weight:4}).addTo(layerRota);
+
+  const latlngs=rota.map(p=>[p.Latitude,p.Longitude]);
+  L.polyline(latlngs,{color:"#0066ff",weight:4}).addTo(layerRota);
 }
+
 function renderRotaLista(){
   const lista=document.getElementById("rota-list");
   lista.innerHTML="";
   getRota().forEach((p,i)=>{
     const div=document.createElement("div");
     div.className="rota-item";
-    div.draggable=true;
-    div.dataset.index=i;
     div.textContent=`${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
     lista.appendChild(div);
-  });
-  habilitarDrag();
-}
-function habilitarDrag(){
-  let dragIndex=null;
-  document.querySelectorAll(".rota-item").forEach(item=>{
-    item.ondragstart=()=>dragIndex=+item.dataset.index;
-    item.ondragover=e=>e.preventDefault();
-    item.ondrop=()=>{
-      const rota=getRota();
-      const dropIndex=+item.dataset.index;
-      rota.splice(dropIndex,0,rota.splice(dragIndex,1)[0]);
-      salvarRota(rota);
-      renderRotaLista();
-      desenharRota();
-    };
   });
 }
 
 window.addRota=i=>{
-  const rota=getRota();
-  rota.push(postos[i]);
-  salvarRota(rota);
+  const dados=JSON.parse(localStorage.getItem("rota_postos")||"{\"rota\":[]}");
+  dados.rota.push(postos[i]);
+  localStorage.setItem("rota_postos",JSON.stringify(dados));
   desenharRota();
   renderRotaLista();
   alert("Posto adicionado à rota");
 };
 
-/* ===== CONTROLE DO BOTTOM-SHEET ===== */
-const sheet=document.getElementById("rota-sheet");
-let estado="min";
+/* ================= EVENTOS ================= */
 
 document.getElementById("btnRota").onclick=()=>{
-  estado="max";
-  sheet.className="max";
   desenharRota();
   renderRotaLista();
-};
-
-document.querySelector(".sheet-handle").onclick=()=>{
-  estado = estado==="max" ? "mid" : "max";
-  sheet.className = estado;
+  document.getElementById("rota-sheet").classList.add("active");
 };
 
 document.getElementById("btnLimpar").onclick=()=>{
   localStorage.removeItem("rota_postos");
   layerRota.clearLayers();
   document.getElementById("rota-list").innerHTML="";
-  estado="min";
-  sheet.className="min";
+  document.getElementById("rota-sheet").classList.remove("active");
 };
 
-/* ===== POSTOS (INALTERADO) ===== */
+/* ================= POSTOS ================= */
+
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
 
@@ -248,15 +256,22 @@ postos.forEach((p,i)=>{
       <div class="popup-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
       <div class="popup-address">${endereco}</div>
       <div class="popup-actions">
-        <button class="popup-btn js-add-rota">➕ Incluir na rota</button>
+        <button class="popup-btn js-add-rota" data-index="${i}">➕ Incluir na rota</button>
       </div>
     </div>
   `;
-  const m=L.marker([p.Latitude,p.Longitude]).addTo(layerPostos).bindPopup(popup);
+
+  const m=L.marker([p.Latitude,p.Longitude],{icon:iconPosto(cores[p.ZONA]||"#555")})
+    .addTo(layerPostos)
+    .bindPopup(popup);
+
   m.on("popupopen",e=>{
-    e.popup.getElement().querySelector(".js-add-rota").onclick=()=>addRota(i);
+    e.popup.getElement()
+      .querySelector(".js-add-rota")
+      .onclick=()=>addRota(i);
   });
 });
+
 }
 </script>
 
