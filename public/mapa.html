@@ -51,6 +51,14 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   overflow:auto;
   z-index:1000;
 }
+.suggestion-card{
+  padding:10px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+}
+.suggestion-card:hover{background:#eef3ff;}
+.suggestion-title{font-weight:bold;}
+.suggestion-city{font-size:12px;color:#555;}
 
 /* 🧭 BOTÕES */
 .map-actions{
@@ -70,6 +78,7 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   border-radius:10px;
   cursor:pointer;
 }
+.map-btn.primary{background:#003c8d;color:white;}
 
 /* 📱 BOTTOM SHEET */
 #rota-sheet{
@@ -94,7 +103,6 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   background:#ccc;
   border-radius:5px;
   margin:10px auto;
-  cursor:pointer;
 }
 #rota-list{overflow:auto;}
 .rota-item{
@@ -102,6 +110,24 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   border-top:1px solid #eee;
   font-size:14px;
 }
+
+/* 📌 POPUP */
+.leaflet-popup-content{margin:0;width:260px;}
+.popup-card{padding:14px;}
+.popup-title{font-weight:700;color:#003c8d;font-size:15px;margin-bottom:6px;}
+.popup-address{font-size:13px;color:#444;margin-bottom:12px;}
+.popup-actions{display:flex;flex-direction:column;gap:8px;}
+.popup-btn{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #003c8d;
+  background:#003c8d;
+  color:white;
+  font-size:14px;
+  cursor:pointer;
+}
+.popup-btn.secondary{background:white;color:#003c8d;}
 </style>
 
 </head>
@@ -177,7 +203,9 @@ function desenharRota(){
   layerRota.clearLayers();
   const rota=getRota();
   if(rota.length<2) return;
-  L.polyline(rota.map(p=>[p.Latitude,p.Longitude]),{color:"#0066ff",weight:4}).addTo(layerRota);
+
+  const latlngs=rota.map(p=>[p.Latitude,p.Longitude]);
+  L.polyline(latlngs,{color:"#0066ff",weight:4}).addTo(layerRota);
 }
 
 function renderRotaLista(){
@@ -202,23 +230,17 @@ window.addRota=i=>{
 
 /* ================= EVENTOS ================= */
 
-const sheet=document.getElementById("rota-sheet");
-
 document.getElementById("btnRota").onclick=()=>{
   desenharRota();
   renderRotaLista();
-  sheet.classList.add("active");
-};
-
-document.querySelector(".sheet-handle").onclick=()=>{
-  sheet.classList.toggle("active");
+  document.getElementById("rota-sheet").classList.add("active");
 };
 
 document.getElementById("btnLimpar").onclick=()=>{
   localStorage.removeItem("rota_postos");
   layerRota.clearLayers();
   document.getElementById("rota-list").innerHTML="";
-  sheet.classList.remove("active");
+  document.getElementById("rota-sheet").classList.remove("active");
 };
 
 /* ================= POSTOS ================= */
@@ -234,7 +256,7 @@ postos.forEach((p,i)=>{
       <div class="popup-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
       <div class="popup-address">${endereco}</div>
       <div class="popup-actions">
-        <button class="popup-btn js-add-rota">➕ Incluir na rota</button>
+        <button class="popup-btn js-add-rota" data-index="${i}">➕ Incluir na rota</button>
       </div>
     </div>
   `;
@@ -244,7 +266,9 @@ postos.forEach((p,i)=>{
     .bindPopup(popup);
 
   m.on("popupopen",e=>{
-    e.popup.getElement().querySelector(".js-add-rota").onclick=()=>addRota(i);
+    e.popup.getElement()
+      .querySelector(".js-add-rota")
+      .onclick=()=>addRota(i);
   });
 });
 
