@@ -13,7 +13,7 @@
 
 <script async crossorigin="anonymous"
   src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
-  data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuYWNjb3VudHMuZGV2JA">
+  data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
 </script>
 
 <link rel="stylesheet" href="style.css?v=202501">
@@ -235,10 +235,13 @@ document.getElementById("btnLimpar").onclick=()=>{
   document.getElementById("rota-sheet").classList.remove("active");
 };
 
-/* === PASSO 1: FECHAR PELO HANDLE === */
-document.querySelector(".sheet-handle").onclick = () => {
-  document.getElementById("rota-sheet").classList.remove("active");
-};
+/* === PASSO 1: FECHAR PELO HANDLE (SEGURO) === */
+const handle = document.querySelector(".sheet-handle");
+if (handle) {
+  handle.onclick = () => {
+    document.getElementById("rota-sheet").classList.remove("active");
+  };
+}
 
 /* ================= POSTOS ================= */
 
