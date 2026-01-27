@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa — Postos UNISETER</title>
 
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Mapa — Postos UNISETER</title>
 
 <script async crossorigin="anonymous"
   src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
@@ -31,7 +29,7 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   border:1px solid var(--border);
 }
 
-/* 🔍 BUSCA (IGUAL À BUSCAR POSTOS) */
+/* 🔍 BUSCA */
 .search-box{max-width:520px;margin:0 auto 12px;position:relative;}
 #search{
   width:100%;
@@ -77,17 +75,12 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   border-radius:10px;
   cursor:pointer;
 }
-.map-btn.primary{
-  background:#003c8d;
-  color:white;
-}
+.map-btn.primary{background:#003c8d;color:white;}
 
 /* 📱 BOTTOM SHEET */
 #rota-sheet{
   position:fixed;
-  left:0;
-  right:0;
-  bottom:-100%;
+  left:0;right:0;bottom:-100%;
   background:white;
   border-radius:16px 16px 0 0;
   box-shadow:0 -4px 12px rgba(0,0,0,.25);
@@ -98,12 +91,9 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   flex-direction:column;
 }
 #rota-sheet.active{bottom:0;}
-
 .sheet-handle{
-  width:40px;
-  height:5px;
-  background:#ccc;
-  border-radius:5px;
+  width:40px;height:5px;
+  background:#ccc;border-radius:5px;
   margin:10px auto;
 }
 #rota-list{overflow:auto;}
@@ -111,11 +101,9 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   padding:10px;
   border-top:1px solid #eee;
   cursor:grab;
-  font-size:14px;
 }
 .rota-item.dragging{opacity:.4;}
 </style>
-
 </head>
 
 <body>
@@ -156,7 +144,6 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   </div>
 </div>
 
-<!-- 📱 BOTTOM SHEET -->
 <div id="rota-sheet">
   <div class="sheet-handle"></div>
   <div style="padding:10px;font-weight:bold;">Ordem da Rota</div>
@@ -176,26 +163,36 @@ const layerPostos=L.layerGroup().addTo(map);
 const layerRota=L.layerGroup().addTo(map);
 const layerGps=L.layerGroup().addTo(map);
 
-let gpsPoint=null, rotaAtiva=false;
+let gpsPoint=null;
+let rotaAtiva=false;
 
 const zonas=[...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
 const cores={};
 zonas.forEach((z,i)=>cores[z]=`hsl(${(i*360)/zonas.length},70%,45%)`);
 
-function icon(cor,ativo=false){
+function iconPosto(cor,ativo=false){
   return L.divIcon({
     html:`<div style="background:${cor};width:${ativo?18:12}px;height:${ativo?18:12}px;border-radius:50%;border:2px solid white;opacity:${ativo?1:.6}"></div>`
+  });
+}
+
+function iconGps(){
+  return L.divIcon({
+    html:`<div style="background:#1976d2;width:16px;height:16px;border-radius:50%;border:3px solid white"></div>`
   });
 }
 
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
 
-  const popup=`<b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b><br>${p.CIDADE}<br>
-    <button onclick="addRota(${i})">➕ Rota</button>`;
+  const popup=`
+    <b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b><br>
+    ${p.CIDADE}<br><br>
+    <button onclick="addRota(${i})">➕ Incluir na rota</button>
+  `;
 
   const m=L.marker([p.Latitude,p.Longitude],{
-    icon:icon(cores[p.ZONA]||"#555")
+    icon:iconPosto(cores[p.ZONA]||"#555")
   }).bindPopup(popup).addTo(layerPostos);
 
   p._marker=m;
@@ -213,8 +210,9 @@ search.oninput=()=>{
   ).slice(0,10).forEach(p=>{
     const div=document.createElement("div");
     div.className="suggestion-card";
-    div.innerHTML=`<div class="suggestion-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
-                   <div class="suggestion-city">${p.CIDADE}</div>`;
+    div.innerHTML=`
+      <div class="suggestion-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
+      <div class="suggestion-city">${p.CIDADE}</div>`;
     div.onclick=()=>{
       map.setView([p.Latitude,p.Longitude],15);
       p._marker.openPopup();
@@ -229,10 +227,9 @@ btnGps.onclick=()=>{
   navigator.geolocation.getCurrentPosition(pos=>{
     gpsPoint=[pos.coords.latitude,pos.coords.longitude];
     layerGps.clearLayers();
-    L.marker(gpsPoint,{
-      icon:L.divIcon({html:`<div style="background:red;width:14px;height:14px;border-radius:50%;border:2px solid white"></div>`})
-    }).addTo(layerGps);
+    L.marker(gpsPoint,{icon:iconGps()}).addTo(layerGps);
     map.setView(gpsPoint,15);
+    if(rotaAtiva) desenharRota();
   });
 };
 
@@ -252,6 +249,7 @@ btnLimpar.onclick=()=>{
 };
 
 function desenharRota(){
+  layerRota.clearLayers();
   const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}").rota||[];
   if(!dados.length) return;
 
@@ -263,14 +261,14 @@ function desenharRota(){
   const list=document.getElementById("rota-list");
   list.innerHTML="";
   dados.forEach((p,i)=>{
-    const m=L.marker([p.Latitude,p.Longitude],{
-      icon:L.divIcon({html:`<div style="background:#003c8d;color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center">${i+1}</div>`})
+    L.marker([p.Latitude,p.Longitude],{
+      icon:L.divIcon({
+        html:`<div style="background:#003c8d;color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center">${i+1}</div>`
+      })
     }).addTo(layerRota);
 
     const div=document.createElement("div");
     div.className="rota-item";
-    div.draggable=true;
-    div.dataset.i=i;
     div.textContent=`${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
     list.appendChild(div);
   });
@@ -279,6 +277,7 @@ function desenharRota(){
 window.addRota=i=>{
   const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}");
   const rota=dados.rota||[];
+  if(rota.some(r=>r.Latitude===postos[i].Latitude)) return;
   rota.push(postos[i]);
   localStorage.setItem("rota_postos",JSON.stringify({rota}));
   if(rotaAtiva) desenharRota();
