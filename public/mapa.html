@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mapa — Postos UNISETER</title>
 
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mapa — Postos UNISETER</title>
 
 <script async crossorigin="anonymous"
   src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
@@ -80,7 +82,9 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 /* 📱 BOTTOM SHEET */
 #rota-sheet{
   position:fixed;
-  left:0;right:0;bottom:-100%;
+  left:0;
+  right:0;
+  bottom:-100%;
   background:white;
   border-radius:16px 16px 0 0;
   box-shadow:0 -4px 12px rgba(0,0,0,.25);
@@ -91,9 +95,12 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   flex-direction:column;
 }
 #rota-sheet.active{bottom:0;}
+
 .sheet-handle{
-  width:40px;height:5px;
-  background:#ccc;border-radius:5px;
+  width:40px;
+  height:5px;
+  background:#ccc;
+  border-radius:5px;
   margin:10px auto;
 }
 #rota-list{overflow:auto;}
@@ -101,9 +108,11 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   padding:10px;
   border-top:1px solid #eee;
   cursor:grab;
+  font-size:14px;
 }
 .rota-item.dragging{opacity:.4;}
 </style>
+
 </head>
 
 <body>
@@ -163,8 +172,7 @@ const layerPostos=L.layerGroup().addTo(map);
 const layerRota=L.layerGroup().addTo(map);
 const layerGps=L.layerGroup().addTo(map);
 
-let gpsPoint=null;
-let rotaAtiva=false;
+let gpsPoint=null, rotaAtiva=false;
 
 const zonas=[...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
 const cores={};
@@ -176,20 +184,19 @@ function iconPosto(cor,ativo=false){
   });
 }
 
-function iconGps(){
-  return L.divIcon({
-    html:`<div style="background:#1976d2;width:16px;height:16px;border-radius:50%;border:3px solid white"></div>`
-  });
-}
+const iconGps=L.divIcon({
+  html:`<div style="background:#1976d2;width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 0 0 4px rgba(25,118,210,.3)"></div>`
+});
 
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
 
   const popup=`
-    <b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b><br>
-    ${p.CIDADE}<br><br>
-    <button onclick="addRota(${i})">➕ Incluir na rota</button>
-  `;
+    <div>
+      <b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b><br>
+      ${p.CIDADE}<br><br>
+      <button onclick="addRota(${i})">➕ Incluir na rota</button>
+    </div>`;
 
   const m=L.marker([p.Latitude,p.Longitude],{
     icon:iconPosto(cores[p.ZONA]||"#555")
@@ -210,9 +217,8 @@ search.oninput=()=>{
   ).slice(0,10).forEach(p=>{
     const div=document.createElement("div");
     div.className="suggestion-card";
-    div.innerHTML=`
-      <div class="suggestion-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
-      <div class="suggestion-city">${p.CIDADE}</div>`;
+    div.innerHTML=`<div class="suggestion-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
+                   <div class="suggestion-city">${p.CIDADE}</div>`;
     div.onclick=()=>{
       map.setView([p.Latitude,p.Longitude],15);
       p._marker.openPopup();
@@ -227,9 +233,8 @@ btnGps.onclick=()=>{
   navigator.geolocation.getCurrentPosition(pos=>{
     gpsPoint=[pos.coords.latitude,pos.coords.longitude];
     layerGps.clearLayers();
-    L.marker(gpsPoint,{icon:iconGps()}).addTo(layerGps);
+    L.marker(gpsPoint,{icon:iconGps}).addTo(layerGps);
     map.setView(gpsPoint,15);
-    if(rotaAtiva) desenharRota();
   });
 };
 
@@ -249,7 +254,6 @@ btnLimpar.onclick=()=>{
 };
 
 function desenharRota(){
-  layerRota.clearLayers();
   const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}").rota||[];
   if(!dados.length) return;
 
@@ -262,9 +266,7 @@ function desenharRota(){
   list.innerHTML="";
   dados.forEach((p,i)=>{
     L.marker([p.Latitude,p.Longitude],{
-      icon:L.divIcon({
-        html:`<div style="background:#003c8d;color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center">${i+1}</div>`
-      })
+      icon:L.divIcon({html:`<div style="background:#003c8d;color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center">${i+1}</div>`})
     }).addTo(layerRota);
 
     const div=document.createElement("div");
@@ -277,7 +279,6 @@ function desenharRota(){
 window.addRota=i=>{
   const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}");
   const rota=dados.rota||[];
-  if(rota.some(r=>r.Latitude===postos[i].Latitude)) return;
   rota.push(postos[i]);
   localStorage.setItem("rota_postos",JSON.stringify({rota}));
   if(rotaAtiva) desenharRota();
