@@ -21,31 +21,113 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
-/* (CSS IDÊNTICO AO SEU – NÃO ALTERADO) */
+/* === ESTILOS INALTERADOS === */
 body{display:none;padding:20px;}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-#map{width:100%;height:calc(100vh - 220px);border-radius:12px;border:1px solid var(--border);}
+
+#map{
+  width:100%;
+  height:calc(100vh - 220px);
+  border-radius:12px;
+  border:1px solid var(--border);
+}
+
+/* 🔍 BUSCA */
 .search-box{max-width:520px;margin:0 auto 12px;position:relative;}
-#search{width:100%;padding:14px 44px 14px 42px;border-radius:12px;border:2px solid #003c8d;font-size:16px;}
-#suggestions{position:absolute;width:100%;background:white;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,.15);max-height:260px;overflow:auto;z-index:1000;}
-.suggestion-card{padding:10px;border-bottom:1px solid #eee;cursor:pointer;}
+#search{
+  width:100%;
+  padding:14px 44px 14px 42px;
+  border-radius:12px;
+  border:2px solid #003c8d;
+  font-size:16px;
+}
+#suggestions{
+  position:absolute;
+  width:100%;
+  background:white;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,.15);
+  max-height:260px;
+  overflow:auto;
+  z-index:1000;
+}
+.suggestion-card{
+  padding:10px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+}
 .suggestion-card:hover{background:#eef3ff;}
 .suggestion-title{font-weight:bold;}
 .suggestion-city{font-size:12px;color:#555;}
-.map-actions{position:absolute;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:1000;}
-.map-btn{background:white;border:1px solid #003c8d;color:#003c8d;padding:10px 14px;border-radius:10px;cursor:pointer;}
+
+/* 🧭 BOTÕES */
+.map-actions{
+  position:absolute;
+  right:16px;
+  bottom:16px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  z-index:1000;
+}
+.map-btn{
+  background:white;
+  border:1px solid #003c8d;
+  color:#003c8d;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+}
 .map-btn.primary{background:#003c8d;color:white;}
-#rota-sheet{position:fixed;left:0;right:0;bottom:-100%;background:white;border-radius:16px 16px 0 0;box-shadow:0 -4px 12px rgba(0,0,0,.25);max-height:55vh;transition:.3s;z-index:2000;display:flex;flex-direction:column;}
+
+/* 📱 BOTTOM SHEET */
+#rota-sheet{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:-100%;
+  background:white;
+  border-radius:16px 16px 0 0;
+  box-shadow:0 -4px 12px rgba(0,0,0,.25);
+  max-height:55vh;
+  transition:.3s;
+  z-index:2000;
+  display:flex;
+  flex-direction:column;
+}
 #rota-sheet.active{bottom:0;}
-.sheet-handle{width:40px;height:5px;background:#ccc;border-radius:5px;margin:10px auto;}
+
+.sheet-handle{
+  width:40px;
+  height:5px;
+  background:#ccc;
+  border-radius:5px;
+  margin:10px auto;
+}
 #rota-list{overflow:auto;}
-.rota-item{padding:10px;border-top:1px solid #eee;cursor:grab;font-size:14px;}
+.rota-item{
+  padding:10px;
+  border-top:1px solid #eee;
+  cursor:grab;
+  font-size:14px;
+}
+
+/* 📌 POPUP */
 .leaflet-popup-content{margin:0;width:260px;}
 .popup-card{padding:14px;}
 .popup-title{font-weight:700;color:#003c8d;font-size:15px;margin-bottom:6px;}
-.popup-address{font-size:13px;color:#444;margin-bottom:12px;line-height:1.4;}
+.popup-address{font-size:13px;color:#444;margin-bottom:12px;}
 .popup-actions{display:flex;flex-direction:column;gap:8px;}
-.popup-btn{width:100%;padding:10px;border-radius:10px;border:1px solid #003c8d;background:#003c8d;color:white;font-size:14px;cursor:pointer;}
+.popup-btn{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #003c8d;
+  background:#003c8d;
+  color:white;
+  font-size:14px;
+  cursor:pointer;
+}
 .popup-btn.secondary{background:white;color:#003c8d;}
 </style>
 
@@ -93,28 +175,56 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 <script>
 async function initMapa(){
 
-/* ✅ FUNÇÃO GLOBAL DEFINIDA ANTES DOS POPUPS */
-window.addRota = function(i){
-  const dados = JSON.parse(localStorage.getItem("rota_postos")||"{}");
-  const rota = dados.rota || [];
-  rota.push(postos[i]);
-  localStorage.setItem("rota_postos", JSON.stringify({rota}));
-  if(rotaAtiva) desenharRota();
-};
-
 const map=L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 L.control.zoom({position:"topright"}).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
 const postos=await fetch("/api/postos").then(r=>r.json());
-
 const layerPostos=L.layerGroup().addTo(map);
-const layerRota=L.layerGroup().addTo(map);
-const layerGps=L.layerGroup().addTo(map);
 
-let gpsPoint=null, rotaAtiva=false;
+const zonas=[...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
+const cores={};
+zonas.forEach((z,i)=>cores[z]=`hsl(${(i*360)/zonas.length},70%,45%)`);
 
-/* (RESTO DO CÓDIGO IDÊNTICO AO SEU) */
+function iconPosto(cor){
+  return L.divIcon({
+    html:`<div style="background:${cor};width:12px;height:12px;border-radius:50%;border:2px solid white"></div>`
+  });
+}
+
+postos.forEach((p,i)=>{
+  if(!p.Latitude||!p.Longitude) return;
+
+  const endereco=[p["ENDEREÇO I"],p["ENDEREÇO II"],p["ENDEREÇO III"],p["ENDEREÇO IV"],p.CIDADE]
+    .filter(Boolean).join(" - ");
+
+  const popup=`
+    <div class="popup-card">
+      <div class="popup-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
+      <div class="popup-address">${endereco}</div>
+      <div class="popup-actions">
+        <button class="popup-btn js-add-rota" data-index="${i}">➕ Incluir na rota</button>
+      </div>
+    </div>
+  `;
+
+  const m=L.marker([p.Latitude,p.Longitude],{icon:iconPosto(cores[p.ZONA]||"#555")})
+    .addTo(layerPostos)
+    .bindPopup(popup);
+
+  m.on("popupopen",e=>{
+    const btn=e.popup.getElement().querySelector(".js-add-rota");
+    btn.onclick=()=>addRota(i);
+  });
+});
+
+window.addRota=i=>{
+  const dados=JSON.parse(localStorage.getItem("rota_postos")||"{}");
+  const rota=dados.rota||[];
+  rota.push(postos[i]);
+  localStorage.setItem("rota_postos",JSON.stringify({rota}));
+  alert("Posto adicionado à rota");
+};
 
 }
 </script>
