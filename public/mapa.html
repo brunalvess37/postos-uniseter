@@ -101,25 +101,9 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   padding:10px;
   border-top:1px solid #eee;
   font-size:14px;
+  cursor:grab;
 }
-
-/* 📌 POPUP */
-.leaflet-popup-content{margin:0;width:260px;}
-.popup-card{padding:14px;}
-.popup-title{font-weight:700;color:#003c8d;font-size:15px;margin-bottom:6px;}
-.popup-address{font-size:13px;color:#444;margin-bottom:12px;}
-.popup-actions{display:flex;flex-direction:column;gap:8px;}
-.popup-btn{
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #003c8d;
-  background:#003c8d;
-  color:white;
-  font-size:14px;
-  cursor:pointer;
-}
-.popup-btn.secondary{background:white;color:#003c8d;}
+.rota-item.dragging{opacity:.5;}
 </style>
 
 </head>
@@ -190,15 +174,19 @@ function iconPosto(cor){
 function getRota(){
   return JSON.parse(localStorage.getItem("rota_postos")||"{\"rota\":[]}").rota;
 }
+function setRota(rota){
+  localStorage.setItem("rota_postos",JSON.stringify({rota}));
+}
 
 function desenharRota(){
   layerRota.clearLayers();
   const rota=getRota();
   if(rota.length<2) return;
-
   const latlngs=rota.map(p=>[p.Latitude,p.Longitude]);
   L.polyline(latlngs,{color:"#0066ff",weight:4}).addTo(layerRota);
 }
+
+let dragIndex=null;
 
 function renderRotaLista(){
   const lista=document.getElementById("rota-list");
@@ -206,15 +194,34 @@ function renderRotaLista(){
   getRota().forEach((p,i)=>{
     const div=document.createElement("div");
     div.className="rota-item";
+    div.draggable=true;
     div.textContent=`${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
+
+    div.addEventListener("dragstart",()=>{
+      dragIndex=i;
+      div.classList.add("dragging");
+    });
+    div.addEventListener("dragend",()=>{
+      div.classList.remove("dragging");
+    });
+    div.addEventListener("dragover",e=>e.preventDefault());
+    div.addEventListener("drop",()=>{
+      const rota=getRota();
+      const item=rota.splice(dragIndex,1)[0];
+      rota.splice(i,0,item);
+      setRota(rota);
+      renderRotaLista();
+      desenharRota();
+    });
+
     lista.appendChild(div);
   });
 }
 
 window.addRota=i=>{
-  const dados=JSON.parse(localStorage.getItem("rota_postos")||"{\"rota\":[]}");
-  dados.rota.push(postos[i]);
-  localStorage.setItem("rota_postos",JSON.stringify(dados));
+  const rota=getRota();
+  rota.push(postos[i]);
+  setRota(rota);
   desenharRota();
   renderRotaLista();
   alert("Posto adicionado à rota");
@@ -222,16 +229,16 @@ window.addRota=i=>{
 
 /* ================= EVENTOS ================= */
 
-const rotaSheet = document.getElementById("rota-sheet");
-const rotaList  = document.getElementById("rota-list");
-let listaVisivel = true;
+const rotaSheet=document.getElementById("rota-sheet");
+const rotaList=document.getElementById("rota-list");
+let listaVisivel=true;
 
 document.getElementById("btnRota").onclick=()=>{
   desenharRota();
   renderRotaLista();
   rotaSheet.classList.add("active");
-  rotaList.style.display = "block";   // garante expandido
-  listaVisivel = true;
+  rotaList.style.display="block";
+  listaVisivel=true;
 };
 
 document.getElementById("btnLimpar").onclick=()=>{
@@ -239,18 +246,16 @@ document.getElementById("btnLimpar").onclick=()=>{
   layerRota.clearLayers();
   rotaList.innerHTML="";
   rotaSheet.classList.remove("active");
-  listaVisivel = true;
+  listaVisivel=true;
 };
 
-/* === PASSO 2: MINIMIZADO LÓGICO === */
-const handle = document.querySelector(".sheet-handle");
-if (handle) {
-  handle.addEventListener("click", (e)=>{
+const handle=document.querySelector(".sheet-handle");
+if(handle){
+  handle.addEventListener("click",e=>{
     e.stopPropagation();
-    if (!rotaSheet.classList.contains("active")) return;
-
-    listaVisivel = !listaVisivel;
-    rotaList.style.display = listaVisivel ? "block" : "none";
+    if(!rotaSheet.classList.contains("active")) return;
+    listaVisivel=!listaVisivel;
+    rotaList.style.display=listaVisivel?"block":"none";
   });
 }
 
