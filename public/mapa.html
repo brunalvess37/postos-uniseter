@@ -21,6 +21,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
+/* === ESTILOS INALTERADOS === */
 body{display:none;padding:20px;}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 
@@ -85,9 +86,7 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   display:flex;
   flex-direction:column;
 }
-#rota-sheet.min{ bottom:-40vh; }
-#rota-sheet.mid{ bottom:0; }
-#rota-sheet.max{ bottom:45vh; }
+#rota-sheet.active{bottom:0;}
 
 .sheet-handle{
   width:40px;
@@ -103,20 +102,6 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   border-top:1px solid #eee;
   font-size:14px;
   cursor:grab;
-}
-
-/* 📌 POPUP */
-.leaflet-popup-content{margin:0;width:260px;}
-.popup-card{padding:14px;}
-.popup-title{font-weight:700;color:#003c8d;font-size:15px;margin-bottom:6px;}
-.popup-address{font-size:13px;color:#444;margin-bottom:12px;}
-.popup-btn{
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #003c8d;
-  background:#003c8d;
-  color:white;
 }
 </style>
 
@@ -150,10 +135,12 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     <button id="btnGps" class="map-btn">📍 GPS</button>
     <button id="btnRota" class="map-btn">🧭 Ver rota</button>
     <button id="btnLimpar" class="map-btn">🗑️ Limpar rota</button>
+    <button id="btnMaps" class="map-btn">🗺️ Maps</button>
+    <button id="btnWaze" class="map-btn">🚗 Waze</button>
   </div>
 </div>
 
-<div id="rota-sheet" class="min">
+<div id="rota-sheet">
   <div class="sheet-handle"></div>
   <div style="padding:10px;font-weight:bold;">Ordem da Rota</div>
   <div id="rota-list"></div>
@@ -167,10 +154,22 @@ L.control.zoom({position:"topright"}).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
 const postos=await fetch("/api/postos").then(r=>r.json());
+
 const layerPostos=L.layerGroup().addTo(map);
 const layerRota=L.layerGroup().addTo(map);
 
-/* ===== ROTA ===== */
+const zonas=[...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
+const cores={};
+zonas.forEach((z,i)=>cores[z]=`hsl(${(i*360)/zonas.length},70%,45%)`);
+
+function iconPosto(cor){
+  return L.divIcon({
+    html:`<div style="background:${cor};width:12px;height:12px;border-radius:50%;border:2px solid white"></div>`
+  });
+}
+
+/* ================= ROTA ================= */
+
 function getRota(){
   return JSON.parse(localStorage.getItem("rota_postos")||"{\"rota\":[]}").rota;
 }
@@ -203,9 +202,9 @@ function renderRotaLista(){
 function habilitarDrag(){
   let dragIndex=null;
   document.querySelectorAll(".rota-item").forEach(item=>{
-    item.ondragstart=e=>dragIndex=+item.dataset.index;
+    item.ondragstart=()=>dragIndex=+item.dataset.index;
     item.ondragover=e=>e.preventDefault();
-    item.ondrop=e=>{
+    item.ondrop=()=>{
       const rota=getRota();
       const dropIndex=+item.dataset.index;
       rota.splice(dropIndex,0,rota.splice(dragIndex,1)[0]);
@@ -225,36 +224,54 @@ window.addRota=i=>{
   alert("Posto adicionado à rota");
 };
 
-/* ===== UI ===== */
+/* ================= EVENTOS ================= */
+
 const sheet=document.getElementById("rota-sheet");
+
 document.getElementById("btnRota").onclick=()=>{
-  sheet.className="mid";
   desenharRota();
   renderRotaLista();
+  sheet.classList.add("active");
 };
+
 document.querySelector(".sheet-handle").onclick=()=>{
-  sheet.className = sheet.classList.contains("mid") ? "max" : "min";
+  sheet.classList.toggle("active");
 };
+
 document.getElementById("btnLimpar").onclick=()=>{
   localStorage.removeItem("rota_postos");
   layerRota.clearLayers();
   document.getElementById("rota-list").innerHTML="";
-  sheet.className="min";
+  sheet.classList.remove("active");
 };
 
-/* ===== POSTOS ===== */
+/* ================= POSTOS ================= */
+
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
+
+  const endereco=[p["ENDEREÇO I"],p["ENDEREÇO II"],p["ENDEREÇO III"],p["ENDEREÇO IV"],p.CIDADE]
+    .filter(Boolean).join(" - ");
+
   const popup=`
     <div class="popup-card">
       <div class="popup-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
-      <button class="popup-btn js-add-rota">➕ Incluir na rota</button>
-    </div>`;
-  const m=L.marker([p.Latitude,p.Longitude]).addTo(layerPostos).bindPopup(popup);
+      <div class="popup-address">${endereco}</div>
+      <div class="popup-actions">
+        <button class="popup-btn js-add-rota">➕ Incluir na rota</button>
+      </div>
+    </div>
+  `;
+
+  const m=L.marker([p.Latitude,p.Longitude],{icon:iconPosto(cores[p.ZONA]||"#555")})
+    .addTo(layerPostos)
+    .bindPopup(popup);
+
   m.on("popupopen",e=>{
     e.popup.getElement().querySelector(".js-add-rota").onclick=()=>addRota(i);
   });
 });
+
 }
 </script>
 
