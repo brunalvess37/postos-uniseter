@@ -101,9 +101,25 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   padding:10px;
   border-top:1px solid #eee;
   font-size:14px;
-  cursor:grab;
 }
-.rota-item.dragging{opacity:.5;}
+
+/* 📌 POPUP */
+.leaflet-popup-content{margin:0;width:260px;}
+.popup-card{padding:14px;}
+.popup-title{font-weight:700;color:#003c8d;font-size:15px;margin-bottom:6px;}
+.popup-address{font-size:13px;color:#444;margin-bottom:12px;}
+.popup-actions{display:flex;flex-direction:column;gap:8px;}
+.popup-btn{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #003c8d;
+  background:#003c8d;
+  color:white;
+  font-size:14px;
+  cursor:pointer;
+}
+.popup-btn.secondary{background:white;color:#003c8d;}
 </style>
 
 </head>
@@ -159,23 +175,12 @@ const postos=await fetch("/api/postos").then(r=>r.json());
 const layerPostos=L.layerGroup().addTo(map);
 const layerRota=L.layerGroup().addTo(map);
 
-const zonas=[...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
-const cores={};
-zonas.forEach((z,i)=>cores[z]=`hsl(${(i*360)/zonas.length},70%,45%)`);
-
-function iconPosto(cor){
-  return L.divIcon({
-    html:`<div style="background:${cor};width:12px;height:12px;border-radius:50%;border:2px solid white"></div>`
-  });
-}
-
-/* ================= ROTA ================= */
-
 function getRota(){
   return JSON.parse(localStorage.getItem("rota_postos")||"{\"rota\":[]}").rota;
 }
-function setRota(rota){
-  localStorage.setItem("rota_postos",JSON.stringify({rota}));
+
+function salvarRota(rota){
+  localStorage.setItem("rota_postos", JSON.stringify({rota}));
 }
 
 function desenharRota(){
@@ -186,30 +191,40 @@ function desenharRota(){
   L.polyline(latlngs,{color:"#0066ff",weight:4}).addTo(layerRota);
 }
 
-let dragIndex=null;
+/* ================= PASSO 3 ================= */
 
 function renderRotaLista(){
   const lista=document.getElementById("rota-list");
   lista.innerHTML="";
-  getRota().forEach((p,i)=>{
+
+  const rota = getRota();
+
+  rota.forEach((p,i)=>{
     const div=document.createElement("div");
     div.className="rota-item";
-    div.draggable=true;
     div.textContent=`${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
+    div.draggable = true;
+    div.dataset.index = i;
 
-    div.addEventListener("dragstart",()=>{
-      dragIndex=i;
-      div.classList.add("dragging");
+    div.addEventListener("dragstart", e=>{
+      e.dataTransfer.setData("text/plain", i);
     });
-    div.addEventListener("dragend",()=>{
-      div.classList.remove("dragging");
+
+    div.addEventListener("dragover", e=>{
+      e.preventDefault();
     });
-    div.addEventListener("dragover",e=>e.preventDefault());
-    div.addEventListener("drop",()=>{
-      const rota=getRota();
-      const item=rota.splice(dragIndex,1)[0];
-      rota.splice(i,0,item);
-      setRota(rota);
+
+    div.addEventListener("drop", e=>{
+      e.preventDefault();
+      const from = Number(e.dataTransfer.getData("text/plain"));
+      const to   = Number(div.dataset.index);
+      if (from === to) return;
+
+      const novaRota = [...rota];
+      const [item] = novaRota.splice(from,1);
+      novaRota.splice(to,0,item);
+
+      salvarRota(novaRota);
       renderRotaLista();
       desenharRota();
     });
@@ -218,27 +233,18 @@ function renderRotaLista(){
   });
 }
 
-window.addRota=i=>{
-  const rota=getRota();
-  rota.push(postos[i]);
-  setRota(rota);
-  desenharRota();
-  renderRotaLista();
-  alert("Posto adicionado à rota");
-};
-
 /* ================= EVENTOS ================= */
 
-const rotaSheet=document.getElementById("rota-sheet");
-const rotaList=document.getElementById("rota-list");
-let listaVisivel=true;
+const rotaSheet = document.getElementById("rota-sheet");
+const rotaList  = document.getElementById("rota-list");
+let listaVisivel = true;
 
 document.getElementById("btnRota").onclick=()=>{
   desenharRota();
   renderRotaLista();
   rotaSheet.classList.add("active");
-  rotaList.style.display="block";
-  listaVisivel=true;
+  rotaList.style.display = "block";
+  listaVisivel = true;
 };
 
 document.getElementById("btnLimpar").onclick=()=>{
@@ -246,47 +252,39 @@ document.getElementById("btnLimpar").onclick=()=>{
   layerRota.clearLayers();
   rotaList.innerHTML="";
   rotaSheet.classList.remove("active");
-  listaVisivel=true;
+  listaVisivel = true;
 };
 
-const handle=document.querySelector(".sheet-handle");
-if(handle){
-  handle.addEventListener("click",e=>{
-    e.stopPropagation();
-    if(!rotaSheet.classList.contains("active")) return;
-    listaVisivel=!listaVisivel;
-    rotaList.style.display=listaVisivel?"block":"none";
-  });
-}
+document.querySelector(".sheet-handle").onclick=()=>{
+  if (!rotaSheet.classList.contains("active")) return;
+  listaVisivel = !listaVisivel;
+  rotaList.style.display = listaVisivel ? "block" : "none";
+};
 
 /* ================= POSTOS ================= */
 
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
 
-  const endereco=[p["ENDEREÇO I"],p["ENDEREÇO II"],p["ENDEREÇO III"],p["ENDEREÇO IV"],p.CIDADE]
-    .filter(Boolean).join(" - ");
-
   const popup=`
     <div class="popup-card">
       <div class="popup-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
-      <div class="popup-address">${endereco}</div>
       <div class="popup-actions">
-        <button class="popup-btn js-add-rota" data-index="${i}">➕ Incluir na rota</button>
+        <button class="popup-btn" onclick="addRota(${i})">➕ Incluir na rota</button>
       </div>
     </div>
   `;
 
-  const m=L.marker([p.Latitude,p.Longitude],{icon:iconPosto(cores[p.ZONA]||"#555")})
-    .addTo(layerPostos)
-    .bindPopup(popup);
-
-  m.on("popupopen",e=>{
-    e.popup.getElement()
-      .querySelector(".js-add-rota")
-      .onclick=()=>addRota(i);
-  });
+  L.marker([p.Latitude,p.Longitude]).addTo(layerPostos).bindPopup(popup);
 });
+
+window.addRota = i=>{
+  const rota = getRota();
+  rota.push(postos[i]);
+  salvarRota(rota);
+  desenharRota();
+  renderRotaLista();
+};
 
 }
 </script>
