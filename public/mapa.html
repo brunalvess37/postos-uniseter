@@ -81,7 +81,14 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   z-index:2000;
   display:flex;
   flex-direction:column;
+  pointer-events: none;
 }
+
+#rota-sheet.active{
+  bottom:0;
+  pointer-events: auto;
+}
+
 #rota-sheet.active{bottom:0;}
 
 .sheet-handle{
@@ -190,7 +197,6 @@ function desenharRota(){
   L.polyline(rota.map(p=>[p.Latitude,p.Longitude]),{color:"#0066ff",weight:4}).addTo(layerRota);
 }
 
-/* ========= AQUI ESTÁ A ÚNICA MUDANÇA ========= */
 function renderRotaLista(){
   const lista = document.getElementById("rota-list");
   lista.innerHTML = "";
