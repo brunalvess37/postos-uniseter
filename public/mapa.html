@@ -241,6 +241,26 @@ function renderRotaLista(){
   let dragIndex = null;
   let touchStartY = null;
 
+  /* ===== AUTO-SCROLL MOBILE ===== */
+  const SCROLL_EDGE = 40;   // px do topo/fundo
+  const SCROLL_SPEED = 6;   // velocidade
+  let scrollInterval = null;
+
+  function startAutoScroll(direction){
+    stopAutoScroll();
+    scrollInterval = setInterval(() => {
+      lista.scrollTop += direction * SCROLL_SPEED;
+    }, 16);
+  }
+
+  function stopAutoScroll(){
+    if(scrollInterval){
+      clearInterval(scrollInterval);
+      scrollInterval = null;
+    }
+  }
+
+
   rota.forEach((p, i) => {
     const div = document.createElement("div");
     div.className = "rota-item";
@@ -278,6 +298,20 @@ function renderRotaLista(){
       }
     }, { passive: true });
 
+    div.addEventListener("touchmove", e => {
+  const touchY = e.touches[0].clientY;
+  const rect = lista.getBoundingClientRect();
+
+  if (touchY < rect.top + SCROLL_EDGE) {
+    startAutoScroll(-1); // scroll para cima
+  } else if (touchY > rect.bottom - SCROLL_EDGE) {
+    startAutoScroll(1);  // scroll para baixo
+  } else {
+    stopAutoScroll();
+  }
+}, { passive: true });
+
+
     
     div.addEventListener("touchend", e => {
       if (dragIndex === null || touchStartY === null) return;
@@ -302,6 +336,7 @@ function renderRotaLista(){
 
       dragIndex = null;
       touchStartY = null;
+      stopAutoScroll();
     });
 
     lista.appendChild(div);
