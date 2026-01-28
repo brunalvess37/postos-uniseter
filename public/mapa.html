@@ -291,9 +291,14 @@ document.getElementById("btnLimpar").onclick=()=>{
   document.getElementById("rota-sheet").classList.remove("active");
 };
 
-document.querySelector(".sheet-handle").onclick=()=>{
-  const lista=document.getElementById("rota-list");
-  lista.style.display=lista.style.display==="none"?"block":"none";
+document.querySelector(".sheet-handle").onclick = () => {
+  const sheet = document.getElementById("rota-sheet");
+  const lista = document.getElementById("rota-list");
+
+  if (!sheet.classList.contains("active")) return;
+
+  const minimizado = sheet.classList.toggle("minimized");
+  lista.style.display = minimizado ? "none" : "block";
 };
 
 postos.forEach((p,i)=>{
