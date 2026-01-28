@@ -105,7 +105,13 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   border-radius:5px;
   margin:10px auto;
 }
-#rota-list{overflow:auto;}
+
+  #rota-list{
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0; /* ⭐ linha crítica que faltava */
+}
+  
 .rota-item{
   padding:10px 10px 10px 34px;
   border-top:1px solid #eee;
@@ -114,6 +120,12 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   position:relative;
 }
 
+.rota-title{
+  padding:10px;
+  font-weight:bold;
+  flex-shrink: 0; /* impede o título de empurrar o sheet */
+}
+  
 /* indicador ↑ ↓ */
 .rota-item::before{
   content:"⇅";
