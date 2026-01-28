@@ -192,38 +192,68 @@ function desenharRota(){
 
 /* ========= AQUI ESTÁ A ÚNICA MUDANÇA ========= */
 function renderRotaLista(){
-  const lista=document.getElementById("rota-list");
-  lista.innerHTML="";
-  const rota=getRota();
+  const lista = document.getElementById("rota-list");
+  lista.innerHTML = "";
 
-  let startY=null;
-  let dragIndex=null;
+  const rota = getRota();
 
-  rota.forEach((p,i)=>{
-    const div=document.createElement("div");
-    div.className="rota-item";
-    div.textContent=`${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
+  let dragIndex = null;
+  let touchStartY = null;
 
-    div.addEventListener("pointerdown",e=>{
-      startY=e.clientY;
-      dragIndex=i;
-      div.setPointerCapture(e.pointerId);
+  rota.forEach((p, i) => {
+    const div = document.createElement("div");
+    div.className = "rota-item";
+    div.textContent = `${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
+
+    /* ===== DESKTOP (HTML5 DRAG) ===== */
+    div.draggable = true;
+
+    div.addEventListener("dragstart", () => {
+      dragIndex = i;
     });
 
-    div.addEventListener("pointerup",e=>{
-      if(startY===null) return;
-      const delta=e.clientY-startY;
-      const alvo=i+(delta>30?1:delta<-30?-1:0);
-      if(alvo>=0&&alvo<rota.length&&alvo!==i){
-        const nova=[...rota];
-        const [movido]=nova.splice(i,1);
-        nova.splice(alvo,0,movido);
+    div.addEventListener("dragover", e => e.preventDefault());
+
+    div.addEventListener("drop", () => {
+      if (dragIndex === null || dragIndex === i) return;
+
+      const nova = [...rota];
+      const [movido] = nova.splice(dragIndex, 1);
+      nova.splice(i, 0, movido);
+
+      salvarRota(nova);
+      desenharRota();
+      renderRotaLista();
+    });
+
+    /* ===== MOBILE (TOUCH) ===== */
+    div.addEventListener("touchstart", e => {
+      dragIndex = i;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    div.addEventListener("touchend", e => {
+      if (dragIndex === null || touchStartY === null) return;
+
+      const touchEndY = e.changedTouches[0].clientY;
+      const delta = touchEndY - touchStartY;
+
+      let alvo = i;
+      if (delta > 30) alvo = i + 1;
+      if (delta < -30) alvo = i - 1;
+
+      if (alvo >= 0 && alvo < rota.length && alvo !== i) {
+        const nova = [...rota];
+        const [movido] = nova.splice(i, 1);
+        nova.splice(alvo, 0, movido);
+
         salvarRota(nova);
         desenharRota();
         renderRotaLista();
       }
-      startY=null;
-      dragIndex=null;
+
+      dragIndex = null;
+      touchStartY = null;
     });
 
     lista.appendChild(div);
