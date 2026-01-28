@@ -9,7 +9,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Mapa — Postos UNISETER</title>
+<title>MAPA — POSTOS UNISETER</title>
 
 <script async crossorigin="anonymous"
   src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
@@ -459,7 +459,7 @@ handle.onclick = () => {
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
 
-  const endereco=[p["ENDEREÇO I"],p["ENDEREÇO II"],p["ENDEREÇO III"],p["ENDEREÇO IV"],p.CIDADE]
+  const endereco=[p["ENDEREÇO I"],p["ENDEREÇO II"],p["ENDEREÇO III"],p["ENDEREÇO IV"]
     .filter(Boolean).join(" - ");
 
   const popup=`
