@@ -111,11 +111,6 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   transform:translateY(0);
 }
 
-/* ⭐ minimizado REAL */
-#rota-sheet.minimized{
-  transform:translateY(calc(65svh - 56px));
-}
-
 .sheet-handle{
   width:40px;
   height:5px;
@@ -128,7 +123,43 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+  position: relative;
+
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #bbb transparent;
 }
+
+  /* Chrome / Edge / mobile */
+#rota-list::-webkit-scrollbar{
+  width: 6px;
+}
+
+#rota-list::-webkit-scrollbar-thumb{
+  background: #bbb;
+  border-radius: 4px;
+}
+
+#rota-list::-webkit-scrollbar-track{
+  background: transparent;
+}
+
+/* Indica que a lista continua */
+#rota-list::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:24px;
+  pointer-events:none;
+  background:linear-gradient(
+    to bottom,
+    rgba(255,255,255,0),
+    #fff
+  );
+}
+
   
 .rota-item{
   padding:10px 10px 10px 34px;
