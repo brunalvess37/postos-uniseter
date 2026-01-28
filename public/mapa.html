@@ -31,6 +31,13 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   border:1px solid var(--border);
 }
 
+/* 📱 ajuste fino apenas para mobile */
+@media (max-width: 768px){
+  #map{
+    height:calc(100vh - 280px);
+  }
+}
+
 .search-box{max-width:520px;margin:0 auto 12px;position:relative;}
 #search{
   width:100%;
