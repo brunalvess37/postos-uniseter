@@ -113,6 +113,12 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   cursor:grab;
 }
 
+/* ✨ feedback visual ao reordenar */
+.rota-item.flash{
+  background:#eef3ff;
+  transition:background .3s ease;
+}
+  
 .leaflet-popup-content{margin:0;width:260px;}
 .popup-card{padding:14px;}
 .popup-title{font-weight:700;color:#003c8d;font-size:15px;margin-bottom:6px;}
@@ -204,6 +210,15 @@ function desenharRota(){
   L.polyline(rota.map(p=>[p.Latitude,p.Longitude]),{color:"#0066ff",weight:4}).addTo(layerRota);
 }
 
+function flashItem(index){
+  const itens = document.querySelectorAll(".rota-item");
+  const el = itens[index];
+  if(!el) return;
+
+  el.classList.add("flash");
+  setTimeout(()=>el.classList.remove("flash"),300);
+}
+  
 function renderRotaLista(){
   const lista = document.getElementById("rota-list");
   lista.innerHTML = "";
@@ -237,6 +252,7 @@ function renderRotaLista(){
       salvarRota(nova);
       desenharRota();
       renderRotaLista();
+      flashItem(i);
     });
 
     /* ===== MOBILE (TOUCH) ===== */
@@ -263,6 +279,7 @@ function renderRotaLista(){
         salvarRota(nova);
         desenharRota();
         renderRotaLista();
+        flashItem(alvo);
       }
 
       dragIndex = null;
