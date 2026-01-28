@@ -107,11 +107,24 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 }
 #rota-list{overflow:auto;}
 .rota-item{
-  padding:10px;
+  padding:10px 10px 10px 34px;
   border-top:1px solid #eee;
   font-size:14px;
   cursor:grab;
+  position:relative;
 }
+
+/* indicador ↑ ↓ */
+.rota-item::before{
+  content:"⇅";
+  position:absolute;
+  left:10px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:14px;
+  color:#999;
+}
+
 
 /* ✨ feedback visual ao reordenar */
 .rota-item.flash{
@@ -259,8 +272,13 @@ function renderRotaLista(){
     div.addEventListener("touchstart", e => {
       dragIndex = i;
       touchStartY = e.touches[0].clientY;
+
+      if (navigator.vibrate) {
+        navigator.vibrate(15);
+      }
     }, { passive: true });
 
+    
     div.addEventListener("touchend", e => {
       if (dragIndex === null || touchStartY === null) return;
 
