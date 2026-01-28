@@ -80,24 +80,31 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   left:0;
   right:0;
   bottom:0;
-  transform:translateY(100%);
+
   background:white;
   border-radius:16px 16px 0 0;
   box-shadow:0 -4px 12px rgba(0,0,0,.25);
+
   height:65svh;
   max-height:65svh;
+
+  transform:translateY(100%);
   transition:transform .3s ease;
+
   z-index:2000;
   display:flex;
   flex-direction:column;
 }
 
+/* aberto */
 #rota-sheet.active{
   transform:translateY(0);
 }
 
- 
-#rota-sheet.active{bottom:0;}
+/* ⭐ minimizado REAL */
+#rota-sheet.minimized{
+  transform:translateY(calc(65svh - 56px));
+}
 
 .sheet-handle{
   width:40px;
@@ -377,15 +384,36 @@ document.getElementById("btnLimpar").onclick=()=>{
   document.getElementById("rota-sheet").classList.remove("active");
 };
 
-document.querySelector(".sheet-handle").onclick = () => {
-  const sheet = document.getElementById("rota-sheet");
-  const lista = document.getElementById("rota-list");
+const rotaSheet = document.getElementById("rota-sheet");
+const rotaList  = document.getElementById("rota-list");
+const handle    = document.querySelector(".sheet-handle");
 
-  if (!sheet.classList.contains("active")) return;
+/* 🧭 ABRIR ROTA → sempre EXPANDIDA */
+document.getElementById("btnRota").onclick = () => {
+  desenharRota();
+  renderRotaLista();
 
-  const minimizado = sheet.classList.toggle("minimized");
-  lista.style.display = minimizado ? "none" : "block";
+  rotaSheet.classList.add("active");
+  rotaSheet.classList.remove("minimized");
+  rotaList.style.display = "block";
 };
+
+/* 🗑️ LIMPAR */
+document.getElementById("btnLimpar").onclick = () => {
+  localStorage.removeItem("rota_postos");
+  layerRota.clearLayers();
+  rotaList.innerHTML = "";
+  rotaSheet.classList.remove("active","minimized");
+};
+
+/* 📱 HANDLE → alterna expandido ↔ minimizado */
+handle.onclick = () => {
+  if (!rotaSheet.classList.contains("active")) return;
+
+  const minimizado = rotaSheet.classList.toggle("minimized");
+  rotaList.style.display = minimizado ? "none" : "block";
+};
+
 
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
