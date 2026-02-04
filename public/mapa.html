@@ -382,10 +382,10 @@ function renderRotaLista(){
     });
 
     /* ===== MOBILE (TOUCH) ===== */
-    div.addEventListener("touchstart", e => {
+   div.addEventListener("touchstart", e => {
   const target = e.target;
 
-  // ❌ Se NÃO tocou no handle, NÃO inicia drag (só scroll)
+  // Só inicia drag se tocar no handle ☰
   if (!target.classList.contains("rota-handle")) {
     dragIndex = null;
     return;
@@ -393,22 +393,15 @@ function renderRotaLista(){
 
   dragIndex = i;
   touchStartY = e.touches[0].clientY;
-  canDrag = false;
+  canDrag = true; // 🔥 libera o arrasto imediatamente
 
-  touchTimer = setTimeout(() => {
-    canDrag = true;
-    if (navigator.vibrate) navigator.vibrate(15);
-  }, 300);
+  if (navigator.vibrate) navigator.vibrate(15);
 }, { passive: true });
-
 
 
     div.addEventListener("touchmove", e => {
   const touchY = e.touches[0].clientY;
   const rect = lista.getBoundingClientRect();
-
-  // se o usuário mexeu o dedo, cancela o "long press"
-  clearTimeout(touchTimer);
 
   // se ainda NÃO deu 300ms, deixa o scroll NORMAL da lista
   if (!canDrag) return;
