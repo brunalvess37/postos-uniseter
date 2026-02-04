@@ -132,7 +132,7 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 
   /* Chrome / Edge / mobile */
 #rota-list::-webkit-scrollbar{
-  width: 8px; 
+  width: 10px; 
 }
 
 
@@ -164,12 +164,30 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 
   
 .rota-item{
-  padding:10px 10px 10px 34px;
+  padding:10px 10px 10px 44px; /* ← espaço extra para o handle */
   border-top:1px solid #eee;
   font-size:14px;
-  cursor:grab;
   position:relative;
+  display:flex;
+  align-items:center;
 }
+
+/* ===== HANDLE DE ARRASTO (☰) ===== */
+.rota-handle{
+  position:absolute;
+  left:10px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:18px;
+  color:#999;
+  cursor:grab;
+  padding:6px;
+}
+
+  .rota-handle:active{
+  color:#003c8d; /* ← sua cor padrão do sistema */
+}
+
 
 .rota-title{
   padding:10px;
@@ -177,16 +195,21 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   flex-shrink: 0; /* impede o título de empurrar o sheet */
 }
   
-/* indicador ↑ ↓ */
-.rota-item::before{
-  content:"⇅";
-  position:absolute;
-  left:10px;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:14px;
-  color:#999;
-}
+const div = document.createElement("div");
+div.className = "rota-item";
+
+/* 🔧 NOVO: cria o handle de arrasto */
+const handle = document.createElement("span");
+handle.className = "rota-handle";
+handle.textContent = "☰";
+
+/* texto do item */
+const label = document.createElement("span");
+label.textContent = `${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
+
+div.appendChild(handle);
+div.appendChild(label);
+
 
 
 /* ✨ feedback visual ao reordenar */
@@ -357,16 +380,24 @@ function renderRotaLista(){
 
     /* ===== MOBILE (TOUCH) ===== */
     div.addEventListener("touchstart", e => {
-    dragIndex = i;
-    touchStartY = e.touches[0].clientY;
-    canDrag = false;
+  const target = e.target;
 
-  // ⬇️ só libera reordenação após 300ms segurando
-    touchTimer = setTimeout(() => {
+  // ❌ Se NÃO tocou no handle, NÃO inicia drag (só scroll)
+  if (!target.classList.contains("rota-handle")) {
+    dragIndex = null;
+    return;
+  }
+
+  dragIndex = i;
+  touchStartY = e.touches[0].clientY;
+  canDrag = false;
+
+  touchTimer = setTimeout(() => {
     canDrag = true;
     if (navigator.vibrate) navigator.vibrate(15);
-    }, 300);
-  }, { passive: true });
+  }, 300);
+}, { passive: true });
+
 
 
     div.addEventListener("touchmove", e => {
