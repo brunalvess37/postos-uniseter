@@ -220,6 +220,17 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   font-size:14px;
   cursor:pointer;
 }
+
+  /* ===== ÍCONE DE LOCALIZAÇÃO DO USUÁRIO ===== */
+.user-location-marker {
+  background: #0066ff;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 4px rgba(0,102,255,0.2);
+}
+  
 </style>
 
 </head>
@@ -251,6 +262,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
   <div class="map-actions">
     <button id="btnRota" class="map-btn">🧭 Ver rota</button>
+    <button id="btnGps" class="map-btn">📍 Minha localização</button>
     <button id="btnLimpar" class="map-btn">🗑️ Limpar rota</button>
   </div>
 </div>
@@ -286,6 +298,13 @@ function iconPosto(cor){
   });
 }
 
+function iconUsuario(){
+  return L.divIcon({
+    className: "user-location-marker",
+    html: "<div></div>"
+  });
+}
+    
 function getRota(){
   return JSON.parse(localStorage.getItem("rota_postos")||"{\"rota\":[]}").rota;
 }
