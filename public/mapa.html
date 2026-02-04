@@ -194,22 +194,6 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   font-weight:bold;
   flex-shrink: 0; /* impede o título de empurrar o sheet */
 }
-  
-const div = document.createElement("div");
-div.className = "rota-item";
-
-/* 🔧 NOVO: cria o handle de arrasto */
-const handle = document.createElement("span");
-handle.className = "rota-handle";
-handle.textContent = "☰";
-
-/* texto do item */
-const label = document.createElement("span");
-label.textContent = `${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
-
-div.appendChild(handle);
-div.appendChild(label);
-
 
 
 /* ✨ feedback visual ao reordenar */
@@ -350,11 +334,7 @@ function renderRotaLista(){
     }
   }
 
-
   rota.forEach((p, i) => {
-    const div = document.createElement("div");
-    div.className = "rota-item";
-    div.textContent = `${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}`;
 
     /* ===== DESKTOP (HTML5 DRAG) ===== */
     div.draggable = true;
