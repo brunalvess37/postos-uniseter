@@ -409,9 +409,9 @@ searchInput.addEventListener("input", () => {
   activeIndex = -1;
 
   if (!q) {
-    renderHistorico();
-    return;
-  }
+  suggestions.innerHTML = "";
+  return;
+}
 
 
   const lista = postos.filter(p =>
@@ -443,14 +443,21 @@ searchInput.addEventListener("input", () => {
   }).join("");
 
   document.querySelectorAll(".suggestion-card[data-index]").forEach(card => {
-    card.onclick = () => {
-      const i = card.dataset.index;
-      const p = postos[i];
+  card.onclick = () => {
+    const i = card.dataset.index;
+    const p = postos[i];
 
-      // Centraliza o mapa no posto escolhido
-      map.setView([p.Latitude, p.Longitude], 15);
-    };
-  });
+    // Centraliza o mapa no posto escolhido
+    map.setView([p.Latitude, p.Longitude], 15);
+
+    // ✅ FECHA A JANELA DE SUGESTÕES
+    suggestions.innerHTML = "";
+
+    // (opcional) também remove o foco do campo
+    searchInput.blur();
+  };
+});
+
 });
 
 searchInput.addEventListener("keydown", e => {
