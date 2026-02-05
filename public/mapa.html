@@ -378,6 +378,7 @@ let map; // ← torna o mapa acessível para a busca
 
   async function initMapa(){
 
+    
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 
 map.on("click", () => {
@@ -385,12 +386,16 @@ map.on("click", () => {
   suggestions.innerHTML = "";
   searchInput.blur();
 
-  // ✅ FECHA A JANELA DE ROTA (se estiver aberta)
+  // ✅ MINIMIZA a janela de rota (se estiver aberta)
   const rotaSheet = document.getElementById("rota-sheet");
   if (rotaSheet.classList.contains("active")) {
-    rotaSheet.classList.remove("active", "minimized");
+    rotaSheet.classList.add("minimized");
+
+    // esconde a lista quando minimizado (mesmo comportamento do handle)
+    document.getElementById("rota-list").style.display = "none";
   }
 });
+
 
     
 L.control.zoom({position:"topright"}).addTo(map);
