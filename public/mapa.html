@@ -492,9 +492,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /* ✅ LÓGICA JAVASCRIPT */
 
+let map; // ← torna o mapa acessível para a busca
+
   async function initMapa(){
 
-const map=L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
+map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
+    
 L.control.zoom({position:"topright"}).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
