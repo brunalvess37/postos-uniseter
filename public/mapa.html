@@ -469,6 +469,11 @@ btnRemove.addEventListener("click", (e) => {
   // 1️⃣ aplica a classe de animação
   div.classList.add("removing");
 
+  // 🔹 feedback tátil ao remover
+  if (navigator.vibrate) {
+    navigator.vibrate(25);
+  }
+  
   // 2️⃣ espera a animação terminar (250ms)
   setTimeout(() => {
   const nova = [...getRota()];   // 👈 pega a rota mais atual
