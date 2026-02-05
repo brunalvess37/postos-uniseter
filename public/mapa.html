@@ -41,7 +41,50 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 }
 
 .search-box{max-width:520px;margin:0 auto 12px;position:relative;}
-#search{
+
+.search-wrapper {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #666;
+  pointer-events: none;
+}
+
+#search:focus {
+  border-color: #005edb;
+  box-shadow: 0 0 0 3px rgba(0, 94, 219, 0.15);
+}
+
+#search::placeholder {
+  color: #777;
+  font-size: 15px;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #999;
+  display: none;
+}
+
+.clear-btn:hover {
+  color: #333;
+}
+
+  
+  #search{
   width:100%;
   padding:14px 44px 14px 42px;
   border-radius:12px;
@@ -276,6 +319,124 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   document.body.style.display="block";
   initMapa();
 });
+
+// ===============================
+// 🔎 BUSCA (MESMO PADRÃO DO APP)
+// ===============================
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const searchInput = document.getElementById("search");
+  const suggestions = document.getElementById("suggestions");
+  let activeIndex = -1;
+
+  let historico = JSON.parse(localStorage.getItem("historico_busca") || "[]");
+
+  function renderHistorico() {
+    if (!historico.length) return;
+
+    suggestions.innerHTML = historico.map(h => `
+      <div class="suggestion-card" data-historico="${h}">
+        <div class="suggestion-city">🧾 ${h}</div>
+      </div>
+    `).join("");
+
+    document.querySelectorAll("[data-historico]").forEach(el => {
+      el.onclick = () => {
+        searchInput.value = el.dataset.historico;
+        searchInput.dispatchEvent(new Event("input"));
+      };
+    });
+  }
+
+  searchInput.addEventListener("focus", () => {
+    if (!searchInput.value) renderHistorico();
+  });
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.toLowerCase();
+    suggestions.innerHTML = "";
+    activeIndex = -1;
+
+    if (!q) {
+      renderHistorico();
+      return;
+    }
+
+    if (!historico.includes(q)) {
+      historico.unshift(q);
+      historico = historico.slice(0, 5);
+      localStorage.setItem("historico_busca", JSON.stringify(historico));
+    }
+
+    // 🔎 BUSCA: NOME + CIDADE + BAIRRO (ENDEREÇO III)
+    const lista = postos.filter(p =>
+      p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
+      p.CIDADE?.toLowerCase().includes(q) ||
+      p["ENDEREÇO III"]?.toLowerCase().includes(q)
+    ).slice(0, 10);
+
+    suggestions.innerHTML = lista.map(p => {
+      const i = postos.indexOf(p);
+
+      const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"]
+        ?.replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
+
+      const cidade = p.CIDADE
+        ?.replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
+
+      const bairro = p["ENDEREÇO III"]
+        ?.replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
+
+      return `
+        <div class="suggestion-card" data-index="${i}">
+          <div class="suggestion-title">${nome}</div>
+          <div class="suggestion-city">
+            ${cidade}${bairro ? " — " + bairro : ""}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    document.querySelectorAll(".suggestion-card[data-index]").forEach(card => {
+      card.onclick = () => {
+        const i = card.dataset.index;
+        const p = postos[i];
+
+        // Centraliza o mapa no posto escolhido
+        map.setView([p.Latitude, p.Longitude], 15);
+      };
+    });
+  });
+
+  searchInput.addEventListener("keydown", e => {
+    const items = document.querySelectorAll(".suggestion-card[data-index]");
+    if (!items.length) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      activeIndex = (activeIndex + 1) % items.length;
+    }
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeIndex = (activeIndex - 1 + items.length) % items.length;
+    }
+
+    if (e.key === "Enter" && activeIndex >= 0) {
+      e.preventDefault();
+      items[activeIndex].click();
+      return;
+    }
+
+    items.forEach((el, i) =>
+      el.classList.toggle("active", i === activeIndex)
+    );
+  });
+
+});
+
+  
 </script>
 
 <header>
@@ -283,10 +444,33 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   <button onclick="location.href='app.html'">← Voltar</button>
 </header>
 
+
 <div class="search-box">
-  <input id="search" placeholder="Buscar posto, cidade ou bairro…" autocomplete="off">
+  <div class="search-wrapper">
+    <span class="search-icon">🔍</span>
+
+    <input
+      id="search"
+      type="text"
+      placeholder="Buscar posto por nome, cidade ou bairro…"
+      autocomplete="off"
+      oninput="document.querySelector('.clear-btn').style.display = this.value ? 'block' : 'none';"
+    >
+
+    <button
+      class="clear-btn"
+      onclick="
+        document.getElementById('search').value='';
+        document.getElementById('suggestions').innerHTML='';
+        this.style.display='none';
+      ">
+      ✕
+    </button>
+  </div>
+
   <div id="suggestions"></div>
 </div>
+
 
 <div style="position:relative">
   <div id="map"></div>
