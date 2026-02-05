@@ -379,9 +379,17 @@ let map; // ← torna o mapa acessível para a busca
   async function initMapa(){
 
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
+
 map.on("click", () => {
+  // fecha sugestões da busca
   suggestions.innerHTML = "";
   searchInput.blur();
+
+  // ✅ FECHA A JANELA DE ROTA (se estiver aberta)
+  const rotaSheet = document.getElementById("rota-sheet");
+  if (rotaSheet.classList.contains("active")) {
+    rotaSheet.classList.remove("active", "minimized");
+  }
 });
 
     
