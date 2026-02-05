@@ -385,6 +385,10 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
 const postos=await fetch("/api/postos").then(r=>r.json());
 
+// ✅ GUARDA OS POSTOS PARA USO GLOBAL (addRota)
+localStorage.setItem("postos_cache", JSON.stringify(postos));
+
+    
 // ===============================
 // 🔎 BUSCA (MESMO PADRÃO DO APP)
 // ===============================
