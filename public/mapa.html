@@ -471,13 +471,14 @@ btnRemove.addEventListener("click", (e) => {
 
   // 2️⃣ espera a animação terminar (250ms)
   setTimeout(() => {
-    const nova = [...rota];
-    nova.splice(i, 1); // remove o item atual
+  const nova = [...getRota()];   // 👈 pega a rota mais atual
+  nova.splice(i, 1);
 
-    salvarRota(nova);
-    desenharRota();
-    renderRotaLista();
-  }, 250);
+  salvarRota(nova);
+  desenharRota();
+  renderRotaLista();
+}, 250);
+
 });
 
 
