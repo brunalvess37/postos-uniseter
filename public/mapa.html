@@ -295,6 +295,18 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   cursor:pointer;
 }
 
+/* ✨ Destaque do marcador buscado */
+@keyframes pulseMarker {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,102,255,.6); }
+  70% { transform: scale(1.4); box-shadow: 0 0 0 12px rgba(0,102,255,0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,102,255,0); }
+}
+
+.marker-highlight {
+  animation: pulseMarker 1.2s ease-out;
+}
+
+  
   /* ===== ÍCONE DE LOCALIZAÇÃO DO USUÁRIO ===== */
 .user-location-marker {
   background: #0066ff;
@@ -467,19 +479,33 @@ searchInput.addEventListener("input", () => {
   }).join("");
 
   document.querySelectorAll(".suggestion-card[data-index]").forEach(card => {
+
   card.onclick = () => {
-    const i = card.dataset.index;
-    const p = postos[i];
+  const i = card.dataset.index;
+  const p = postos[i];
 
-    // Centraliza o mapa no posto escolhido
-    map.setView([p.Latitude, p.Longitude], 15);
+  // Centraliza o mapa no posto escolhido
+  map.setView([p.Latitude, p.Longitude], 15);
 
-    // ✅ FECHA A JANELA DE SUGESTÕES
-    suggestions.innerHTML = "";
+  // ✅ FECHA A JANELA DE SUGESTÕES
+  suggestions.innerHTML = "";
+  searchInput.blur();
 
-    // (opcional) também remove o foco do campo
-    searchInput.blur();
-  };
+  // ✨ DESTACA O MARCADOR BUSCADO
+  const marcador = marcadores[i];
+  if (marcador) {
+    const el = marcador.getElement();
+    if (el) {
+      el.classList.add("marker-highlight");
+
+      // remove o efeito depois de 1.3s
+      setTimeout(() => {
+        el.classList.remove("marker-highlight");
+      }, 1300);
+    }
+  }
+};
+
 });
 
 });
@@ -840,6 +866,8 @@ handle.onclick = () => {
   rotaList.style.display = minimizado ? "none" : "block";
 };
 
+// Vamos guardar todos os marcadores em um array para depois localizar pelo índice
+const marcadores = [];
 
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
@@ -857,9 +885,15 @@ postos.forEach((p,i)=>{
     </div>
   `;
 
-  const m=L.marker([p.Latitude,p.Longitude],{icon:iconPosto(cores[p.ZONA]||"#555")})
-    .addTo(layerPostos)
-    .bindPopup(popup);
+  const m = L.marker([p.Latitude,p.Longitude],{
+  icon: iconPosto(cores[p.ZONA]||"#555")
+})
+.addTo(layerPostos)
+.bindPopup(popup);
+
+// 🔹 guarda o marcador na mesma posição do posto
+marcadores[i] = m;
+
 
   m.on("popupopen",e=>{
    e.popup.getElement().querySelector(".js-add-rota").onclick = () => {
