@@ -393,21 +393,23 @@ let map; // ← torna o mapa acessível para a busca
     
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 
+map.on("click", (e) => {
+  // fecha sugestões da busca
+  suggestions.innerHTML = "";
+  searchInput.blur();
 
-  // ❌ se clicou em um marcador, NÃO faz nada com a rota
+  // ❌ se clicou em um marcador, NÃO minimiza a rota
   if (e.originalEvent.target.closest(".leaflet-marker-icon")) {
     return;
   }
 
-  // ✅ Caso contrário (clicou no mapa vazio) → MINIMIZA a rota
+  // ✅ clicou no mapa vazio → minimiza a rota
   const rotaSheet = document.getElementById("rota-sheet");
   if (rotaSheet.classList.contains("active")) {
     rotaSheet.classList.add("minimized");
     document.getElementById("rota-list").style.display = "none";
   }
 });
-
-
 
     
 L.control.zoom({position:"topright"}).addTo(map);
@@ -426,11 +428,6 @@ localStorage.setItem("postos_cache", JSON.stringify(postos));
 const searchInput = document.getElementById("search");
 const suggestions = document.getElementById("suggestions");
 let activeIndex = -1;
-
-map.on("click", (e) => {
-  // fecha sugestões da busca
-  suggestions.innerHTML = "";
-  searchInput.blur();
 
   
 searchInput.addEventListener("focus", () => {
