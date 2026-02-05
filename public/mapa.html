@@ -319,98 +319,6 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   document.body.style.display="block";
   initMapa();
 });
-
-
-  }
-
-  searchInput.addEventListener("focus", () => {
-    if (!searchInput.value) renderHistorico();
-  });
-
-  searchInput.addEventListener("input", () => {
-    const q = searchInput.value.toLowerCase();
-    suggestions.innerHTML = "";
-    activeIndex = -1;
-
-    if (!q) {
-      renderHistorico();
-      return;
-    }
-
-    if (!historico.includes(q)) {
-      historico.unshift(q);
-      historico = historico.slice(0, 5);
-      localStorage.setItem("historico_busca", JSON.stringify(historico));
-    }
-
-    // 🔎 BUSCA: NOME + CIDADE + BAIRRO (ENDEREÇO III)
-    const lista = postos.filter(p =>
-      p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
-      p.CIDADE?.toLowerCase().includes(q) ||
-      p["ENDEREÇO III"]?.toLowerCase().includes(q)
-    ).slice(0, 10);
-
-    suggestions.innerHTML = lista.map(p => {
-      const i = postos.indexOf(p);
-
-      const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"]
-        ?.replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
-
-      const cidade = p.CIDADE
-        ?.replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
-
-      const bairro = p["ENDEREÇO III"]
-        ?.replace(new RegExp(q, "gi"), m => `<mark>${m}</mark>`);
-
-      return `
-        <div class="suggestion-card" data-index="${i}">
-          <div class="suggestion-title">${nome}</div>
-          <div class="suggestion-city">
-            ${cidade}${bairro ? " — " + bairro : ""}
-          </div>
-        </div>
-      `;
-    }).join("");
-
-    document.querySelectorAll(".suggestion-card[data-index]").forEach(card => {
-      card.onclick = () => {
-        const i = card.dataset.index;
-        const p = postos[i];
-
-        // Centraliza o mapa no posto escolhido
-        map.setView([p.Latitude, p.Longitude], 15);
-      };
-    });
-  });
-
-  searchInput.addEventListener("keydown", e => {
-    const items = document.querySelectorAll(".suggestion-card[data-index]");
-    if (!items.length) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      activeIndex = (activeIndex + 1) % items.length;
-    }
-
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      activeIndex = (activeIndex - 1 + items.length) % items.length;
-    }
-
-    if (e.key === "Enter" && activeIndex >= 0) {
-      e.preventDefault();
-      items[activeIndex].click();
-      return;
-    }
-
-    items.forEach((el, i) =>
-      el.classList.toggle("active", i === activeIndex)
-    );
-  });
-
-});
-
-  
 </script>
 
 <header>
@@ -858,13 +766,18 @@ btnRemove.addEventListener("click", (e) => {
   });
 }
 
-window.addRota=i=>{
-  const rota=getRota();
-  rota.push(postos[i]);
-  salvarRota(rota);
-  desenharRota();
-  renderRotaLista();
+window.addRota = i => {
+  const rota = getRota();
+  const p = JSON.parse(localStorage.getItem("postos_cache") || "[]")[i];
+
+  if (p) {
+    rota.push(p);
+    salvarRota(rota);
+    desenharRota();
+    renderRotaLista();
+  }
 };
+
 
 document.getElementById("btnRota").onclick=()=>{
   desenharRota();
