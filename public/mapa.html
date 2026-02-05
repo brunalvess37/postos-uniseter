@@ -381,20 +381,24 @@ let map; // ← torna o mapa acessível para a busca
     
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 
-map.on("click", () => {
+map.on("click", (e) => {
   // fecha sugestões da busca
   suggestions.innerHTML = "";
   searchInput.blur();
 
-  // ✅ MINIMIZA a janela de rota (se estiver aberta)
+  // ❌ se clicou em um marcador, NÃO faz nada com a rota
+  if (e.originalEvent.target.closest(".leaflet-marker-icon")) {
+    return;
+  }
+
+  // ✅ Caso contrário (clicou no mapa vazio) → MINIMIZA a rota
   const rotaSheet = document.getElementById("rota-sheet");
   if (rotaSheet.classList.contains("active")) {
     rotaSheet.classList.add("minimized");
-
-    // esconde a lista quando minimizado (mesmo comportamento do handle)
     document.getElementById("rota-list").style.display = "none";
   }
 });
+
 
 
     
