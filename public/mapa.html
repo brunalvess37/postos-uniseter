@@ -393,6 +393,8 @@ let map; // ← torna o mapa acessível para a busca
     
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 
+// 🔹 Array global para guardar todos os marcadores (PRECISA vir antes da busca)
+const marcadores = [];
       
 L.control.zoom({position:"topright"}).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
@@ -817,13 +819,6 @@ window.addRota = i => {
 };
 
 
-document.getElementById("btnRota").onclick=()=>{
-  desenharRota();
-  renderRotaLista();
-  document.getElementById("rota-sheet").classList.add("active");
-};
-
-document.getElementById("btnLimpar").onclick=()=>{
   localStorage.removeItem("rota_postos");
   layerRota.clearLayers();
   document.getElementById("rota-list").innerHTML="";
@@ -865,8 +860,6 @@ handle.onclick = () => {
   rotaList.style.display = minimizado ? "none" : "block";
 };
 
-// Vamos guardar todos os marcadores em um array para depois localizar pelo índice
-const marcadores = [];
 
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
