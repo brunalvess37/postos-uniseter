@@ -287,7 +287,8 @@ const postos=await fetch("/api/postos").then(r=>r.json());
 
 const layerPostos=L.layerGroup().addTo(map);
 const layerRota=L.layerGroup().addTo(map);
-
+const layerUsuario = L.layerGroup().addTo(map);
+    
 const zonas=[...new Set(postos.map(p=>p.ZONA).filter(Boolean))];
 const cores={};
 zonas.forEach((z,i)=>cores[z]=`hsl(${(i*360)/zonas.length},70%,45%)`);
@@ -327,7 +328,52 @@ function flashItem(index){
   el.classList.add("flash");
   setTimeout(()=>el.classList.remove("flash"),300);
 }
-  
+function irParaMeuGps(){
+  if (!navigator.geolocation) {
+    alert("Seu navegador não suporta geolocalização.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      // limpa marcador antigo do usuário (se houver)
+      layerUsuario.clearLayers();
+
+      // adiciona bolinha azul no mapa
+      L.marker([lat, lng], { icon: iconUsuario() })
+        .addTo(layerUsuario);
+
+      // centraliza o mapa nesse ponto
+      map.setView([lat, lng], 15);
+
+      // cria objeto “posto virtual” para incluir na rota
+      const pontoUsuario = {
+        Latitude: lat,
+        Longitude: lng,
+        "POSTOS DE SERVIÇOS / GRUPO SETER": "📍 Minha localização"
+      };
+
+      // adiciona como primeiro ponto da rota
+      const rota = getRota();
+      rota.unshift(pontoUsuario);
+      salvarRota(rota);
+
+      desenharRota();
+      renderRotaLista();
+    },
+    (err) => {
+      alert("Não foi possível obter sua localização.");
+      console.error(err);
+    },
+    { enableHighAccuracy: true }
+  );
+}
+
+
+    
 function renderRotaLista(){
   const lista = document.getElementById("rota-list");
   lista.innerHTML = "";
@@ -512,6 +558,11 @@ document.getElementById("btnRota").onclick = () => {
   rotaList.style.display = "block";
 };
 
+document.getElementById("btnGps").onclick = () => {
+  irParaMeuGps();
+};    
+
+    
 /* 🗑️ LIMPAR */
 document.getElementById("btnLimpar").onclick = () => {
   localStorage.removeItem("rota_postos");
