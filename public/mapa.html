@@ -393,24 +393,7 @@ let map; // ← torna o mapa acessível para a busca
     
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 
-  // fecha sugestões da busca
-  suggestions.innerHTML = "";
-  searchInput.blur();
-
-  // ❌ se clicou em um marcador, NÃO minimiza a rota
-  if (e.originalEvent.target.closest(".leaflet-marker-icon")) {
-    return;
-  }
-
-  // ✅ clicou no mapa vazio → minimiza a rota
-  const rotaSheet = document.getElementById("rota-sheet");
-  if (rotaSheet.classList.contains("active")) {
-    rotaSheet.classList.add("minimized");
-    document.getElementById("rota-list").style.display = "none";
-  }
-});
-
-    
+      
 L.control.zoom({position:"topright"}).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
