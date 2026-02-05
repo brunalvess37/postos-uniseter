@@ -663,7 +663,16 @@ postos.forEach((p,i)=>{
     .bindPopup(popup);
 
   m.on("popupopen",e=>{
-    e.popup.getElement().querySelector(".js-add-rota").onclick=()=>addRota(i);
+   e.popup.getElement().querySelector(".js-add-rota").onclick = () => {
+  // 🔹 feedback tátil ao incluir na rota
+  if (navigator.vibrate) {
+    navigator.vibrate(20);
+  }
+
+  addRota(i);
+};
+
+    
   });
 });
 
