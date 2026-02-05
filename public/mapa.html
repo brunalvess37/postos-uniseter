@@ -379,6 +379,11 @@ let map; // ← torna o mapa acessível para a busca
   async function initMapa(){
 
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
+map.on("click", () => {
+  suggestions.innerHTML = "";
+  searchInput.blur();
+});
+
     
 L.control.zoom({position:"topright"}).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
@@ -410,8 +415,10 @@ searchInput.addEventListener("input", () => {
 
   if (!q) {
   suggestions.innerHTML = "";
+  searchInput.blur();   // ← fecha teclado no celular
   return;
 }
+
 
 
   const lista = postos.filter(p =>
