@@ -227,6 +227,14 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   background:#eef3ff;
   transition:background .3s ease;
 }
+
+/* ✨ efeito ao remover */
+.rota-item.removing{
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity .25s ease, transform .25s ease;
+}
+
   
 .leaflet-popup-content{margin:0;width:260px;}
 .popup-card{padding:14px;}
@@ -453,17 +461,25 @@ function renderRotaLista(){
   div.appendChild(label);
   div.appendChild(btnRemove);
 
-   /* ===== REMOVER ITEM DA ROTA ===== */
+   
+/* ===== REMOVER ITEM DA ROTA (COM FADE) ===== */
 btnRemove.addEventListener("click", (e) => {
   e.stopPropagation(); // evita conflitos com drag
 
-  const nova = [...rota];
-  nova.splice(i, 1); // remove o item atual
+  // 1️⃣ aplica a classe de animação
+  div.classList.add("removing");
 
-  salvarRota(nova);
-  desenharRota();
-  renderRotaLista();
+  // 2️⃣ espera a animação terminar (250ms)
+  setTimeout(() => {
+    const nova = [...rota];
+    nova.splice(i, 1); // remove o item atual
+
+    salvarRota(nova);
+    desenharRota();
+    renderRotaLista();
+  }, 250);
 });
+
 
 
     /* ===== DESKTOP (HTML5 DRAG) ===== */
