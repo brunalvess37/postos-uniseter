@@ -397,28 +397,11 @@ const searchInput = document.getElementById("search");
 const suggestions = document.getElementById("suggestions");
 let activeIndex = -1;
 
-let historico = JSON.parse(localStorage.getItem("historico_busca") || "[]");
-
-function renderHistorico() {
-  if (!historico.length) return;
-
-  suggestions.innerHTML = historico.map(h => `
-    <div class="suggestion-card" data-historico="${h}">
-      <div class="suggestion-city">🧾 ${h}</div>
-    </div>
-  `).join("");
-
-  document.querySelectorAll("[data-historico]").forEach(el => {
-    el.onclick = () => {
-      searchInput.value = el.dataset.historico;
-      searchInput.dispatchEvent(new Event("input"));
-    };
-  });
-}
 
 searchInput.addEventListener("focus", () => {
-  if (!searchInput.value) renderHistorico();
+  // não faz nada — sem histórico
 });
+
 
 searchInput.addEventListener("input", () => {
   const q = searchInput.value.toLowerCase();
@@ -430,11 +413,6 @@ searchInput.addEventListener("input", () => {
     return;
   }
 
-  if (!historico.includes(q)) {
-    historico.unshift(q);
-    historico = historico.slice(0, 5);
-    localStorage.setItem("historico_busca", JSON.stringify(historico));
-  }
 
   const lista = postos.filter(p =>
     p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
