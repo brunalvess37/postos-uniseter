@@ -357,11 +357,11 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     this.style.display='none';
 
     // remove destaque do marcador
-    if (marcadorDestacado) {
-      const el = marcadorDestacado.getElement();
-      if (el) el.classList.remove('marker-highlight');
-      marcadorDestacado = null;
-    }
+if (marcadorDestacado) {
+  const el = marcadorDestacado.getElement();
+  el?.querySelector("div")?.classList.remove("marker-highlight");
+  marcadorDestacado = null;
+}
   ">
   ✕
 </button>
@@ -499,23 +499,29 @@ searchInput.addEventListener("input", () => {
     suggestions.innerHTML = "";
     searchInput.blur();
 
-    // ===== DESTACA O MARCADOR BUSCADO (PERMANENTE) =====
-    const marcador = marcadores[i];
-    if (marcador) {
-      const el = marcador.getElement();
-      if (el) {
+   // ===== DESTACA O MARCADOR BUSCADO (PERMANENTE) =====
+const marcador = marcadores[i];
+if (marcador) {
 
-        // remove destaque anterior
-        if (marcadorDestacado) {
-          const elAntigo = marcadorDestacado.getElement();
-          if (elAntigo) elAntigo.classList.remove("marker-highlight");
-        }
+  const container = marcador.getElement();          // elemento do Leaflet
+  const ponto = container?.querySelector("div");   // 🔹 CÍRCULO COLORIDO REAL
 
-        // aplica novo destaque
-        el.classList.add("marker-highlight");
-        marcadorDestacado = marcador;
-      }
-    }
+  if (ponto) {
+
+    // remove destaque anterior (se houver)
+if (marcadorDestacado) {
+  const antigoContainer = marcadorDestacado.getElement();
+  const antigoPonto = antigoContainer?.querySelector("div"); // círculo real
+  antigoPonto?.classList.remove("marker-highlight");
+}
+
+
+    // aplica novo destaque
+    ponto.classList.add("marker-highlight");
+    marcadorDestacado = marcador;
+  }
+}
+
   };
 
 });
@@ -838,11 +844,12 @@ const handle    = document.querySelector(".sheet-handle");
 document.getElementById("btnRota").onclick = () => {
 
   // 👉 NOVO: limpa destaque ao abrir rota
-  if (marcadorDestacado) {
-    const el = marcadorDestacado.getElement();
-    if (el) el.classList.remove("marker-highlight");
-    marcadorDestacado = null;
-  }
+if (marcadorDestacado) {
+  const el = marcadorDestacado.getElement();
+  el?.querySelector("div")?.classList.remove("marker-highlight");
+  marcadorDestacado = null;
+}
+
 
   desenharRota();
   renderRotaLista();
@@ -857,13 +864,14 @@ document.getElementById("btnGps").onclick = () => {
 
   // 👉 NOVO: limpa destaque antes de ir ao GPS
   if (marcadorDestacado) {
-    const el = marcadorDestacado.getElement();
-    if (el) el.classList.remove("marker-highlight");
-    marcadorDestacado = null;
-  }
+  const el = marcadorDestacado.getElement();
+  el?.querySelector("div")?.classList.remove("marker-highlight");
+  marcadorDestacado = null;
+}
 
   irParaMeuGps();
-};    
+};
+    
     
 document.getElementById("btnLimpar").onclick = () => {
 
