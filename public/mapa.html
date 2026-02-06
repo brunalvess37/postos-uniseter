@@ -833,17 +833,17 @@ const rotaSheet = document.getElementById("rota-sheet");
 const rotaList  = document.getElementById("rota-list");
 const handle    = document.querySelector(".sheet-handle");
 
-    
-// limpa destaque ao abrir rota
-if (marcadorDestacado) {
-  const el = marcadorDestacado.getElement();
-  if (el) el.classList.remove("marker-highlight");
-  marcadorDestacado = null;
-}
-
-    
+       
 /* 🧭 ABRIR ROTA → sempre EXPANDIDA */
 document.getElementById("btnRota").onclick = () => {
+
+  // 👉 NOVO: limpa destaque ao abrir rota
+  if (marcadorDestacado) {
+    const el = marcadorDestacado.getElement();
+    if (el) el.classList.remove("marker-highlight");
+    marcadorDestacado = null;
+  }
+
   desenharRota();
   renderRotaLista();
 
@@ -852,31 +852,35 @@ document.getElementById("btnRota").onclick = () => {
   rotaList.style.display = "block";
 };
 
-if (marcadorDestacado) {
-  const el = marcadorDestacado.getElement();
-  if (el) el.classList.remove("marker-highlight");
-  marcadorDestacado = null;
-}
-    
+   
 document.getElementById("btnGps").onclick = () => {
+
+  // 👉 NOVO: limpa destaque antes de ir ao GPS
+  if (marcadorDestacado) {
+    const el = marcadorDestacado.getElement();
+    if (el) el.classList.remove("marker-highlight");
+    marcadorDestacado = null;
+  }
+
   irParaMeuGps();
 };    
-
-    
-/* 🗑️ LIMPAR */
-
-if (marcadorDestacado) {
-  const el = marcadorDestacado.getElement();
-  if (el) el.classList.remove("marker-highlight");
-  marcadorDestacado = null;
-}
     
 document.getElementById("btnLimpar").onclick = () => {
+
+  // 👉 NOVO: limpa destaque também
+  if (marcadorDestacado) {
+    const el = marcadorDestacado.getElement();
+    if (el) el.classList.remove("marker-highlight");
+    marcadorDestacado = null;
+  }
+
   localStorage.removeItem("rota_postos");
   layerRota.clearLayers();
   rotaList.innerHTML = "";
   rotaSheet.classList.remove("active","minimized");
 };
+      
+
 
 /* 📱 HANDLE → alterna expandido ↔ minimizado */
 handle.onclick = () => {
