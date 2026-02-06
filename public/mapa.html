@@ -387,14 +387,13 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   /* ✅ LÓGICA JAVASCRIPT */
 
 let map; // ← torna o mapa acessível para a busca
-
+let marcadores = [];
+  
   async function initMapa(){
-
     
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 
 // 🔹 Array global para guardar todos os marcadores (PRECISA vir antes da busca)
-const marcadores = [];
       
 L.control.zoom({position:"topright"}).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
@@ -816,13 +815,6 @@ window.addRota = i => {
     desenharRota();
     renderRotaLista();
   }
-};
-
-
-  localStorage.removeItem("rota_postos");
-  layerRota.clearLayers();
-  document.getElementById("rota-list").innerHTML="";
-  document.getElementById("rota-sheet").classList.remove("active");
 };
 
 const rotaSheet = document.getElementById("rota-sheet");
