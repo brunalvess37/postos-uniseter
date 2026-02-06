@@ -295,16 +295,14 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   cursor:pointer;
 }
 
-/* ✨ Destaque do marcador buscado */
-@keyframes pulseMarker {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,102,255,.6); }
-  70% { transform: scale(1.4); box-shadow: 0 0 0 12px rgba(0,102,255,0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,102,255,0); }
+/* ✨ Destaque do marcador buscado (PERMANENTE E CLARO) */
+.marker-highlight {
+  transform: scale(1.6) !important;
+  filter: drop-shadow(0 0 8px rgba(0,102,255,.9));
+  border: 3px solid white !important;
+  z-index: 2000 !important;
 }
 
-.marker-highlight {
-  animation: pulseMarker 1.2s ease-out;
-}
 
   
   /* ===== ÍCONE DE LOCALIZAÇÃO DO USUÁRIO ===== */
@@ -352,14 +350,22 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     >
 
     <button
-      class="clear-btn"
-      onclick="
-        document.getElementById('search').value='';
-        document.getElementById('suggestions').innerHTML='';
-        this.style.display='none';
-      ">
-      ✕
-    </button>
+  class="clear-btn"
+  onclick="
+    document.getElementById('search').value='';
+    document.getElementById('suggestions').innerHTML='';
+    this.style.display='none';
+
+    // remove destaque do marcador
+    if (marcadorDestacado) {
+      const el = marcadorDestacado.getElement();
+      if (el) el.classList.remove('marker-highlight');
+      marcadorDestacado = null;
+    }
+  ">
+  ✕
+</button>
+
   </div>
 
   <div id="suggestions"></div>
@@ -387,6 +393,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   /* ✅ LÓGICA JAVASCRIPT */
 
 let map; // ← torna o mapa acessível para a busca
+let marcadorDestacado = null; // guarda qual pin está destacado
 let marcadores = [];
   
   async function initMapa(){
@@ -491,24 +498,24 @@ searchInput.addEventListener("input", () => {
   suggestions.innerHTML = "";
   searchInput.blur();
 
-  // ✨ DESTACA O MARCADOR BUSCADO
-  const marcador = marcadores[i];
-  if (marcador) {
-    const el = marcador.getElement();
-    if (el) {
-      el.classList.add("marker-highlight");
+  // ✨ DESTACA O MARCADOR BUSCADO (PERMANENTE)
+const marcador = marcadores[i];
+if (marcador) {
+  const el = marcador.getElement();
+  if (el) {
 
-      // remove o efeito depois de 1.3s
-      setTimeout(() => {
-        el.classList.remove("marker-highlight");
-      }, 1300);
+    // 1️⃣ remove destaque do marcador anterior (se houver)
+    if (marcadorDestacado) {
+      const elAntigo = marcadorDestacado.getElement();
+      if (elAntigo) elAntigo.classList.remove("marker-highlight");
     }
+
+    // 2️⃣ aplica destaque no novo marcador
+    el.classList.add("marker-highlight");
+    marcadorDestacado = marcador;
   }
-};
+}
 
-});
-
-});
 
 searchInput.addEventListener("keydown", e => {
   const items = document.querySelectorAll(".suggestion-card[data-index]");
@@ -821,6 +828,15 @@ const rotaSheet = document.getElementById("rota-sheet");
 const rotaList  = document.getElementById("rota-list");
 const handle    = document.querySelector(".sheet-handle");
 
+    
+// limpa destaque ao abrir rota
+if (marcadorDestacado) {
+  const el = marcadorDestacado.getElement();
+  if (el) el.classList.remove("marker-highlight");
+  marcadorDestacado = null;
+}
+
+    
 /* 🧭 ABRIR ROTA → sempre EXPANDIDA */
 document.getElementById("btnRota").onclick = () => {
   desenharRota();
@@ -831,12 +847,25 @@ document.getElementById("btnRota").onclick = () => {
   rotaList.style.display = "block";
 };
 
+if (marcadorDestacado) {
+  const el = marcadorDestacado.getElement();
+  if (el) el.classList.remove("marker-highlight");
+  marcadorDestacado = null;
+}
+    
 document.getElementById("btnGps").onclick = () => {
   irParaMeuGps();
 };    
 
     
 /* 🗑️ LIMPAR */
+
+if (marcadorDestacado) {
+  const el = marcadorDestacado.getElement();
+  if (el) el.classList.remove("marker-highlight");
+  marcadorDestacado = null;
+}
+    
 document.getElementById("btnLimpar").onclick = () => {
   localStorage.removeItem("rota_postos");
   layerRota.clearLayers();
