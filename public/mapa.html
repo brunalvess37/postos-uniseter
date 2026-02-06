@@ -485,36 +485,41 @@ searchInput.addEventListener("input", () => {
     `;
   }).join("");
 
+  
   document.querySelectorAll(".suggestion-card[data-index]").forEach(card => {
 
   card.onclick = () => {
-  const i = card.dataset.index;
-  const p = postos[i];
+    const i = card.dataset.index;
+    const p = postos[i];
 
-  // Centraliza o mapa no posto escolhido
-  map.setView([p.Latitude, p.Longitude], 15);
+    // Centraliza o mapa no posto escolhido
+    map.setView([p.Latitude, p.Longitude], 15);
 
-  // ✅ FECHA A JANELA DE SUGESTÕES
-  suggestions.innerHTML = "";
-  searchInput.blur();
+    // fecha sugestões
+    suggestions.innerHTML = "";
+    searchInput.blur();
 
-  // ✨ DESTACA O MARCADOR BUSCADO (PERMANENTE)
-const marcador = marcadores[i];
-if (marcador) {
-  const el = marcador.getElement();
-  if (el) {
+    // ===== DESTACA O MARCADOR BUSCADO (PERMANENTE) =====
+    const marcador = marcadores[i];
+    if (marcador) {
+      const el = marcador.getElement();
+      if (el) {
 
-    // 1️⃣ remove destaque do marcador anterior (se houver)
-    if (marcadorDestacado) {
-      const elAntigo = marcadorDestacado.getElement();
-      if (elAntigo) elAntigo.classList.remove("marker-highlight");
+        // remove destaque anterior
+        if (marcadorDestacado) {
+          const elAntigo = marcadorDestacado.getElement();
+          if (elAntigo) elAntigo.classList.remove("marker-highlight");
+        }
+
+        // aplica novo destaque
+        el.classList.add("marker-highlight");
+        marcadorDestacado = marcador;
+      }
     }
+  };
 
-    // 2️⃣ aplica destaque no novo marcador
-    el.classList.add("marker-highlight");
-    marcadorDestacado = marcador;
-  }
-}
+});
+
 
 
 searchInput.addEventListener("keydown", e => {
