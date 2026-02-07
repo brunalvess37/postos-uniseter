@@ -424,9 +424,6 @@ map.on("click", (e) => {
     return;
   }
 
-  // ✅ Caso contrário (clicou no mapa vazio) → MINIMIZA a rota
-  const rotaSheet = document.getElementById("rota-sheet");
-
 //  SEMPRE limpa destaque ao clicar no mapa vazio
 if (marcadorDestacado) {
   const el = marcadorDestacado.getElement();
@@ -939,6 +936,16 @@ postos.forEach((p,i)=>{
     .addTo(layerPostos)
     .bindPopup(popup);
 
+  // 🔹 Se clicar em qualquer marcador, remove destaque anterior
+m.on("click", () => {
+  if (marcadorDestacado) {
+    const el = marcadorDestacado.getElement();
+    el?.querySelector("div")?.classList.remove("marker-highlight");
+    marcadorDestacado = null;
+  }
+});
+
+  
 // 🔹 guarda o marcador na mesma posição do posto
 marcadores[i] = m;
 
