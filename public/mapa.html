@@ -357,9 +357,10 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
     // remove destaque do marcador
         if (marcadorDestacado) {
-        const el = marcadorDestacado.getElement();
-        el?.querySelector('div')?.classList.remove('marker-highlight');
-        marcadorDestacado = null;
+          const el = marcadorDestacado.getElement();
+          const ponto = el?.querySelector("div");
+          ponto?.classList.remove("marker-highlight");
+          marcadorDestacado = null;
         }
       ">
       ✕
@@ -412,9 +413,17 @@ map.on("click", (e) => {
   // ✅ Caso contrário (clicou no mapa vazio) → MINIMIZA a rota
   const rotaSheet = document.getElementById("rota-sheet");
   if (rotaSheet.classList.contains("active")) {
-    rotaSheet.classList.add("minimized");
-    document.getElementById("rota-list").style.display = "none";
+
+  // 🔹 limpa destaque ao clicar no mapa vazio (opcional)
+  if (marcadorDestacado) {
+    const el = marcadorDestacado.getElement();
+    el?.querySelector("div")?.classList.remove("marker-highlight");
+    marcadorDestacado = null;
   }
+
+  rotaSheet.classList.add("minimized");
+  document.getElementById("rota-list").style.display = "none";
+}
 });
 
 
