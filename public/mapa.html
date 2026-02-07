@@ -406,9 +406,7 @@ let marcadores = []; // guarda todos os marcadores do mapa
     
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 
-// 🔹 EVITA ERRO ANTES DA BUSCA SER DEFINIDA
-window.suggestions = document.getElementById("suggestions");
-    
+   
 // deixa a rota já "presente" em modo minimizado por padrão
 const rotaSheet = document.getElementById("rota-sheet");
 const rotaList  = document.getElementById("rota-list");
