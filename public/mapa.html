@@ -406,6 +406,14 @@ let marcadores = []; // guarda todos os marcadores do mapa
     
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 
+// deixa a rota já "presente" em modo minimizado por padrão
+const rotaSheet = document.getElementById("rota-sheet");
+const rotaList  = document.getElementById("rota-list");
+
+rotaSheet.classList.add("minimized"); // já nasce minimizado
+rotaList.style.display = "none";      // lista começa escondida
+
+    
 map.on("click", (e) => {
   // fecha sugestões da busca
   suggestions.innerHTML = "";
@@ -418,18 +426,20 @@ map.on("click", (e) => {
 
   // ✅ Caso contrário (clicou no mapa vazio) → MINIMIZA a rota
   const rotaSheet = document.getElementById("rota-sheet");
-  if (rotaSheet.classList.contains("active")) {
 
-  // 🔹 limpa destaque ao clicar no mapa vazio (opcional)
-  if (marcadorDestacado) {
-    const el = marcadorDestacado.getElement();
-    el?.querySelector("div")?.classList.remove("marker-highlight");
-    marcadorDestacado = null;
-  }
+//  SEMPRE limpa destaque ao clicar no mapa vazio
+if (marcadorDestacado) {
+  const el = marcadorDestacado.getElement();
+  el?.querySelector("div")?.classList.remove("marker-highlight");
+  marcadorDestacado = null;
+}
 
+// só minimiza se estiver expandido
+if (rotaSheet.classList.contains("active")) {
   rotaSheet.classList.add("minimized");
   document.getElementById("rota-list").style.display = "none";
 }
+
 });
 
 
@@ -865,7 +875,7 @@ document.getElementById("btnRota").onclick = () => {
   desenharRota();
   renderRotaLista();
 
-  rotaSheet.classList.add("active");
+  rotaSheet.classList.add("active");   // marca como ativa
   rotaSheet.classList.remove("minimized");
   rotaList.style.display = "block";
 };
@@ -933,7 +943,7 @@ postos.forEach((p,i)=>{
 marcadores[i] = m;
 
   
-  m.on("popupopen",e=>{
+    m.on("popupopen",e=>{
    e.popup.getElement().querySelector(".js-add-rota").onclick = () => {
   // 🔹 feedback tátil ao incluir na rota
   if (navigator.vibrate) {
@@ -941,6 +951,14 @@ marcadores[i] = m;
   }
 
   addRota(i);
+
+  // 👉 NOVO: limpa o destaque ao incluir na rota (PARTE 3)
+  if (marcadorDestacado) {
+    const el = marcadorDestacado.getElement();
+    const ponto = el?.querySelector("div");
+    ponto?.classList.remove("marker-highlight");
+    marcadorDestacado = null;
+  }
 };
 
     
