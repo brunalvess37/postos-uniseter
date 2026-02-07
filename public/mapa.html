@@ -402,15 +402,28 @@ let marcadorDestacado = null; // guarda qual pin está destacado
 let marcadores = []; // guarda todos os marcadores do mapa
 let searchInput;
 let suggestions;
+let rotaSheet;
+let rotaList;
+let handle;
+
 
   async function initMapa(){
 
     
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 
+setTimeout(() => {
+  map.invalidateSize();
+}, 100);
+
+
 // 🔹 referências globais da busca (ANTES de qualquer uso)
 searchInput = document.getElementById("search");
 suggestions = document.getElementById("suggestions");
+
+rotaSheet = document.getElementById("rota-sheet");
+rotaList  = document.getElementById("rota-list");
+handle    = document.querySelector(".sheet-handle");
 
    
 // deixa a rota já "presente" em modo minimizado por padrão
@@ -853,11 +866,6 @@ window.addRota = i => {
     renderRotaLista();
   }
 };
-
-
-const rotaSheet = document.getElementById("rota-sheet");
-const rotaList  = document.getElementById("rota-list");
-const handle    = document.querySelector(".sheet-handle");
 
 /* 🧭 ABRIR ROTA → sempre EXPANDIDA */
 document.getElementById("btnRota").onclick = () => {
