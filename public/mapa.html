@@ -417,8 +417,9 @@ rotaList.style.display = "none";      // lista começa escondida
     
 map.on("click", (e) => {
   // fecha sugestões da busca (só se já existirem)
-  if (window.suggestions) suggestions.innerHTML = "";
-  if (window.searchInput) searchInput.blur();
+  if (suggestions) suggestions.innerHTML = "";
+  if (searchInput) searchInput.blur();
+
 
 
   // ❌ se clicou em um marcador, NÃO faz nada com a rota
