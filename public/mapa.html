@@ -295,14 +295,13 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
   cursor:pointer;
 }
 
-/* ✨ Destaque do marcador buscado (PERMANENTE E CLARO) */
+  /* ✨ Destaque do marcador buscado (PERMANENTE E CLARO) */
 .marker-highlight {
   transform: scale(1.6) !important;
   filter: drop-shadow(0 0 8px rgba(0,102,255,.9));
   border: 3px solid white !important;
   z-index: 2000 !important;
 }
-
 
   
   /* ===== ÍCONE DE LOCALIZAÇÃO DO USUÁRIO ===== */
@@ -350,22 +349,21 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     >
 
     <button
-  class="clear-btn"
-  onclick="
-    document.getElementById('search').value='';
-    document.getElementById('suggestions').innerHTML='';
-    this.style.display='none';
+      class="clear-btn"
+      onclick="
+        document.getElementById('search').value='';
+        document.getElementById('suggestions').innerHTML='';
+        this.style.display='none';
 
     // remove destaque do marcador
-if (marcadorDestacado) {
-  const el = marcadorDestacado.getElement();
-  el?.querySelector("div")?.classList.remove("marker-highlight");
-  marcadorDestacado = null;
-}
-  ">
-  ✕
-</button>
-
+        if (marcadorDestacado) {
+        const el = marcadorDestacado.getElement();
+        el?.querySelector('div')?.classList.remove('marker-highlight');
+        marcadorDestacado = null;
+        }
+      ">
+      ✕
+    </button>
   </div>
 
   <div id="suggestions"></div>
@@ -394,14 +392,34 @@ if (marcadorDestacado) {
 
 let map; // ← torna o mapa acessível para a busca
 let marcadorDestacado = null; // guarda qual pin está destacado
-let marcadores = [];
-  
+let marcadores = []; // guarda todos os marcadores do mapa
+
   async function initMapa(){
+
     
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 
-// 🔹 Array global para guardar todos os marcadores (PRECISA vir antes da busca)
-      
+map.on("click", (e) => {
+  // fecha sugestões da busca
+  suggestions.innerHTML = "";
+  searchInput.blur();
+
+  // ❌ se clicou em um marcador, NÃO faz nada com a rota
+  if (e.originalEvent.target.closest(".leaflet-marker-icon")) {
+    return;
+  }
+
+  // ✅ Caso contrário (clicou no mapa vazio) → MINIMIZA a rota
+  const rotaSheet = document.getElementById("rota-sheet");
+  if (rotaSheet.classList.contains("active")) {
+    rotaSheet.classList.add("minimized");
+    document.getElementById("rota-list").style.display = "none";
+  }
+});
+
+
+
+    
 L.control.zoom({position:"topright"}).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
@@ -419,26 +437,7 @@ const searchInput = document.getElementById("search");
 const suggestions = document.getElementById("suggestions");
 let activeIndex = -1;
 
-map.on("click", (e) => {
-  // fecha sugestões da busca
-  suggestions.innerHTML = "";
-  searchInput.blur();
 
-  // ❌ se clicou em um marcador, NÃO minimiza a rota
-  if (e.originalEvent.target.closest(".leaflet-marker-icon")) {
-    return;
-  }
-
-  // ✅ clicou no mapa vazio → minimiza a rota
-  const rotaSheet = document.getElementById("rota-sheet");
-  if (rotaSheet.classList.contains("active")) {
-    rotaSheet.classList.add("minimized");
-    document.getElementById("rota-list").style.display = "none";
-  }
-});
-
-
-  
 searchInput.addEventListener("focus", () => {
   // não faz nada — sem histórico
 });
@@ -485,9 +484,7 @@ searchInput.addEventListener("input", () => {
     `;
   }).join("");
 
-  
   document.querySelectorAll(".suggestion-card[data-index]").forEach(card => {
-
   card.onclick = () => {
     const i = card.dataset.index;
     const p = postos[i];
@@ -495,38 +492,38 @@ searchInput.addEventListener("input", () => {
     // Centraliza o mapa no posto escolhido
     map.setView([p.Latitude, p.Longitude], 15);
 
-    // fecha sugestões
+    // ✅ FECHA A JANELA DE SUGESTÕES
     suggestions.innerHTML = "";
+
+    // (opcional) também remove o foco do campo
     searchInput.blur();
 
-   // ===== DESTACA O MARCADOR BUSCADO (PERMANENTE) =====
+    // ===== DESTACA O MARCADOR BUSCADO (PERMANENTE) =====
 const marcador = marcadores[i];
 if (marcador) {
 
   const container = marcador.getElement();          // elemento do Leaflet
-  const ponto = container?.querySelector("div");   // 🔹 CÍRCULO COLORIDO REAL
+  const ponto = container?.querySelector("div");   // círculo colorido real
 
   if (ponto) {
 
     // remove destaque anterior (se houver)
-if (marcadorDestacado) {
-  const antigoContainer = marcadorDestacado.getElement();
-  const antigoPonto = antigoContainer?.querySelector("div"); // círculo real
-  antigoPonto?.classList.remove("marker-highlight");
-}
-
+    if (marcadorDestacado) {
+      const antigoContainer = marcadorDestacado.getElement();
+      const antigoPonto = antigoContainer?.querySelector("div");
+      antigoPonto?.classList.remove("marker-highlight");
+    }
 
     // aplica novo destaque
     ponto.classList.add("marker-highlight");
     marcadorDestacado = marcador;
   }
 }
-
-  };
-
+    
+  }; // 👈 fecha o card.onclick
 });
 
-
+});
 
 searchInput.addEventListener("keydown", e => {
   const items = document.querySelectorAll(".suggestion-card[data-index]");
@@ -835,22 +832,21 @@ window.addRota = i => {
   }
 };
 
+
 const rotaSheet = document.getElementById("rota-sheet");
 const rotaList  = document.getElementById("rota-list");
 const handle    = document.querySelector(".sheet-handle");
 
-       
 /* 🧭 ABRIR ROTA → sempre EXPANDIDA */
 document.getElementById("btnRota").onclick = () => {
 
-  // 👉 NOVO: limpa destaque ao abrir rota
-if (marcadorDestacado) {
-  const el = marcadorDestacado.getElement();
-  el?.querySelector("div")?.classList.remove("marker-highlight");
-  marcadorDestacado = null;
-}
-
-
+  // 👉 limpa destaque ao abrir rota
+  if (marcadorDestacado) {
+    const el = marcadorDestacado.getElement();
+    el?.querySelector("div")?.classList.remove("marker-highlight");
+    marcadorDestacado = null;
+  }
+  
   desenharRota();
   renderRotaLista();
 
@@ -859,26 +855,26 @@ if (marcadorDestacado) {
   rotaList.style.display = "block";
 };
 
-   
 document.getElementById("btnGps").onclick = () => {
 
-  // 👉 NOVO: limpa destaque antes de ir ao GPS
+  // 👉 limpa destaque antes de ir ao GPS
   if (marcadorDestacado) {
-  const el = marcadorDestacado.getElement();
-  el?.querySelector("div")?.classList.remove("marker-highlight");
-  marcadorDestacado = null;
-}
+    const el = marcadorDestacado.getElement();
+    el?.querySelector("div")?.classList.remove("marker-highlight");
+    marcadorDestacado = null;
+  }
 
   irParaMeuGps();
 };
+
     
-    
+/* 🗑️ LIMPAR */
 document.getElementById("btnLimpar").onclick = () => {
 
-  // 👉 NOVO: limpa destaque também
+  // 👉 limpa destaque também
   if (marcadorDestacado) {
     const el = marcadorDestacado.getElement();
-    if (el) el.classList.remove("marker-highlight");
+    el?.querySelector("div")?.classList.remove("marker-highlight");
     marcadorDestacado = null;
   }
 
@@ -887,7 +883,6 @@ document.getElementById("btnLimpar").onclick = () => {
   rotaList.innerHTML = "";
   rotaSheet.classList.remove("active","minimized");
 };
-      
 
 
 /* 📱 HANDLE → alterna expandido ↔ minimizado */
@@ -915,16 +910,14 @@ postos.forEach((p,i)=>{
     </div>
   `;
 
-  const m = L.marker([p.Latitude,p.Longitude],{
-  icon: iconPosto(cores[p.ZONA]||"#555")
-})
-.addTo(layerPostos)
-.bindPopup(popup);
+  const m=L.marker([p.Latitude,p.Longitude],{icon:iconPosto(cores[p.ZONA]||"#555")})
+    .addTo(layerPostos)
+    .bindPopup(popup);
 
 // 🔹 guarda o marcador na mesma posição do posto
 marcadores[i] = m;
 
-
+  
   m.on("popupopen",e=>{
    e.popup.getElement().querySelector(".js-add-rota").onclick = () => {
   // 🔹 feedback tátil ao incluir na rota
