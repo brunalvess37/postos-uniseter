@@ -406,6 +406,10 @@ let marcadores = []; // guarda todos os marcadores do mapa
     
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
 
+// 🔹 EVITA ERRO ANTES DA BUSCA SER DEFINIDA
+window.searchInput = document.getElementById("search");
+window.suggestions = document.getElementById("suggestions");
+    
 // deixa a rota já "presente" em modo minimizado por padrão
 const rotaSheet = document.getElementById("rota-sheet");
 const rotaList  = document.getElementById("rota-list");
@@ -415,9 +419,10 @@ rotaList.style.display = "none";      // lista começa escondida
 
     
 map.on("click", (e) => {
-  // fecha sugestões da busca
-  suggestions.innerHTML = "";
-  searchInput.blur();
+  // fecha sugestões da busca (só se já existirem)
+  if (window.suggestions) suggestions.innerHTML = "";
+  if (window.searchInput) searchInput.blur();
+
 
   // ❌ se clicou em um marcador, NÃO faz nada com a rota
   if (e.originalEvent.target.closest(".leaflet-marker-icon")) {
