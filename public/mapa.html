@@ -348,23 +348,29 @@ document.addEventListener("DOMContentLoaded", async ()=>{
       oninput="document.querySelector('.clear-btn').style.display = this.value ? 'block' : 'none';"
     >
 
-    <button
-      class="clear-btn"
-      onclick="
-        document.getElementById('search').value='';
-        document.getElementById('suggestions').innerHTML='';
-        this.style.display='none';
+  <button
+  class="clear-btn"
+  onclick="
+    const input = document.getElementById('search');
+    input.value = '';
+
+    // 🔧 CORREÇÃO IMPORTANTE: dispara o evento 'input'
+    input.dispatchEvent(new Event('input'));
+
+    document.getElementById('suggestions').innerHTML='';
+    this.style.display='none';
 
     // remove destaque do marcador
-        if (marcadorDestacado) {
-          const el = marcadorDestacado.getElement();
-          const ponto = el?.querySelector("div");
-          ponto?.classList.remove("marker-highlight");
-          marcadorDestacado = null;
-        }
-      ">
-      ✕
-    </button>
+    if (marcadorDestacado) {
+      const el = marcadorDestacado.getElement();
+      const ponto = el?.querySelector('div');
+      ponto?.classList.remove('marker-highlight');
+      marcadorDestacado = null;
+    }
+  ">
+  ✕
+</button>
+    
   </div>
 
   <div id="suggestions"></div>
