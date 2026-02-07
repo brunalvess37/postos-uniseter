@@ -400,11 +400,17 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 let map; // ← torna o mapa acessível para a busca
 let marcadorDestacado = null; // guarda qual pin está destacado
 let marcadores = []; // guarda todos os marcadores do mapa
+let searchInput;
+let suggestions;
 
   async function initMapa(){
 
     
 map = L.map("map",{zoomControl:false}).setView([-22.9,-47.06],10);
+
+// 🔹 referências globais da busca (ANTES de qualquer uso)
+searchInput = document.getElementById("search");
+suggestions = document.getElementById("suggestions");
 
    
 // deixa a rota já "presente" em modo minimizado por padrão
@@ -458,10 +464,7 @@ localStorage.setItem("postos_cache", JSON.stringify(postos));
 // 🔎 BUSCA (MESMO PADRÃO DO APP)
 // ===============================
 
-const searchInput = document.getElementById("search");
-const suggestions = document.getElementById("suggestions");
 let activeIndex = -1;
-
 
 searchInput.addEventListener("focus", () => {
   // não faz nada — sem histórico
