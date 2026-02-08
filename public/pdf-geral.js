@@ -147,9 +147,9 @@ conteudo.push({
     },
     {
       text: enderecoCompleto(p),
-      fontSize: 9,
-      lineHeight: 1.2,
-      margin: [12, 0, 0, 4]
+      fontSize: 10,
+      lineHeight: 1.3,
+      margin: [12, 0, 0, 2]
     },
 
     // Observação (se existir)
@@ -167,9 +167,9 @@ conteudo.push({
     contatosFormatados(p)
       ? {
           stack: contatosFormatados(p),
-          fontSize: 9,
-          lineHeight: 1.2,
-          margin: [12, 2, 0, 4]
+          fontSize: 10,
+          lineHeight: 1.3,
+          margin: [12, 0, 0, 2]
         }
       : null,
 
