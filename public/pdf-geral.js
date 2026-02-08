@@ -147,8 +147,8 @@ conteudo.push({
     },
     {
       text: enderecoCompleto(p),
-      fontSize: 10,
-      lineHeight: 1.3,
+      fontSize: 11,
+      lineHeight: 1.25,
       margin: [12, 0, 0, 1]
     },
 
@@ -167,9 +167,9 @@ conteudo.push({
     contatosFormatados(p)
       ? {
           stack: contatosFormatados(p),
-          fontSize: 10,
-          lineHeight: 1.3,
-          margin: [12, 0, 0, 2]
+          fontSize: 11,
+          lineHeight: 1.25,
+          margin: [12, 0, 0, 1]
         }
       : null,
 
