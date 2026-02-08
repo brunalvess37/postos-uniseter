@@ -142,14 +142,14 @@ conteudo.push({
     {
       text: "Endereço:",
       bold: true,
-      fontSize: 8,
+      fontSize: 9,
       margin: [12, 0, 0, 1]
     },
     {
       text: enderecoCompleto(p),
       fontSize: 10,
       lineHeight: 1.3,
-      margin: [12, 0, 0, 2]
+      margin: [12, 0, 0, 1]
     },
 
     // Observação (se existir)
