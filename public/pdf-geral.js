@@ -118,24 +118,80 @@ async function gerarPDFGeral(filtros) {
     }
 
     // ===== BLOCO DO POSTO =====
-    conteudo.push({
-      margin: [0, 0, 0, 18],
-      stack: [
-        { text: p["POSTOS DE SERVIÇOS / GRUPO SETER"], style: "posto" },
-        {
-          text: p.TIPO || "",
+conteudo.push({
+  margin: [0, 0, 0, 14],
+  stack: [
+
+    // Nome do posto
+    {
+      text: p["POSTOS DE SERVIÇOS / GRUPO SETER"],
+      style: "posto",
+      margin: [0, 0, 0, 2]
+    },
+
+    // Tipo do posto
+    {
+      text: p.TIPO || "",
+      italics: true,
+      fontSize: 8,
+      color: "#666",
+      margin: [0, 0, 0, 4]
+    },
+
+    // Endereço
+    {
+      text: "Endereço:",
+      bold: true,
+      fontSize: 8,
+      margin: [12, 0, 0, 1]
+    },
+    {
+      text: enderecoCompleto(p),
+      fontSize: 9,
+      lineHeight: 1.2,
+      margin: [12, 0, 0, 4]
+    },
+
+    // Observação (se existir)
+    p.OBSERVAÇÃO
+      ? {
+          text: p.OBSERVAÇÃO,
+          fontSize: 8,
+          color: "#555",
           italics: true,
-          color: "#666",
-          margin: [0, 2, 0, 6]
-        },
-        { text: "Endereço:", bold: true },
-        { text: enderecoCompleto(p), margin: [0, 2, 0, 4] },
-        p.OBSERVAÇÃO
-          ? { text: p.OBSERVAÇÃO, color: "#555", margin: [0, 2, 0, 4] }
-          : null,
-        contatosFormatados(p)
-      ].filter(Boolean)
-    });
+          margin: [12, 0, 0, 4]
+        }
+      : null,
+
+    // Contatos (já formatados)
+    contatosFormatados(p)
+      ? {
+          stack: contatosFormatados(p),
+          fontSize: 9,
+          lineHeight: 1.2,
+          margin: [12, 2, 0, 4]
+        }
+      : null,
+
+    // Linha separadora entre postos
+    {
+      canvas: [
+        {
+          type: "line",
+          x1: 0,
+          y1: 0,
+          x2: 515,
+          y2: 0,
+          lineWidth: 0.5,
+          lineColor: "#cccccc"
+        }
+      ],
+      margin: [0, 8, 0, 0]
+    }
+
+  ].filter(Boolean)
+});
+    
   });
 
   // ===== USUÁRIO =====
