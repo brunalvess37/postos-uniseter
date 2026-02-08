@@ -170,7 +170,7 @@ const blocoPosto = {
     p.OBSERVAÇÃO
       ? {
           text: p.OBSERVAÇÃO,
-          fontSize: 8,
+          fontSize: 11,
           color: "#555",
           italics: true,
           margin: [12, 0, 0, 4]
@@ -219,8 +219,7 @@ if (primeiroDaCidade) {
   conteudo.push(blocoPosto);
 }
 });
-    
-  });
+
 
   // ===== USUÁRIO =====
   let linhaUsuario = null;
