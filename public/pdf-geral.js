@@ -142,7 +142,7 @@ conteudo.push({
     {
       text: "Endereço:",
       bold: true,
-      fontSize: 9,
+      fontSize: 11,
       margin: [12, 0, 0, 1]
     },
     {
