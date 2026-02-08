@@ -33,16 +33,25 @@ async function gerarPDFGeral(filtros) {
   // ===== ORDENAÇÃO =====
   dados.sort((a, b) => {
 
-    if (filtros.ordem === "zona") {
-      return (a.ZONA || "").localeCompare(b.ZONA || "") ||
-        (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
-          .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
-    }
+  // ZONA (mantém exatamente como está)
+  if (filtros.ordem === "zona") {
+    return (a.ZONA || "").localeCompare(b.ZONA || "") ||
+      (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
+        .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
+  }
 
+  // CIDADE (novo nome para o comportamento atual)
+  if (filtros.ordem === "cidade") {
     return (a.CIDADE || "").localeCompare(b.CIDADE || "") ||
       (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
         .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
-  });
+  }
+
+  // NOME DO POSTO (novo: A–Z simples, sem agrupamento)
+  return (a["POSTOS DE SERVIÇOS / GRUPO SETER"] || "")
+    .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
+});
+
 
   // ===== FUNÇÕES AUXILIARES =====
   function enderecoCompleto(p) {
@@ -105,31 +114,35 @@ async function gerarPDFGeral(filtros) {
 
   dados.forEach(p => {
 
-    const grupo =
-      filtros.ordem === "zona"
-        ? p.ZONA
-        : p.CIDADE;
+    let grupo = null;
+
+if (filtros.ordem === "zona") {
+  grupo = p.ZONA;
+} else if (filtros.ordem === "cidade") {
+  grupo = p.CIDADE;
+}
+
 
     // ===== FAIXA DE AGRUPAMENTO =====
-    if (grupo !== grupoAtual) {
-      grupoAtual = grupo;
-      primeiroDaCidade = true;
+    if (grupo && grupo !== grupoAtual) {
+  grupoAtual = grupo;
+  primeiroDaCidade = true;
 
-      conteudo.push({
-        _tipo: "faixa", // marcador interno (não afeta PDF)
-        margin: [0, 10, 0, 12],
-        table: {
-          widths: ["*"],
-          body: [[
-            {
-              text: grupo.toUpperCase(),
-              style: "grupo"
-            }
-          ]]
-        },
-        layout: "noBorders"
-      });
-    }
+  conteudo.push({
+    _tipo: "faixa",
+    margin: [0, 10, 0, 12],
+    table: {
+      widths: ["*"],
+      body: [[
+        {
+          text: grupo.toUpperCase(),
+          style: "grupo"
+        }
+      ]]
+    },
+    layout: "noBorders"
+  });
+}
 
     // ===== BLOCO DO POSTO =====
 const blocoPosto = {
