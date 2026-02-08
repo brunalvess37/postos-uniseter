@@ -82,10 +82,20 @@ async function gerarPDFGeral(filtros) {
     if (!linhas.length) return null;
 
     return [
-      { text: "Contato:", bold: true, margin: [0, 6, 0, 2] },
-      linhas.join("\n")
-    ];
-  }
+    {
+      text: "Contato:",
+      bold: true,
+      fontSize: 11,
+      margin: [0, 0, 0, 1] // 👈 MESMO espaçamento do Endereço
+    },
+    {
+      text: linhas.join("\n"),
+      fontSize: 11,
+      lineHeight: 1.25,
+      margin: [0, 0, 0, 1] // 👈 MESMO espaçamento do texto do endereço
+    }
+  ];
+}
 
   // ===== CONTEÚDO =====
   let grupoAtual = null;
