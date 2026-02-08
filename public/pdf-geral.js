@@ -130,7 +130,7 @@ async function gerarPDFGeral(filtros) {
     // ===== BLOCO DO POSTO =====
 conteudo.push({
   margin: [0, 0, 0, 14],
-  pageBreak: 'avoid',   // 👈 sem quebra de página no bloco
+  unbreakable: true,   // 👈 sem quebra de página no bloco
   stack: [
 
     // Nome do posto
