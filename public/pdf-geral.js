@@ -101,6 +101,8 @@ async function gerarPDFGeral(filtros) {
   let grupoAtual = null;
   const conteudo = [];
 
+  let primeiroDaCidade = false;
+
   dados.forEach(p => {
 
     const grupo =
@@ -111,8 +113,10 @@ async function gerarPDFGeral(filtros) {
     // ===== FAIXA DE AGRUPAMENTO =====
     if (grupo !== grupoAtual) {
       grupoAtual = grupo;
+      primeiroDaCidade = true;
 
       conteudo.push({
+        _tipo: "faixa", // marcador interno (não afeta PDF)
         margin: [0, 10, 0, 12],
         table: {
           widths: ["*"],
@@ -128,9 +132,9 @@ async function gerarPDFGeral(filtros) {
     }
 
     // ===== BLOCO DO POSTO =====
-conteudo.push({
+const blocoPosto = {
   margin: [0, 0, 0, 14],
-  unbreakable: true,   // 👈 sem quebra de página no bloco
+  unbreakable: true,
   stack: [
 
     // Nome do posto
@@ -163,7 +167,6 @@ conteudo.push({
       margin: [12, 0, 0, 1]
     },
 
-    // Observação (se existir)
     p.OBSERVAÇÃO
       ? {
           text: p.OBSERVAÇÃO,
@@ -174,7 +177,6 @@ conteudo.push({
         }
       : null,
 
-    // Contatos (já formatados)
     contatosFormatados(p)
       ? {
           stack: contatosFormatados(p),
@@ -184,7 +186,6 @@ conteudo.push({
         }
       : null,
 
-    // Linha separadora entre postos
     {
       canvas: [
         {
@@ -201,6 +202,22 @@ conteudo.push({
     }
 
   ].filter(Boolean)
+};
+if (primeiroDaCidade) {
+  const faixa = conteudo.pop(); // remove a faixa recém inserida
+
+  conteudo.push({
+    unbreakable: true,
+    stack: [
+      faixa,
+      blocoPosto
+    ]
+  });
+
+  primeiroDaCidade = false;
+} else {
+  conteudo.push(blocoPosto);
+}
 });
     
   });
