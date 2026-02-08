@@ -113,7 +113,7 @@ async function gerarPDFGeral(filtros) {
       grupoAtual = grupo;
 
       conteudo.push({
-        margin: [0, 18, 0, 12],
+        margin: [0, 10, 0, 12],
         table: {
           widths: ["*"],
           body: [[
