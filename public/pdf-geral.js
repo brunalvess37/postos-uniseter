@@ -91,7 +91,7 @@ async function gerarPDFGeral(filtros) {
     {
       text: linhas.join("\n"),
       fontSize: 11,
-      lineHeight: 1.25,
+      lineHeight: 1.15,
       margin: [0, 0, 0, 1] // 👈 MESMO espaçamento do texto do endereço
     }
   ];
