@@ -6,6 +6,13 @@ let favoritos = JSON.parse(localStorage.getItem("postos_favoritos") || "[]");
 let historico = JSON.parse(localStorage.getItem("historico_busca") || "[]");
 
 // =====================================================
+// STATUS DO CADASTRO
+// =====================================================
+function isCadastroInativo(p) {
+  return !!p.DATA_INATIVO;
+}
+
+// =====================================================
 // LOADER
 // =====================================================
 const loader = document.createElement("div");
@@ -80,6 +87,8 @@ function abrirDetalhes(i) {
   const p = postos[i];
   if (!p) return;
 
+  const inativo = isCadastroInativo(p);
+
   const end = [
     p["ENDEREÇO I"],
     p["ENDEREÇO II"],
@@ -91,12 +100,30 @@ function abrirDetalhes(i) {
   const wazeUrl = `https://waze.com/ul?ll=${p.Latitude},${p.Longitude}&navigate=yes`;
 
   document.getElementById("details").innerHTML = `
-    <h3>
-      ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
-      <button onclick="toggleFavorito(${i})">
-        ${isFavorito(i) ? "★" : "☆"}
-      </button>
-    </h3>
+  <h3>
+    ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
+    <button
+      ${inativo ? "disabled title='Cadastro inativo não pode ser favoritado'" : ""}
+      onclick="${inativo ? "" : `toggleFavorito(${i})`}"
+    >
+      ${isFavorito(i) ? "★" : "☆"}
+    </button>
+  </h3>
+
+  ${inativo ? `
+    <div style="
+      margin:8px 0;
+      padding:8px;
+      background:#ffe5e5;
+      color:#b71c1c;
+      font-weight:bold;
+      border-radius:6px;
+      text-align:center;
+    ">
+      ⚠️ CADASTRO INATIVO
+    </div>
+  ` : ""}
+
 
     <p><b>Cidade:</b> ${p.CIDADE}</p>
     <p><b>Endereço:</b> ${end}</p>
@@ -109,9 +136,15 @@ function abrirDetalhes(i) {
     </div>
 
     <div style="margin-top:12px;">
-      <button onclick="addRota(${i})">➕ Adicionar à rota</button>
-      <button onclick="location='rota.html'">📍 Abrir rota</button>
-    </div>
+  <button
+    ${inativo ? "disabled title='Cadastro inativo não pode entrar na rota'" : ""}
+    onclick="${inativo ? "" : `addRota(${i})`}"
+  >
+    ➕ Adicionar à rota
+  </button>
+  <button onclick="location='rota.html'">📍 Abrir rota</button>
+</div>
+
   `;
 
   document.getElementById("suggestions").innerHTML = "";
