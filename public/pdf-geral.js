@@ -236,23 +236,20 @@ const blocoPosto = {
   ].filter(Boolean)
 };
 
-// 🔒 linha do posto (estrutura DIFERENTE para ativo e inativo)
-const linhaPosto = isCadastroInativo(p)
-  ? {
-      unbreakable: true,
-      table: {
-        widths: [4, "*"], // ✅ NUNCA zero
-        body: [[
-          { fillColor: "#b71c1c", text: "" },
-          blocoPosto
-        ]]
-      },
-      layout: "noBorders"
-    }
-  : {
-      unbreakable: true,
-      stack: [ blocoPosto ]
-    };
+// 🔒 linha do posto (como tabela)
+const linhaPosto = {
+  unbreakable: true,
+  table: {
+    widths: isCadastroInativo(p) ? [4, "*"] : [0.1, "*"], // 👈 nunca zero
+    body: [[
+      isCadastroInativo(p)
+        ? { fillColor: "#b71c1c", text: "" }
+        : { text: "" },
+      blocoPosto
+    ]]
+  },
+  layout: "noBorders"
+};
 
 
 if (primeiroDaCidade) {
