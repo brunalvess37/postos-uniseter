@@ -160,22 +160,17 @@ if (filtros.ordem === "zona") {
 // ⚠️ CADASTRO INATIVO
 const tarjaInativo = isCadastroInativo(p)
   ? {
-      margin: [0, 0, 0, 4],
-      table: {
-        widths: ["*"],
-        body: [[
-          {
-            text: "⚠️ CADASTRO INATIVO",
-            bold: true,
-            color: "white",
-            fillColor: "#b71c1c",
-            alignment: "center",
-            fontSize: 10,
-            margin: [0, 4, 0, 4]
-          }
-        ]]
-      },
-      layout: "noBorders"
+      canvas: [
+        {
+          type: "rect",
+          x: 0,
+          y: 0,
+          w: 6,          // largura da tarja
+          h: 1000,       // altura grande (pdfmake corta automaticamente)
+          color: "#b71c1c"
+        }
+      ],
+      absolutePosition: { x: 40, y: 0 } // mesma margem esquerda da página
     }
   : null;
 
@@ -194,13 +189,16 @@ const blocoPosto = {
 },
 
     // Tipo do posto
-    {
-      text: p.TIPO || "",
-      italics: true,
-      fontSize: 8,
-      color: "#666",
-      margin: [0, 0, 0, 4]
-    },
+   {
+  text: isCadastroInativo(p)
+    ? `${p.TIPO || ""}  (Cadastro INATIVO)`
+    : (p.TIPO || ""),
+  italics: true,
+  fontSize: 8,
+  color: isCadastroInativo(p) ? "#b71c1c" : "#666",
+  margin: [0, 0, 0, 4]
+},
+
 
     // Endereço
     {
