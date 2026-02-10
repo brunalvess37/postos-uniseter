@@ -177,9 +177,15 @@ const tarjaInativo = isCadastroInativo(p)
     
     // ===== BLOCO DO POSTO =====
 const blocoPosto = {
-  margin: [0, 0, 0, 14],
+  margin: [
+    isCadastroInativo(p) ? 14 : 0,  // 👈 AFASTAMENTO DA TARJA
+    0,
+    0,
+    14
+  ],
   unbreakable: true,
   stack: [
+
 
     // Nome do posto
 {
