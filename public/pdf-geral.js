@@ -157,23 +157,6 @@ if (filtros.ordem === "zona") {
   });
 }
 
-// ⚠️ CADASTRO INATIVO
-const tarjaInativo = isCadastroInativo(p)
-  ? {
-      canvas: [
-        {
-          type: "rect",
-          x: 0,
-          y: 0,
-          w: 6,          // largura da tarja
-          h: 1000,       // altura grande (pdfmake corta automaticamente)
-          color: "#b71c1c"
-        }
-      ],
-      absolutePosition: { x: 40, y: 0 } // mesma margem esquerda da página
-    }
-  : null;
-
     
     // ===== BLOCO DO POSTO =====
 const blocoPosto = {
@@ -256,6 +239,7 @@ const blocoPosto = {
 
   ].filter(Boolean)
 };
+    
 if (primeiroDaCidade) {
   const faixa = conteudo.pop(); // remove a faixa recém inserida
 
@@ -263,18 +247,69 @@ if (primeiroDaCidade) {
     unbreakable: true,
     stack: [
       faixa,
-      ...(tarjaInativo ? [tarjaInativo] : []),
-      blocoPosto
+      isCadastroInativo(p)
+        ? {
+            table: {
+              widths: [6, "*"],
+              body: [[
+                { fillColor: "#b71c1c", text: "" },
+                blocoPosto
+              ]]
+            },
+            layout: "noBorders"
+          }
+        : blocoPosto
     ]
   });
+
+  primeiroDaCidade = false;
+
+} else {
+
+  conteudo.push(
+    isCadastroInativo(p)
+      ? {
+          table: {
+            widths: [6, "*"],
+            body: [[
+              { fillColor: "#b71c1c", text: "" },
+              blocoPosto
+            ]]
+          },
+          layout: "noBorders"
+        }
+      : blocoPosto
+  );
+
+}
+
+
 
   primeiroDaCidade = false;
 }
  else {
   conteudo.push(
-    ...(tarjaInativo ? [tarjaInativo] : []),
-    blocoPosto
   );
+   
+  if (isCadastroInativo(p)) {
+  conteudo.push({
+    table: {
+      widths: [6, "*"],
+      body: [[
+        {
+          fillColor: "#b71c1c",
+          text: ""
+        },
+        blocoPosto
+      ]]
+    },
+    layout: "noBorders"
+  });
+} else {
+  conteudo.push(blocoPosto);
+}
+
+   
 }
 });
 
