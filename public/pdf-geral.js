@@ -287,35 +287,36 @@ if (primeiroDaCidade) {
     pageMargins: [40, 90, 40, 60],
 
     header: {
-      margin: [40, 20, 40, 10],
-      stack: [
-        {
-          text: "RELATÓRIO POSTOS UNISETER",
-          style: "titulo"
-        },
-        {
-          text: `Gerado em ${new Date().toLocaleString("pt-BR")}`,
-          alignment: "right",
-          fontSize: 9
-        },
-        linhaUsuario
-          ? {
-              text: linhaUsuario,
-              alignment: "right",
-              fontSize: 9
-            }
-          : null
-      ].filter(Boolean)
-    },
+  margin: [40, 20, 40, 10],
+  stack: [
+    {
+      text: "RELATÓRIO POSTOS UNISETER",
+      style: "titulo"
+    }
+  ]
+},
 
     footer: function (currentPage, pageCount) {
-      return {
-        text: `Página ${currentPage} de ${pageCount}`,
-        alignment: "center",
+  return {
+    margin: [40, 10, 40, 0],
+    columns: [
+      {
+        text: [
+          `Gerado em ${new Date().toLocaleString("pt-BR")}`,
+          linhaUsuario ? `\n${linhaUsuario}` : ""
+        ],
         fontSize: 9,
-        margin: [0, 10, 0, 0]
-      };
-    },
+        alignment: "left"
+      },
+      {
+        text: `Página ${currentPage} de ${pageCount}`,
+        fontSize: 9,
+        alignment: "right"
+      }
+    ]
+  };
+},
+
 
     content: conteudo,
 
