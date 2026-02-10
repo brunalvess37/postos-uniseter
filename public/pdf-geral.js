@@ -251,7 +251,7 @@ if (primeiroDaCidade) {
                   stack: blocoPosto.stack,
                   margin: [0, 0, 0, 14] // 👈 encerra a tarja exatamente no posto
                 }
-              ]
+              ]]
             },
             layout: "noBorders"
           }
