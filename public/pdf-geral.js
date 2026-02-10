@@ -162,12 +162,7 @@ const blocoPosto = {
   margin: [0, 0, 0, 0],
   unbreakable: true,
   stack: [
-    ...
-  ]
-};
 
-  unbreakable: true,
-  stack: [
 
     // Nome do posto
 {
