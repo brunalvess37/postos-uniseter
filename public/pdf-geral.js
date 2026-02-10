@@ -5,9 +5,17 @@ async function gerarPDFGeral(filtros) {
 
   let dados = await fetch("/api/postos").then(r => r.json());
 
+  function isCadastroInativo(p) {
+  return !!(
+    p.DATA_INATIVO &&
+    String(p.DATA_INATIVO).trim() !== ""
+  );
+}
+
+
   // ===== ATIVOS x TODOS =====
 if (filtros.tipo === "ativos") {
-  dados = dados.filter(p => !p.DATA_INATIVO);
+  dados = dados.filter(p => !isCadastroInativo(p));
 }
 
   // ===== FAVORITOS =====
@@ -163,7 +171,7 @@ const blocoPosto = {
 },
 
 // ⚠️ CADASTRO INATIVO
-p.DATA_INATIVO
+isCadastroInativo(p)
   ? {
       text: "CADASTRO INATIVO",
       color: "white",
