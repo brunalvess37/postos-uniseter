@@ -173,12 +173,15 @@ const blocoPosto = {
 
     // Tipo do posto
     {
-      text: p.TIPO || "",
-      italics: true,
-      fontSize: 8,
-      color: "#666",
-      margin: [0, 0, 0, 4]
-    },
+  text: isCadastroInativo(p)
+    ? [
+        { text: p.TIPO || "", italics: true, color: "#666" },
+        { text: "  (Cadastro INATIVO)", italics: true, color: "#b71c1c" }
+      ]
+    : (p.TIPO || ""),
+  fontSize: 8,
+  margin: [0, 0, 0, 4]
+},
 
     // Endereço
     {
@@ -236,7 +239,7 @@ const blocoPosto = {
 const linhaPosto = {
   unbreakable: true,
   table: {
-    widths: isCadastroInativo(p) ? [4, "*"] : [0.1, "*"], // 👈 nunca zero
+    widths: isCadastroInativo(p) ? [2, "*"] : [0.1, "*"], // 👈 Largura da Tarja - nunca zero
     body: [[
       isCadastroInativo(p)
         ? { fillColor: "#b71c1c", text: "" }
