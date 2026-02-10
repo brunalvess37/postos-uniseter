@@ -157,18 +157,39 @@ if (filtros.ordem === "zona") {
   });
 }
 
+// ⚠️ CADASTRO INATIVO
+const tarjaInativo = isCadastroInativo(p)
+  ? {
+      margin: [0, 0, 0, 4],
+      table: {
+        widths: ["*"],
+        body: [[
+          {
+            text: "⚠️ CADASTRO INATIVO",
+            bold: true,
+            color: "white",
+            fillColor: "#b71c1c",
+            alignment: "center",
+            fontSize: 10,
+            margin: [0, 4, 0, 4]
+          }
+        ]]
+      },
+      layout: "noBorders"
+    }
+  : null;
+
     
     // ===== BLOCO DO POSTO =====
 const blocoPosto = {
   margin: [
-    isCadastroInativo(p) ? 14 : 0,  // 👈 AFASTAMENTO DA TARJA
-    0,
-    0,
-    14
-  ],
+  isCadastroInativo(p) ? 14 : 0,
+  0,
+  0,
+  14
+],
   unbreakable: true,
   stack: [
-
 
     // Nome do posto
 {
@@ -178,16 +199,13 @@ const blocoPosto = {
 },
 
     // Tipo do posto
-   {
-  text: isCadastroInativo(p)
-    ? `${p.TIPO || ""}  (Cadastro INATIVO)`
-    : (p.TIPO || ""),
-  italics: true,
-  fontSize: 8,
-  color: isCadastroInativo(p) ? "#b71c1c" : "#666",
-  margin: [0, 0, 0, 4]
-},
-
+    {
+      text: p.TIPO || "",
+      italics: true,
+      fontSize: 8,
+      color: "#666",
+      margin: [0, 0, 0, 4]
+    },
 
     // Endereço
     {
@@ -239,7 +257,6 @@ const blocoPosto = {
 
   ].filter(Boolean)
 };
-    
 if (primeiroDaCidade) {
   const faixa = conteudo.pop(); // remove a faixa recém inserida
 
@@ -283,34 +300,6 @@ if (primeiroDaCidade) {
 
 }
 
-
-
-  primeiroDaCidade = false;
-}
- else {
-  conteudo.push(
-  );
-   
-  if (isCadastroInativo(p)) {
-  conteudo.push({
-    table: {
-      widths: [6, "*"],
-      body: [[
-        {
-          fillColor: "#b71c1c",
-          text: ""
-        },
-        blocoPosto
-      ]]
-    },
-    layout: "noBorders"
-  });
-} else {
-  conteudo.push(blocoPosto);
-}
-
-   
-}
 });
 
 
