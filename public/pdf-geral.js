@@ -156,30 +156,7 @@ if (filtros.ordem === "zona") {
     layout: "noBorders"
   });
 }
-
-// ⚠️ CADASTRO INATIVO
-const tarjaInativo = isCadastroInativo(p)
-  ? {
-      margin: [0, 0, 0, 4],
-      table: {
-        widths: ["*"],
-        body: [[
-          {
-            text: "⚠️ CADASTRO INATIVO",
-            bold: true,
-            color: "white",
-            fillColor: "#b71c1c",
-            alignment: "center",
-            fontSize: 10,
-            margin: [0, 4, 0, 4]
-          }
-        ]]
-      },
-      layout: "noBorders"
-    }
-  : null;
-
-    
+  
     // ===== BLOCO DO POSTO =====
 const blocoPosto = {
   margin: [
@@ -270,8 +247,11 @@ if (primeiroDaCidade) {
               widths: [6, "*"],
               body: [[
                 { fillColor: "#b71c1c", text: "" },
-                blocoPosto
-              ]]
+                {
+                  stack: blocoPosto.stack,
+                  margin: [0, 0, 0, 14] // 👈 encerra a tarja exatamente no posto
+                }
+              ]
             },
             layout: "noBorders"
           }
