@@ -160,11 +160,12 @@ if (filtros.ordem === "zona") {
     // ===== BLOCO DO POSTO =====
 const blocoPosto = {
   margin: [
-  isCadastroInativo(p) ? 8 : 0,
-  0,
-  0,
-  14
-],
+    isCadastroInativo(p) ? 8 : 0,
+    0,
+    0,
+    0
+  ],
+
   unbreakable: true,
   stack: [
 
@@ -244,14 +245,16 @@ const linhaPosto = {
       isCadastroInativo(p)
         ? {
             fillColor: "#b71c1c",
-            text: "",
-            margin: [0, 0, 0, 14] // 👈 define exatamente a altura da tarja
+            text: "\n\n\n" // 👈 altura REAL da tarja
           }
         : { text: "" },
       {
-        stack: blocoPosto.stack,
-        margin: [0, 0, 0, 14] // 👈 MESMA altura do posto
-      }
+        stack: [
+        ...blocoPosto.stack,
+        { text: "\n" } // 👈 garante mesma altura da linha
+      ]
+    }
+
     ]]
   },
   layout: "noBorders"
