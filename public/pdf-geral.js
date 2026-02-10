@@ -234,6 +234,22 @@ const blocoPosto = {
 
   ].filter(Boolean)
 };
+
+// 🔒 linha única do posto (tarja + conteúdo SEMPRE juntos)
+const linhaPosto = {
+  unbreakable: true,
+  table: {
+    widths: [ isCadastroInativo(p) ? 6 : 0, "*" ],
+    body: [[
+      isCadastroInativo(p)
+        ? { fillColor: "#b71c1c", text: "" }
+        : { text: "" },
+      blocoPosto
+    ]]
+  },
+  layout: "noBorders"
+};
+
 if (primeiroDaCidade) {
   const faixa = conteudo.pop(); // remove a faixa recém inserida
 
@@ -241,43 +257,13 @@ if (primeiroDaCidade) {
     unbreakable: true,
     stack: [
       faixa,
-      isCadastroInativo(p)
-        ? {
-            table: {
-              widths: [6, "*"],
-              body: [[
-                { fillColor: "#b71c1c", text: "" },
-                {
-                  stack: blocoPosto.stack,
-                  margin: [0, 0, 0, 14] // 👈 encerra a tarja exatamente no posto
-                }
-              ]]
-            },
-            layout: "noBorders"
-          }
-        : blocoPosto
+      linhaPosto
     ]
   });
 
   primeiroDaCidade = false;
-
 } else {
-
-  conteudo.push(
-    isCadastroInativo(p)
-      ? {
-          table: {
-            widths: [6, "*"],
-            body: [[
-              { fillColor: "#b71c1c", text: "" },
-              blocoPosto
-            ]]
-          },
-          layout: "noBorders"
-        }
-      : blocoPosto
-  );
-
+  conteudo.push(linhaPosto);
 }
 
 });
