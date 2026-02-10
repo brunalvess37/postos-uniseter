@@ -157,6 +157,29 @@ if (filtros.ordem === "zona") {
   });
 }
 
+// ⚠️ CADASTRO INATIVO
+const tarjaInativo = isCadastroInativo(p)
+  ? {
+      margin: [0, 0, 0, 4],
+      table: {
+        widths: ["*"],
+        body: [[
+          {
+            text: "⚠️ CADASTRO INATIVO",
+            bold: true,
+            color: "white",
+            fillColor: "#b71c1c",
+            alignment: "center",
+            fontSize: 10,
+            margin: [0, 4, 0, 4]
+          }
+        ]]
+      },
+      layout: "noBorders"
+    }
+  : null;
+
+    
     // ===== BLOCO DO POSTO =====
 const blocoPosto = {
   margin: [0, 0, 0, 14],
@@ -169,20 +192,6 @@ const blocoPosto = {
   style: "posto",
   margin: [0, 0, 0, 2]
 },
-
-// ⚠️ CADASTRO INATIVO
-isCadastroInativo(p)
-  ? {
-      text: "CADASTRO INATIVO",
-      color: "white",
-      bold: true,
-      alignment: "center",
-      fillColor: "#b71c1c",
-      margin: [0, 2, 0, 6],
-      fontSize: 10
-    }
-  : null,
-
 
     // Tipo do posto
     {
