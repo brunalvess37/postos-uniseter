@@ -5,6 +5,11 @@ async function gerarPDFGeral(filtros) {
 
   let dados = await fetch("/api/postos").then(r => r.json());
 
+  // ===== ATIVOS x TODOS =====
+if (filtros.tipo === "ativos") {
+  dados = dados.filter(p => !p.DATA_INATIVO);
+}
+
   // ===== FAVORITOS =====
   if (filtros.tipo === "favoritos") {
     const fav = JSON.parse(localStorage.getItem("postos_favoritos") || "[]");
@@ -151,11 +156,25 @@ const blocoPosto = {
   stack: [
 
     // Nome do posto
-    {
-      text: p["POSTOS DE SERVIÇOS / GRUPO SETER"],
-      style: "posto",
-      margin: [0, 0, 0, 2]
-    },
+{
+  text: p["POSTOS DE SERVIÇOS / GRUPO SETER"],
+  style: "posto",
+  margin: [0, 0, 0, 2]
+},
+
+// ⚠️ CADASTRO INATIVO
+p.DATA_INATIVO
+  ? {
+      text: "CADASTRO INATIVO",
+      color: "white",
+      bold: true,
+      alignment: "center",
+      fillColor: "#b71c1c",
+      margin: [0, 2, 0, 6],
+      fontSize: 10
+    }
+  : null,
+
 
     // Tipo do posto
     {
