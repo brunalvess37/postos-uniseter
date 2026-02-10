@@ -160,7 +160,7 @@ if (filtros.ordem === "zona") {
     // ===== BLOCO DO POSTO =====
 const blocoPosto = {
   margin: [
-  isCadastroInativo(p) ? 14 : 0,
+  isCadastroInativo(p) ? 8 : 0,
   0,
   0,
   14
@@ -239,16 +239,24 @@ const blocoPosto = {
 const linhaPosto = {
   unbreakable: true,
   table: {
-    widths: [ isCadastroInativo(p) ? 6 : 0, "*" ],
+    widths: [ isCadastroInativo(p) ? 4 : 0, "*" ],
     body: [[
       isCadastroInativo(p)
-        ? { fillColor: "#b71c1c", text: "" }
+        ? {
+            fillColor: "#b71c1c",
+            text: "",
+            margin: [0, 0, 0, 14] // 👈 define exatamente a altura da tarja
+          }
         : { text: "" },
-      blocoPosto
+      {
+        stack: blocoPosto.stack,
+        margin: [0, 0, 0, 14] // 👈 MESMA altura do posto
+      }
     ]]
   },
   layout: "noBorders"
 };
+
 
 if (primeiroDaCidade) {
   const faixa = conteudo.pop(); // remove a faixa recém inserida
