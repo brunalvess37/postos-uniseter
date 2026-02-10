@@ -159,12 +159,12 @@ if (filtros.ordem === "zona") {
   
     // ===== BLOCO DO POSTO =====
 const blocoPosto = {
-  margin: [
-    isCadastroInativo(p) ? 8 : 0,
-    0,
-    0,
-    0
-  ],
+  margin: [0, 0, 0, 0],
+  unbreakable: true,
+  stack: [
+    ...
+  ]
+};
 
   unbreakable: true,
   stack: [
@@ -218,21 +218,7 @@ const blocoPosto = {
         }
       : null,
 
-    {
-      canvas: [
-        {
-          type: "line",
-          x1: 0,
-          y1: 0,
-          x2: 515,
-          y2: 0,
-          lineWidth: 0.5,
-          lineColor: "#cccccc"
-        }
-      ],
-      margin: [0, 8, 0, 0]
-    }
-
+   
   ].filter(Boolean)
 };
 
