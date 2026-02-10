@@ -47,6 +47,13 @@ function isFavorito(id) {
 }
 
 function toggleFavorito(id) {
+  const p = postos[id];
+
+  if (isCadastroInativo(p)) {
+    alert("⚠️ Cadastro inativo não pode ser favoritado.");
+    return;
+  }
+
   favoritos = isFavorito(id)
     ? favoritos.filter(f => f !== id)
     : [...favoritos, id];
@@ -54,6 +61,7 @@ function toggleFavorito(id) {
   localStorage.setItem("postos_favoritos", JSON.stringify(favoritos));
   abrirDetalhes(id);
 }
+
 
 // =====================================================
 // CONTATOS
@@ -101,6 +109,20 @@ function abrirDetalhes(i) {
 
   document.getElementById("details").innerHTML = `
   <h3>
+  ${isCadastroInativo(p) ? `
+  <div style="
+    margin:8px 0;
+    padding:8px;
+    background:#ffe5e5;
+    color:#b71c1c;
+    font-weight:bold;
+    border-radius:6px;
+    text-align:center;
+  ">
+    ⚠️ CADASTRO INATIVO
+  </div>
+` : ""}
+
     ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
     <button
       ${inativo ? "disabled title='Cadastro inativo não pode ser favoritado'" : ""}
@@ -158,10 +180,17 @@ window.abrirDetalhes = abrirDetalhes;
 // ROTA
 // =====================================================
 function addRota(i) {
+  const p = postos[i];
+
+  if (isCadastroInativo(p)) {
+    alert("⚠️ Cadastro inativo não pode ser adicionado à rota.");
+    return;
+  }
+
   const dados = JSON.parse(localStorage.getItem("rota_postos") || "{}");
   const rota = dados.rota || [];
 
-  rota.push({ ...postos[i] });
+  rota.push({ ...p });
 
   localStorage.setItem("rota_postos", JSON.stringify({
     rota,
@@ -170,6 +199,7 @@ function addRota(i) {
 
   alert("Posto adicionado à rota!");
 }
+
 
 // =====================================================
 // BUSCA + HISTÓRICO + TECLADO
