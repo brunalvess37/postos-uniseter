@@ -106,11 +106,30 @@ function atualizarEstadoBotoes(){
 <div class="card">
   <label>Tipo de relatório</label>
   <div class="radio-group" onchange="atualizarEstadoBotoes()">
-    <label><input type="radio" name="tipo" value="todos" checked> Todos os postos</label>
-    <label><input type="radio" name="tipo" value="favoritos"> Apenas favoritos</label>
-    <label><input type="radio" name="tipo" value="manual"> Seleção manual</label>
+
+    <label>
+      <input type="radio" name="tipo" value="ativos" checked>
+      Postos ativos
+    </label>
+
+    <label>
+      <input type="radio" name="tipo" value="todos">
+      Todos os cadastros (ativos + inativos)
+    </label>
+
+    <label>
+      <input type="radio" name="tipo" value="favoritos">
+      Apenas favoritos
+    </label>
+
+    <label>
+      <input type="radio" name="tipo" value="manual">
+      Seleção manual
+    </label>
+
   </div>
 </div>
+
 
 <div class="card">
   <label>Ordenação</label>
