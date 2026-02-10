@@ -110,12 +110,13 @@ function abrirDetalhes(i) {
   document.getElementById("details").innerHTML = `
   <h3>
   ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
-  <button
-    ${inativo ? "disabled title='Cadastro inativo não pode ser favoritado'" : ""}
-    onclick="${inativo ? "" : `toggleFavorito(${i})`}"
-  >
+
+ ${!inativo ? `
+  <button onclick="toggleFavorito(${i})">
     ${isFavorito(i) ? "★" : "☆"}
   </button>
+` : ""}
+  
 </h3>
 
 ${inativo ? `
@@ -131,21 +132,6 @@ ${inativo ? `
     ⚠️ CADASTRO INATIVO
   </div>
 ` : ""}
-
-
-  ${inativo ? `
-    <div style="
-      margin:8px 0;
-      padding:8px;
-      background:#ffe5e5;
-      color:#b71c1c;
-      font-weight:bold;
-      border-radius:6px;
-      text-align:center;
-    ">
-      ⚠️ CADASTRO INATIVO
-    </div>
-  ` : ""}
 
 
     <p><b>Cidade:</b> ${p.CIDADE}</p>
