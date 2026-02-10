@@ -1028,6 +1028,7 @@ marcadores[i] = m;
   }
 
   btn.onclick = () => {
+    
     if (navigator.vibrate) {
       navigator.vibrate(20);
     }
@@ -1042,24 +1043,6 @@ marcadores[i] = m;
     }
   };
 });
-
-  
-  // 🔹 feedback tátil ao incluir na rota
-  if (navigator.vibrate) {
-    navigator.vibrate(20);
-  }
-
-  addRota(i);
-
-  // 👉 NOVO: limpa o destaque ao incluir na rota (PARTE 3)
-  if (marcadorDestacado) {
-    const el = marcadorDestacado.getElement();
-    const ponto = el?.querySelector("div");
-    ponto?.classList.remove("marker-highlight");
-    marcadorDestacado = null;
-  }
-};
-
     
   });
 });
