@@ -259,13 +259,18 @@ if (primeiroDaCidade) {
     unbreakable: true,
     stack: [
       faixa,
+      ...(tarjaInativo ? [tarjaInativo] : []),
       blocoPosto
     ]
   });
 
   primeiroDaCidade = false;
-} else {
-  conteudo.push(blocoPosto);
+}
+ else {
+  conteudo.push(
+    ...(tarjaInativo ? [tarjaInativo] : []),
+    blocoPosto
+  );
 }
 });
 
