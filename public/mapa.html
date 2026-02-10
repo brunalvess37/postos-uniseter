@@ -414,6 +414,9 @@ let rotaSheet;
 let rotaList;
 let handle;
 
+function isCadastroInativo(p) {
+  return !!p.DATA_INATIVO;
+}
 
   async function initMapa(){
 
@@ -608,6 +611,21 @@ function iconPosto(cor){
   });
 }
 
+function iconPostoInativo(){
+  return L.divIcon({
+    html: `
+      <div style="
+        background:#999;
+        width:12px;
+        height:12px;
+        border-radius:50%;
+        border:2px solid white;
+        opacity:0.5;
+      "></div>
+    `
+  });
+}
+    
 function iconUsuario(){
   return L.divIcon({
     className: "user-location-marker",
@@ -938,17 +956,52 @@ postos.forEach((p,i)=>{
   const endereco=[p["ENDEREÇO I"],p["ENDEREÇO II"],p["ENDEREÇO III"],p["ENDEREÇO IV"]
     ].filter(Boolean).join(" - ");
 
-  const popup=`
-    <div class="popup-card">
-      <div class="popup-title">${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</div>
-      <div class="popup-address">${endereco}</div>
-      <div class="popup-actions">
-        <button class="popup-btn js-add-rota">➕ Incluir na rota</button>
-      </div>
-    </div>
-  `;
+  const inativo = isCadastroInativo(p);
 
-  const m=L.marker([p.Latitude,p.Longitude],{icon:iconPosto(cores[p.ZONA]||"#555")})
+const popup=`
+  <div class="popup-card">
+    <div class="popup-title">
+      ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
+    </div>
+
+    ${inativo ? `
+      <div style="
+        margin:6px 0;
+        padding:6px;
+        background:#ffe5e5;
+        color:#b71c1c;
+        font-weight:bold;
+        border-radius:6px;
+        text-align:center;
+        font-size:13px;
+      ">
+        ⚠️ CADASTRO INATIVO
+      </div>
+    ` : ""}
+
+    <div class="popup-address">${endereco}</div>
+
+    <div class="popup-actions">
+      <button
+        class="popup-btn js-add-rota"
+        ${inativo ? "disabled title='Cadastro inativo não pode entrar na rota'" : ""}
+      >
+        ➕ Incluir na rota
+      </button>
+    </div>
+  </div>
+`;
+
+
+const m = L.marker(
+  [p.Latitude, p.Longitude],
+  {
+    icon: inativo
+      ? iconPostoInativo()
+      : iconPosto(cores[p.ZONA] || "#555"),
+    opacity: inativo ? 0.6 : 1
+  }
+)
     .addTo(layerPostos)
     .bindPopup(popup);
 
@@ -965,9 +1018,32 @@ m.on("click", () => {
 // 🔹 guarda o marcador na mesma posição do posto
 marcadores[i] = m;
 
+  m.on("popupopen", e => {
+  const btn = e.popup.getElement().querySelector(".js-add-rota");
+  if (!btn) return;
+
+  if (isCadastroInativo(p)) {
+    btn.onclick = null;
+    return;
+  }
+
+  btn.onclick = () => {
+    if (navigator.vibrate) {
+      navigator.vibrate(20);
+    }
+
+    addRota(i);
+
+    if (marcadorDestacado) {
+      const el = marcadorDestacado.getElement();
+      const ponto = el?.querySelector("div");
+      ponto?.classList.remove("marker-highlight");
+      marcadorDestacado = null;
+    }
+  };
+});
+
   
-    m.on("popupopen",e=>{
-   e.popup.getElement().querySelector(".js-add-rota").onclick = () => {
   // 🔹 feedback tátil ao incluir na rota
   if (navigator.vibrate) {
     navigator.vibrate(20);
