@@ -236,29 +236,23 @@ const blocoPosto = {
   ].filter(Boolean)
 };
 
-// 🔒 linha única do posto (tarja + conteúdo SEMPRE juntos)
-const linhaPosto = {
-  unbreakable: true,
-  table: {
-    widths: [ isCadastroInativo(p) ? 4 : 0, "*" ],
-    body: [[
-      isCadastroInativo(p)
-        ? {
-            fillColor: "#b71c1c",
-            text: "\n\n\n" // 👈 altura REAL da tarja
-          }
-        : { text: "" },
-      {
-        stack: [
-        ...blocoPosto.stack,
-        { text: "\n" } // 👈 garante mesma altura da linha
-      ]
+// 🔒 linha do posto (estrutura DIFERENTE para ativo e inativo)
+const linhaPosto = isCadastroInativo(p)
+  ? {
+      unbreakable: true,
+      table: {
+        widths: [4, "*"], // ✅ NUNCA zero
+        body: [[
+          { fillColor: "#b71c1c", text: "" },
+          blocoPosto
+        ]]
+      },
+      layout: "noBorders"
     }
-
-    ]]
-  },
-  layout: "noBorders"
-};
+  : {
+      unbreakable: true,
+      stack: [ blocoPosto ]
+    };
 
 
 if (primeiroDaCidade) {
