@@ -84,8 +84,16 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   };
 
   document.body.style.display="block";
-  atualizarEstadoBotoes();
+
+// 🔹 NOVO: se já houver seleção salva, pré-seleciona "manual"
+if (localStorage.getItem("postos_selecionados")) {
+  const radioManual = document.querySelector('input[name="tipo"][value="manual"]');
+  if (radioManual) radioManual.checked = true;
+}
+
+atualizarEstadoBotoes();
 });
+
 
 function atualizarEstadoBotoes(){
   const tipo = document.querySelector("input[name=tipo]:checked").value;
@@ -159,7 +167,7 @@ if (tipo === "manual" && temSelecao) {
 <p id="manualStatus"
    class="hidden"
    style="margin: 6px 0 0 24px; color: var(--muted); font-size: 13px;">
-  ✔️ Seleção salva — clique em “Gerar PDF”
+  ✔️ Seleção manual ativa — clique em “Gerar PDF”
 </p>
 
   </div>
