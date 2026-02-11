@@ -97,7 +97,7 @@ function linhaIndice(rotulo, pagina) {
         color: "#999"
       },
       {
-        text: pagina.toString(),
+        text: (pagina ?? "").toString(),
         fontSize: 8,
         alignment: "right",
         width: 20
