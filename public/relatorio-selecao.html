@@ -1,1 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selecionar Postos — UNISETER</title>
+<link rel="stylesheet" href="style.css?v=202501">
+<style>
+:root{
+  --bg:#f4f6f8;
+}
+body{display:none; padding:20px; background:var(--bg);}
+.container{max-width:900px; margin:auto;}
+header{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:16px;}
+.search-row{display:flex; gap:8px; align-items:center;}
+.search-row input{flex:1; padding:10px 12px; border-radius:8px; border:1px solid var(--border);}
+.list{max-height:420px; overflow-y:auto; border:1px solid var(--border); border-radius:10px;}
+.item{display:flex; justify-content:space-between; align-items:center; padding:10px 12px; cursor:pointer;}
+.item:hover{background:#eef3ff;}
+.item + .item{border-top:1px solid var(--border);}
+.badge{background:#eef3ff; color:#003c8d; padding:4px 8px; border-radius:999px; font-size:12px;}
+.chips{display:flex; flex-wrap:wrap; gap:8px;}
+.chip{background:#eef3ff; color:#003c8d; border:1px solid #d6e0ff; border-radius:999px; padding:6px 10px; display:flex; align-items:center; gap:6px; font-size:13px;}
+.chip button{border:none; background:transparent; cursor:pointer; font-weight:bold; color:#003c8d;}
+.footer-row{display:flex; justify-content:space-between; align-items:center;}
+.counter{color:var(--muted); font-size:14px;}
+.primary{background:var(--primary); color:white; border:none; padding:10px 16px; border-radius:8px; cursor:pointer;}
+.secondary{background:transparent; border:1px solid var(--border); padding:10px 16px; border-radius:8px; cursor:pointer;}
+.empty{padding:20px; text-align:center; color:var(--muted);}
+</style>
+
+<script async crossorigin="anonymous"
+  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+  data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
+</script>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h2>Selecionar Postos</h2>
+    <button class="secondary" onclick="location.href='relatorio.html'">← Voltar</button>
+  </header>
+
+  <div class="card">
+    <div class="search-row">
+      <input id="busca" type="text" placeholder="Buscar por nome ou cidade..." oninput="renderLista()">
+      <button class="secondary" onclick="limparSelecao()">Limpar seleção</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="chips" id="chips"></div>
+    <p id="contador" class="counter" style="margin-top:8px"></p>
+  </div>
+
+  <div class="card">
+    <div id="lista" class="list"></div>
+  </div>
+
+  <div class="footer-row">
+    <button class="secondary" onclick="location.href='relatorio.html'">Cancelar</button>
+    <button class="primary" onclick="confirmarSelecao()">Confirmar seleção</button>
+  </div>
+</div>
+
+<script>
+let postos = [];
+let selecionados = [];
+
+async function init(){
+  const c = window.Clerk;
+  await c.load();
+  if(!c.user) return location.href="/signin.html";
+
+  document.body.style.display = "block";
+
+  // carrega seleção existente (se houver)
+  selecionados = JSON.parse(localStorage.getItem("postos_selecionados") || "[]");
+
+  postos = await fetch("/api/postos").then(r => r.json());
+  renderLista();
+  renderChips();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+function chaveBusca(p){
+  const nome = (p["POSTOS DE SERVIÇOS / GRUPO SETER"] || "").toLowerCase();
+  const cidade = (p.CIDADE || "").toLowerCase();
+  return `${nome} ${cidade}`;
+}
+
+function renderLista(){
+  const termo = document.getElementById("busca").value.toLowerCase();
+  const lista = document.getElementById("lista");
+
+  const filtrados = postos
+    .map((p,i) => ({p,i}))
+    .filter(({p}) => !termo || chaveBusca(p).includes(termo));
+
+  if(!filtrados.length){
+    lista.innerHTML = `<div class='empty'>Nenhum posto encontrado.</div>`;
+    return;
+  }
+
+  lista.innerHTML = filtrados.map(({p,i}) => {
+    const rotulo = `${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || "Sem nome"} (${p.CIDADE || "Sem cidade"})`;
+    const ativo = selecionados.includes(i);
+    return `
+      <div class='item' onclick='toggleSelecionado(${i})'>
+        <div>${rotulo}</div>
+        <div class='badge'>${ativo ? "Selecionado" : "Selecionar"}</div>
+      </div>`;
+  }).join("");
+}
+
+function toggleSelecionado(indice){
+  if(selecionados.includes(indice)){
+    selecionados = selecionados.filter(i => i !== indice);
+  } else {
+    selecionados.push(indice);
+  }
+  renderLista();
+  renderChips();
+}
+
+function renderChips(){
+  const chips = document.getElementById("chips");
+  const contador = document.getElementById("contador");
+
+  chips.innerHTML = selecionados.map(i => {
+    const p = postos[i];
+    const rotulo = `${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || "Sem nome"} (${p.CIDADE || "Sem cidade"})`;
+    return `
+      <div class='chip'>
+        <span>${rotulo}</span>
+        <button onclick='removerSelecionado(${i})' title='Remover'>&times;</button>
+      </div>`;
+  }).join("");
+
+  const n = selecionados.length;
+  contador.textContent = n === 1 ? "1 posto selecionado" : `${n} postos selecionados`;
+}
+
+function removerSelecionado(indice){
+  selecionados = selecionados.filter(i => i !== indice);
+  renderLista();
+  renderChips();
+}
+
+function limparSelecao(){
+  selecionados = [];
+  renderLista();
+  renderChips();
+}
+
+function confirmarSelecao(){
+  if(!selecionados.length){
+    alert("Selecione ao menos um posto.");
+    return;
+  }
+  localStorage.setItem("postos_selecionados", JSON.stringify(selecionados));
+  location.href = "relatorio.html";
+}
+</script>
+</body>
+</html>
 
