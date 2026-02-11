@@ -341,9 +341,10 @@ if (primeiroDaCidade) {
   };
 },
 
-
     content: [
-  ...(filtros.incluirIndice ? [{ text: "INDICE_PLACEHOLDER" }] : []),
+  ...(filtros.incluirIndice
+    ? [{ text: "", pageBreak: "before" }]
+    : []),
   ...conteudo
 ],
 
