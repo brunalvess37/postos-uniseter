@@ -467,7 +467,12 @@ if (primeiroDaCidade) {
   // ===== ETAPA 1: GERAR PDF "VIRTUAL" PARA DESCOBRIR PÁGINAS =====
   const pdfDoc = pdfMake.createPdf(doc);
 
+// 👉 FORÇA A RENDERIZAÇÃO DO PDF VIRTUAL
+pdfDoc.getBuffer().then(() => {
+
+  // Agora SIM podemos ler as páginas reais
   pdfDoc.getPageInfo().then(() => {
+
 
     // Preenche mapaPaginas com páginas reais
     mapaPaginas.forEach(mp => {
