@@ -98,16 +98,17 @@ function atualizarEstadoBotoes(){
 
 
   // Mostra o botão inline abaixo de "Seleção manual"
-  document.getElementById("btnManualInline")
-    .classList.toggle("hidden", tipo !== "manual");
-}
+document.getElementById("btnManualInline")
+  .classList.toggle("hidden", tipo !== "manual");
 
+// Mostra/oculta o texto de status da seleção
 const status = document.getElementById("manualStatus");
 
 if (tipo === "manual" && temSelecao) {
   status.classList.remove("hidden");
 } else {
   status.classList.add("hidden");
+}
 }
 
   
@@ -161,16 +162,6 @@ if (tipo === "manual" && temSelecao) {
   ✔️ Seleção salva — clique em “Gerar PDF”
 </p>
 
-
-<button
-  id="btnManualInline"
-  type="button"
-  class="secondary hidden"
-  style="margin: 8px 0 0 24px; width: auto;"
-  onclick="location.href='relatorio-selecao.html'">
-  Selecionar postos
-</button>
-
   </div>
 </div>
 
@@ -202,13 +193,6 @@ if (tipo === "manual" && temSelecao) {
     Gerar PDF
   </button>
 
-  <button
-    id="btnManual"
-    type="button"
-    class="secondary hidden"
-    onclick="location.href='relatorio-selecao.html'">
-    Selecionar postos
-  </button>
 </div>
 
 </div>
