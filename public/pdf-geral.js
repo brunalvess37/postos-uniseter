@@ -104,10 +104,30 @@ function linhaIndice(rotulo, pagina) {
 
 
 // Distribui itens em 3 colunas (coluna 0, 1 ou 2)
-function colunaIndice(offset, lista) {
-  return lista
-    .filter((_, i) => i % 3 === offset)
-    .map(item => linhaIndice(item.rotulo, item.pagina));
+// Monta o índice em 3 colunas alinhadas linha a linha (tabela)
+function montarIndiceEmTresColunas(lista) {
+
+  const linhas = [];
+
+  for (let i = 0; i < lista.length; i += 3) {
+    const c1 = lista[i];
+    const c2 = lista[i + 1];
+    const c3 = lista[i + 2];
+
+    linhas.push([
+      c1 ? linhaIndice(c1.rotulo, c1.pagina) : { text: "" },
+      c2 ? linhaIndice(c2.rotulo, c2.pagina) : { text: "" },
+      c3 ? linhaIndice(c3.rotulo, c3.pagina) : { text: "" }
+    ]);
+  }
+
+  return {
+    table: {
+      widths: ["*", "*", "*"], // 3 colunas iguais
+      body: linhas
+    },
+    layout: "noBorders"
+  };
 }
 
 
@@ -403,15 +423,9 @@ if (primeiroDaCidade) {
               alignment: "center",
               margin: [0, 0, 0, 8]
             },
-            {
-              columns: [
-                { stack: colunaIndice(0, listaIndice) },
-                { stack: colunaIndice(1, listaIndice) },
-                { stack: colunaIndice(2, listaIndice) }
-              ],
-              columnGap: 8,
-              widths: ["*", "*", "*"]   // ← FIXA 3 COLUNAS IGUAIS
-            }
+
+            montarIndiceEmTresColunas(listaIndice)
+
           ],
           pageBreak: "after" // ← QUEBRA DE PÁGINA APÓS O ÍNDICE
         }
