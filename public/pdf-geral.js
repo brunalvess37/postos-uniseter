@@ -65,6 +65,14 @@ if (filtros.tipo === "ativos") {
     .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
 });
 
+  // ===== PREPARAÇÃO DO ÍNDICE (base de dados) =====
+const listaIndice = dados.map((p) => {
+  return {
+    rotulo: `${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || ""} (${p.CIDADE || ""})`,
+    pagina: null // será calculada depois
+  };
+});
+
 
   // ===== FUNÇÕES AUXILIARES =====
   function enderecoCompleto(p) {
@@ -334,7 +342,11 @@ if (primeiroDaCidade) {
 },
 
 
-    content: conteudo,
+    content: [
+  ...(filtros.incluirIndice ? [{ text: "INDICE_PLACEHOLDER" }] : []),
+  ...conteudo
+],
+
 
     styles: {
       titulo: {
