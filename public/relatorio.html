@@ -89,9 +89,28 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
 function atualizarEstadoBotoes(){
   const tipo = document.querySelector("input[name=tipo]:checked").value;
-  document.getElementById("btnGerar").disabled = (tipo === "manual");
-  document.getElementById("btnManual").classList.toggle("hidden", tipo !== "manual");
+
+  const temSelecao = !!localStorage.getItem("postos_selecionados");
+
+  // Só desabilita se for manual E ainda não houver seleção
+  document.getElementById("btnGerar").disabled =
+    (tipo === "manual" && !temSelecao);
+
+
+  // Mostra o botão inline abaixo de "Seleção manual"
+  document.getElementById("btnManualInline")
+    .classList.toggle("hidden", tipo !== "manual");
 }
+
+const status = document.getElementById("manualStatus");
+
+if (tipo === "manual" && temSelecao) {
+  status.classList.remove("hidden");
+} else {
+  status.classList.add("hidden");
+}
+
+  
 </script>
 
 <div class="container">
@@ -126,6 +145,22 @@ function atualizarEstadoBotoes(){
   <input type="radio" name="tipo" value="manual">
   Seleção manual
 </label>
+
+<button
+  id="btnManualInline"
+  type="button"
+  class="secondary hidden"
+  style="margin: 8px 0 0 24px; width: auto;"
+  onclick="location.href='relatorio-selecao.html'">
+  Selecionar postos
+</button>
+
+<p id="manualStatus"
+   class="hidden"
+   style="margin: 6px 0 0 24px; color: var(--muted); font-size: 13px;">
+  ✔️ Seleção salva — clique em “Gerar PDF”
+</p>
+
 
 <button
   id="btnManualInline"
