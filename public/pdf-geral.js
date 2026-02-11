@@ -484,7 +484,12 @@ pdfDoc.getBuffer().then(() => {
 
     // Atualiza listaIndice com as páginas reais
     listaIndice.forEach((item, i) => {
-      item.pagina = mapaPaginas[i]?.pagina || 1;
+      const paginaCalculada =
+        mapaPaginas[i]?.pagina ??
+        mapaPaginas[i - 1]?.pagina ??
+        1;
+      
+      item.pagina = paginaCalculada;
     });
 
     // ===== ETAPA 2: GERAR PDF FINAL COM ÍNDICE REAL =====
