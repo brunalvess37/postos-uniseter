@@ -526,4 +526,4 @@ pdfDoc.getBuffer().then(() => {
     pdfMake.createPdf(docFinal).open();
   });
 });
-
+}
