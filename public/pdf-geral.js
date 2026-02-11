@@ -81,7 +81,8 @@ function linhaIndice(rotulo, pagina) {
     columns: [
       {
         text: rotulo,
-        fontSize: 8
+        fontSize: 8,
+        noWrap: false   // ← permite quebrar linha se o nome for muito grande
       },
       {
         text:
@@ -93,13 +94,14 @@ function linhaIndice(rotulo, pagina) {
         text: pagina.toString(),
         fontSize: 8,
         alignment: "right",
-        width: 20   // ← chave do alinhamento dos números
+        width: 20
       }
     ],
     columnGap: 4,
     margin: [0, 0, 0, 2]
   };
 }
+
 
 // Distribui itens em 3 colunas (coluna 0, 1 ou 2)
 function colunaIndice(offset, lista) {
@@ -165,7 +167,7 @@ function colunaIndice(offset, lista) {
   // ===== ATRIBUIÇÃO SIMPLES DE PÁGINAS PARA O ÍNDICE =====
 // (1ª página do relatório será 1; depois +1 por posto)
 listaIndice.forEach((item, i) => {
-  item.pagina = i + 1;
+  item.pagina = Math.floor(i / 2) + 2;
 });
 
   
@@ -387,7 +389,7 @@ if (primeiroDaCidade) {
   ...(filtros.incluirIndice
     ? [
         {
-          pageBreak: "before",
+          // ← NÃO usamos mais pageBreak:"before" aqui
           stack: [
             {
               text: "POSTOS UNISETER",
@@ -407,9 +409,11 @@ if (primeiroDaCidade) {
                 { stack: colunaIndice(1, listaIndice) },
                 { stack: colunaIndice(2, listaIndice) }
               ],
-              columnGap: 8
+              columnGap: 8,
+              widths: ["*", "*", "*"]   // ← FIXA 3 COLUNAS IGUAIS
             }
-          ]
+          ],
+          pageBreak: "after" // ← QUEBRA DE PÁGINA APÓS O ÍNDICE
         }
       ]
     : []),
