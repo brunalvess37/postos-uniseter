@@ -291,10 +291,26 @@ if (primeiroDaCidade) {
   stack: [
     {
       text: "RELATÓRIO POSTOS UNISETER",
-      style: "titulo"
+      style: "titulo",
+      margin: [0, 0, 0, 6]
+    },
+    {
+      canvas: [
+        {
+          type: "line",
+          x1: 0,
+          y1: 0,
+          x2: 515,
+          y2: 0,
+          lineWidth: 1,        // 👈 mais forte que as linhas dos postos
+          lineColor: "#999999" // 👈 cinza mais escuro
+        }
+      ],
+      margin: [0, 0, 0, 6]
     }
   ]
 },
+
 
     footer: function (currentPage, pageCount) {
   return {
