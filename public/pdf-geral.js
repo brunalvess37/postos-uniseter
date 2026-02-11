@@ -65,13 +65,19 @@ if (filtros.tipo === "ativos") {
     .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
 });
 
-  // ===== PREPARAÇÃO DO ÍNDICE (base de dados) =====
-const listaIndice = dados.map((p) => {
-  return {
-    rotulo: `${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || ""} (${p.CIDADE || ""})`,
-    pagina: null // será calculada depois
-  };
-});
+  // ===== MAPA PARA RASTREAR PÁGINAS REAIS =====
+const mapaPaginas = dados.map((p, i) => ({
+  id: `posto_${i}`, // identificador único no PDF
+  rotulo: `${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || ""} (${p.CIDADE || ""})`,
+  pagina: null
+}));
+
+// ===== LISTA DO ÍNDICE (derivada do mapa de páginas) =====
+const listaIndice = mapaPaginas.map(mp => ({
+  rotulo: mp.rotulo,
+  pagina: null
+}));
+
 
 // ===== FUNÇÕES DO ÍNDICE =====
 
@@ -184,12 +190,6 @@ function montarIndiceEmTresColunas(lista) {
   ];
 }
 
-  // ===== ATRIBUIÇÃO SIMPLES DE PÁGINAS PARA O ÍNDICE =====
-// (1ª página do relatório será 1; depois +1 por posto)
-listaIndice.forEach((item, i) => {
-  item.pagina = Math.floor(i / 2) + 2;
-});
-
   
   // ===== CONTEÚDO =====
   let grupoAtual = null;
@@ -197,7 +197,7 @@ listaIndice.forEach((item, i) => {
 
   let primeiroDaCidade = false;
 
-  dados.forEach(p => {
+  dados.forEach((p, i) => {
 
     let grupo = null;
 
@@ -235,6 +235,11 @@ const blocoPosto = {
   unbreakable: true,
   stack: [
 
+    // 🔹 MARCADOR INVISÍVEL PARA PAGINAÇÃO REAL
+    {
+      text: "",
+      id: mapaPaginas[i].id
+    },
 
     // Nome do posto
 {
@@ -242,6 +247,7 @@ const blocoPosto = {
   style: "posto",
   margin: [0, 0, 0, 2]
 },
+
 
     // Tipo do posto
     {
@@ -457,5 +463,57 @@ if (primeiroDaCidade) {
     }
   };
 
-  pdfMake.createPdf(doc).open();
+
+  // ===== ETAPA 1: GERAR PDF "VIRTUAL" PARA DESCOBRIR PÁGINAS =====
+  const pdfDoc = pdfMake.createPdf(doc);
+
+  pdfDoc.getPageInfo().then(() => {
+
+    // Preenche mapaPaginas com páginas reais
+    mapaPaginas.forEach(mp => {
+      const ref = pdfDoc.getPageReference(mp.id);
+      if (ref && ref.pageNumber) {
+        mp.pagina = ref.pageNumber;
+      }
+    });
+
+    // Atualiza listaIndice com as páginas reais
+    listaIndice.forEach((item, i) => {
+      item.pagina = mapaPaginas[i]?.pagina || 1;
+    });
+
+    // ===== ETAPA 2: GERAR PDF FINAL COM ÍNDICE REAL =====
+    const docFinal = {
+      ...doc,
+      content: [
+        ...(filtros.incluirIndice
+          ? [
+              {
+                stack: [
+                  {
+                    text: "POSTOS UNISETER",
+                    style: "titulo",
+                    alignment: "center",
+                    margin: [0, 0, 0, 2]
+                  },
+                  {
+                    text: "ÍNDICE",
+                    fontSize: 11,
+                    alignment: "center",
+                    margin: [0, 0, 0, 8]
+                  },
+
+                  montarIndiceEmTresColunas(listaIndice)
+                ],
+                pageBreak: "after"
+              }
+            ]
+          : []),
+        ...conteudo
+      ]
+    };
+
+    pdfMake.createPdf(docFinal).open();
+  });
 }
+
