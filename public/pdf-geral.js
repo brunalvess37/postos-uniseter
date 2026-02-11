@@ -73,6 +73,41 @@ const listaIndice = dados.map((p) => {
   };
 });
 
+// ===== FUNÇÕES DO ÍNDICE =====
+
+// Linha compacta do índice com pontilhado e número alinhado à direita
+function linhaIndice(rotulo, pagina) {
+  return {
+    columns: [
+      {
+        text: rotulo,
+        fontSize: 8
+      },
+      {
+        text:
+          "........................................................................................",
+        fontSize: 8,
+        color: "#999"
+      },
+      {
+        text: pagina.toString(),
+        fontSize: 8,
+        alignment: "right",
+        width: 20   // ← chave do alinhamento dos números
+      }
+    ],
+    columnGap: 4,
+    margin: [0, 0, 0, 2]
+  };
+}
+
+// Distribui itens em 3 colunas (coluna 0, 1 ou 2)
+function colunaIndice(offset, lista) {
+  return lista
+    .filter((_, i) => i % 3 === offset)
+    .map(item => linhaIndice(item.rotulo, item.pagina));
+}
+
 
   // ===== FUNÇÕES AUXILIARES =====
   function enderecoCompleto(p) {
@@ -127,6 +162,13 @@ const listaIndice = dados.map((p) => {
   ];
 }
 
+  // ===== ATRIBUIÇÃO SIMPLES DE PÁGINAS PARA O ÍNDICE =====
+// (1ª página do relatório será 1; depois +1 por posto)
+listaIndice.forEach((item, i) => {
+  item.pagina = i + 1;
+});
+
+  
   // ===== CONTEÚDO =====
   let grupoAtual = null;
   const conteudo = [];
@@ -343,7 +385,33 @@ if (primeiroDaCidade) {
 
     content: [
   ...(filtros.incluirIndice
-    ? [{ text: "", pageBreak: "before" }]
+    ? [
+        {
+          pageBreak: "before",
+          stack: [
+            {
+              text: "POSTOS UNISETER",
+              style: "titulo",
+              alignment: "center",
+              margin: [0, 0, 0, 2]
+            },
+            {
+              text: "ÍNDICE",
+              fontSize: 11,
+              alignment: "center",
+              margin: [0, 0, 0, 8]
+            },
+            {
+              columns: [
+                { stack: colunaIndice(0, listaIndice) },
+                { stack: colunaIndice(1, listaIndice) },
+                { stack: colunaIndice(2, listaIndice) }
+              ],
+              columnGap: 8
+            }
+          ]
+        }
+      ]
     : []),
   ...conteudo
 ],
