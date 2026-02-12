@@ -481,12 +481,29 @@ if (primeiroDaCidade) {
       item.pagina = mapaPaginas[i].pagina;
     });
 
-    const docFinal = {
+        const docFinal = {
+      ...doc,
+      content: [
+        ...conteudo,
+        {
+          pageBreak: "before",
+          stack: [
+            {
+              text: "ÍNDICE",
+              style: "posto",
+              alignment: "center",
+              margin: [0, 0, 0, 6]
+            },
+            montarIndiceEmTresColunas(listaIndice)
+          ]
+        }
+      ]
+    };
 
-
-      pdfMake.createPdf(docFinal).open();
+    pdfMake.createPdf(docFinal).open();
 
   });
 }
+
 
 
