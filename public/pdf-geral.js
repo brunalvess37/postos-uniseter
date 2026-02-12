@@ -67,8 +67,14 @@ if (filtros.tipo === "ativos") {
 
   // ===== MAPA PARA RASTREAR PÁGINAS REAIS =====
 const mapaPaginas = dados.map((p, i) => ({
-  id: `posto_${i}`, // identificador único no PDF
-  rotulo: `${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || ""} (${p.CIDADE || ""})`,
+  id: `posto_${i}`,
+  rotulo: `${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || ""}`,
+  grupo:
+    filtros.ordem === "zona"
+      ? p.ZONA
+      : filtros.ordem === "cidade"
+      ? p.CIDADE
+      : null,
   pagina: null
 }));
 
@@ -81,59 +87,72 @@ const listaIndice = mapaPaginas.map(mp => ({
 
 // ===== FUNÇÕES DO ÍNDICE =====
 
-// Linha compacta do índice com pontilhado e número alinhado à direita
-function linhaIndice(rotulo, pagina) {
-  return {
-    columns: [
-      {
-        text: rotulo,
-        fontSize: 8,
-        noWrap: false   // ← permite quebrar linha se o nome for muito grande
-      },
-      {
-        text:
-          "........................................................................................",
-        fontSize: 8,
-        color: "#999"
-      },
-      {
-        text: (pagina ?? "").toString(),
-        fontSize: 8,
-        alignment: "right",
-        width: 20
-      }
-    ],
-    columnGap: 4,
-    margin: [0, 0, 0, 2]
-  };
-}
+
 
 
 // Distribui itens em 3 colunas (coluna 0, 1 ou 2)
 // Monta o índice em 3 colunas alinhadas linha a linha (tabela)
 function montarIndiceEmTresColunas(lista) {
 
+  const colunasFixas = [170, 170, 170]; // largura fixa das 3 colunas
   const linhas = [];
+  let grupoAtual = null;
 
-  for (let i = 0; i < lista.length; i += 3) {
-    const c1 = lista[i];
-    const c2 = lista[i + 1];
-    const c3 = lista[i + 2];
+  for (let i = 0; i < lista.length; i++) {
 
+    const item = lista[i];
+
+    // FAIXA AZUL DE GRUPO (como zona/cidade)
+    if (item.grupo && item.grupo !== grupoAtual) {
+      grupoAtual = item.grupo;
+
+      linhas.push([
+        {
+          colSpan: 3,
+          fillColor: "#003c8d",
+          color: "white",
+          bold: true,
+          fontSize: 9,
+          text: grupoAtual.toUpperCase(),
+          margin: [4, 3, 0, 3]
+        },
+        {},
+        {}
+      ]);
+    }
+
+    // Linha normal do índice
     linhas.push([
-      c1 ? linhaIndice(c1.rotulo, c1.pagina) : { text: "" },
-      c2 ? linhaIndice(c2.rotulo, c2.pagina) : { text: "" },
-      c3 ? linhaIndice(c3.rotulo, c3.pagina) : { text: "" }
+      {
+        text: `Pág. ${String(i + 1).padStart(2, "0")} - ${item.rotulo}`,
+        fontSize: 8,
+        noWrap: false
+      }
     ]);
   }
 
   return {
     table: {
-      widths: ["*", "*", "*"], // 3 colunas iguais
-      body: linhas
+      widths: colunasFixas,
+      body: dividirEmTresColunas(linhas)
     },
     layout: "noBorders"
   };
+}
+
+function dividirEmTresColunas(lista) {
+
+  const resultado = [];
+
+  for (let i = 0; i < lista.length; i += 3) {
+    resultado.push([
+      lista[i] || { text: "" },
+      lista[i + 1] || { text: "" },
+      lista[i + 2] || { text: "" }
+    ]);
+  }
+
+  return resultado;
 }
 
 
@@ -417,12 +436,7 @@ if (primeiroDaCidade) {
         {
           // ← NÃO usamos mais pageBreak:"before" aqui
           stack: [
-            {
-              text: "POSTOS UNISETER",
-              style: "titulo",
-              alignment: "center",
-              margin: [0, 0, 0, 2]
-            },
+            
             {
               text: "ÍNDICE",
               fontSize: 11,
