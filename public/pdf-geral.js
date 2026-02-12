@@ -82,14 +82,10 @@ const mapaPaginas = dados.map((p, i) => ({
 const listaIndice = mapaPaginas.map(mp => ({
   rotulo: mp.rotulo,
   grupo: mp.grupo,
-  pagina: null
+  id: mp.id
 }));
 
-
 // ===== FUNÇÕES DO ÍNDICE =====
-
-
-
 
 // Distribui itens em 3 colunas (coluna 0, 1 ou 2)
 // Monta o índice em 3 colunas alinhadas linha a linha (tabela)
@@ -121,14 +117,17 @@ function montarIndiceEmTresColunas(lista) {
     }
 
     linhas.push({
-      text: [
-        { text: `Pág. ${item.pagina} - `, color: "#003c8d", bold: true },
-        { text: item.rotulo }
-      ],
-      fontSize: 8,
-      noWrap: false,
-      margin: [0, 0, 0, 2]
-    });
+  text: [
+    { text: 'Pág. ', bold: true, color: "#003c8d" },
+    { text: '', pageReference: item.id, bold: true, color: "#003c8d" },
+    { text: ' - ' },
+    { text: item.rotulo }
+  ],
+  fontSize: 8,
+  noWrap: false,
+  margin: [0, 0, 0, 2]
+});
+
 
   });
 
