@@ -473,9 +473,32 @@ if (primeiroDaCidade) {
   pdfDoc.getBuffer(() => {
 
     mapaPaginas.forEach(mp => {
-      const ref = pdfDoc.getPageReference(mp.id);
-      mp.pagina = ref ? ref.pageNumber : 1;
-    });
+
+  const paginas = pdfDoc._pdfMakePages;
+
+  if (!paginas) {
+    mp.pagina = 1;
+    return;
+  }
+
+  for (let p = 0; p < paginas.length; p++) {
+    const pagina = paginas[p];
+
+    if (pagina.items) {
+      const encontrou = pagina.items.find(
+        item => item.item && item.item.id === mp.id
+      );
+
+      if (encontrou) {
+        mp.pagina = p + 1;
+        return;
+      }
+    }
+  }
+
+  mp.pagina = 1;
+});
+
 
     listaIndice.forEach((item, i) => {
       item.pagina = mapaPaginas[i].pagina;
