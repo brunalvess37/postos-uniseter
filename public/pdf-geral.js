@@ -477,6 +477,4 @@ if (primeiroDaCidade) {
     }
   };
 
-  pdfMake.createPdf(doc).open();
-
 }
