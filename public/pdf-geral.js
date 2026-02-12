@@ -463,68 +463,6 @@ if (primeiroDaCidade) {
     }
   };
 
+  pdfMake.createPdf(doc).open();
 
-  // ===== ETAPA 1: GERAR PDF "VIRTUAL" PARA DESCOBRIR PÁGINAS =====
-  const pdfDoc = pdfMake.createPdf(doc);
-
-// 👉 FORÇA A RENDERIZAÇÃO DO PDF VIRTUAL
-  pdfDoc.getBuffer(function () {
-
-
-  // Agora SIM podemos ler as páginas reais
-  pdfDoc.getPageInfo().then(() => {
-
-
-    // Preenche mapaPaginas com páginas reais
-    mapaPaginas.forEach(mp => {
-      const ref = pdfDoc.getPageReference(mp.id);
-      if (ref && ref.pageNumber) {
-        mp.pagina = ref.pageNumber;
-      }
-    });
-
-    // Atualiza listaIndice com as páginas reais
-    listaIndice.forEach((item, i) => {
-      const paginaCalculada =
-        mapaPaginas[i]?.pagina ??
-        mapaPaginas[i - 1]?.pagina ??
-        1;
-      
-      item.pagina = paginaCalculada;
-    });
-
-    // ===== ETAPA 2: GERAR PDF FINAL COM ÍNDICE REAL =====
-    const docFinal = {
-      ...doc,
-      content: [
-        ...(filtros.incluirIndice
-          ? [
-              {
-                stack: [
-                  {
-                    text: "POSTOS UNISETER",
-                    style: "titulo",
-                    alignment: "center",
-                    margin: [0, 0, 0, 2]
-                  },
-                  {
-                    text: "ÍNDICE",
-                    fontSize: 11,
-                    alignment: "center",
-                    margin: [0, 0, 0, 8]
-                  },
-
-                  montarIndiceEmTresColunas(listaIndice)
-                ],
-                pageBreak: "after"
-              }
-            ]
-          : []),
-        ...conteudo
-      ]
-    };
-
-    pdfMake.createPdf(docFinal).open();
-  });
-});
 }
