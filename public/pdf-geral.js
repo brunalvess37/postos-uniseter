@@ -466,27 +466,22 @@ if (primeiroDaCidade) {
         }
   };
 
-  // ===== GERAR PDF VIRTUAL PARA CAPTURAR PÁGINAS =====
+ // ===== GERAR PDF VIRTUAL PARA CAPTURAR PÁGINAS =====
 const pdfDoc = pdfMake.createPdf(doc);
 
-pdfDoc.getBuffer(() => {
+pdfDoc.getBuffer((buffer) => {
 
-  const paginasInternas = pdfDoc._pdfMakePages;
+  const pdf = pdfDoc._getPdfDoc();
 
   mapaPaginas.forEach((mp) => {
-    const pageIndex = paginasInternas.findIndex(page =>
-      page.items.some(item => item.id === mp.id)
-    );
-
-    mp.pagina = pageIndex >= 0 ? pageIndex + 1 : 1;
+    const ref = pdf._pageRefs[mp.id];
+    mp.pagina = ref ? ref.pageNumber : 1;
   });
 
-  // Atualiza índice com páginas reais
   listaIndice.forEach((item, i) => {
     item.pagina = mapaPaginas[i].pagina;
   });
 
-  // Documento final com índice no final
   const docFinal = {
     ...doc,
     content: [
@@ -509,6 +504,7 @@ pdfDoc.getBuffer(() => {
   pdfMake.createPdf(docFinal).open();
 
 });
+
   
 }
 
