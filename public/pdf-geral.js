@@ -81,6 +81,7 @@ const mapaPaginas = dados.map((p, i) => ({
 // ===== LISTA DO ÍNDICE (derivada do mapa de páginas) =====
 const listaIndice = mapaPaginas.map(mp => ({
   rotulo: mp.rotulo,
+  grupo: mp.grupo,
   pagina: null
 }));
 
@@ -94,15 +95,13 @@ const listaIndice = mapaPaginas.map(mp => ({
 // Monta o índice em 3 colunas alinhadas linha a linha (tabela)
 function montarIndiceEmTresColunas(lista) {
 
-  const colunasFixas = [170, 170, 170]; // largura fixa das 3 colunas
+  const colunasFixas = [170, 170, 170];
   const linhas = [];
   let grupoAtual = null;
 
-  for (let i = 0; i < lista.length; i++) {
+  lista.forEach(item => {
 
-    const item = lista[i];
-
-    // FAIXA AZUL DE GRUPO (como zona/cidade)
+    // FAIXA DE GRUPO
     if (item.grupo && item.grupo !== grupoAtual) {
       grupoAtual = item.grupo;
 
@@ -121,24 +120,33 @@ function montarIndiceEmTresColunas(lista) {
       ]);
     }
 
-    // Linha normal do índice
-    linhas.push([
-      {
-        text: `Pág. ${String(i + 1).padStart(2, "0")} - ${item.rotulo}`,
-        fontSize: 8,
-        noWrap: false
-      }
-    ]);
-  }
+    linhas.push({
+      text: [
+        { text: `Pág. ${item.pagina} - `, color: "#003c8d", bold: true },
+        { text: item.rotulo }
+      ],
+      fontSize: 8,
+      noWrap: false,
+      margin: [0, 0, 0, 2]
+    });
+
+  });
 
   return {
     table: {
       widths: colunasFixas,
       body: dividirEmTresColunas(linhas)
     },
-    layout: "noBorders"
+    layout: {
+      fillColor: function (rowIndex, node, columnIndex) {
+        return columnIndex === 1 ? "#f3f3f3" : null;
+      },
+      hLineWidth: () => 0,
+      vLineWidth: () => 0
+    }
   };
 }
+
 
 function dividirEmTresColunas(lista) {
 
@@ -431,26 +439,6 @@ if (primeiroDaCidade) {
 },
 
     content: [
-  ...(filtros.incluirIndice
-    ? [
-        {
-          // ← NÃO usamos mais pageBreak:"before" aqui
-          stack: [
-            
-            {
-              text: "ÍNDICE",
-              fontSize: 11,
-              alignment: "center",
-              margin: [0, 0, 0, 8]
-            },
-
-            montarIndiceEmTresColunas(listaIndice)
-
-          ],
-          pageBreak: "after" // ← QUEBRA DE PÁGINA APÓS O ÍNDICE
-        }
-      ]
-    : []),
   ...conteudo
 ],
 
