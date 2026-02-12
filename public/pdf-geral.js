@@ -468,7 +468,8 @@ if (primeiroDaCidade) {
   const pdfDoc = pdfMake.createPdf(doc);
 
 // 👉 FORÇA A RENDERIZAÇÃO DO PDF VIRTUAL
-pdfDoc.getBuffer().then(() => {
+  pdfDoc.getBuffer(function () {
+
 
   // Agora SIM podemos ler as páginas reais
   pdfDoc.getPageInfo().then(() => {
