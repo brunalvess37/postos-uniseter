@@ -467,41 +467,30 @@ if (primeiroDaCidade) {
   };
 
   // ===== GERAR PDF VIRTUAL PARA DESCOBRIR PÁGINAS =====
-  const pdfDoc = pdfMake.createPdf(doc);
-
-  pdfDoc.getBuffer(function () {
-
-    mapaPaginas.forEach(mp => {
-      const ref = pdfDoc.getPageReference(mp.id);
-      mp.pagina = ref ? ref.pageNumber : 1;
-    });
-
-    // Atualiza listaIndice com páginas reais
-    listaIndice.forEach((item, i) => {
-      item.pagina = mapaPaginas[i].pagina;
-    });
-
-    const docFinal = {
-      ...doc,
-      content: [
-        ...conteudo,
-        {
-          pageBreak: "before",
-          stack: [
-            {
-              text: "ÍNDICE",
-              style: "posto",
-              alignment: "center",
-              margin: [0, 0, 0, 6]
-            },
-            montarIndiceEmTresColunas(listaIndice)
-          ]
-        }
-      ]
     };
 
-    pdfMake.createPdf(docFinal).open();
-  });
+  const docFinal = {
+    ...doc,
+    content: [
+      ...conteudo,
+      {
+        pageBreak: "before",
+        stack: [
+          {
+            text: "ÍNDICE",
+            style: "posto",
+            alignment: "center",
+            margin: [0, 0, 0, 6]
+          },
+          montarIndiceEmTresColunas(
+            listaIndice.map((item, index) => ({
+              ...item,
+              pagina: index + 1
+            }))
+          )
+        ]
+      }
+    ]
+  };
 
-}
-
+  pdfMake.createPdf(docFinal).open();
