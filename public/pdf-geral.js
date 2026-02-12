@@ -467,8 +467,7 @@ if (primeiroDaCidade) {
   };
 
   // ===== GERAR PDF VIRTUAL PARA DESCOBRIR PÁGINAS =====
-    };
-
+  
   const docFinal = {
     ...doc,
     content: [
@@ -494,3 +493,5 @@ if (primeiroDaCidade) {
   };
 
   pdfMake.createPdf(docFinal).open();
+}
+
