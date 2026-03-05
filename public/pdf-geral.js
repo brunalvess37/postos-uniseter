@@ -465,46 +465,24 @@ if (primeiroDaCidade) {
         }
   };
 
- // ===== GERAR PDF VIRTUAL PARA CAPTURAR PÁGINAS =====
-const pdfDoc = pdfMake.createPdf(doc);
-
-pdfDoc.getBuffer((buffer) => {
-
-  const pdf = pdfDoc._getPdfDoc();
-
-  mapaPaginas.forEach((mp) => {
-    const ref = pdf._pageRefs[mp.id];
-    mp.pagina = ref ? ref.pageNumber : 1;
-  });
-
-  listaIndice.forEach((item, i) => {
-    item.pagina = mapaPaginas[i].pagina;
-  });
-
-  const docFinal = {
-    ...doc,
-    content: [
-      ...conteudo,
+ // ===== INSERE O ÍNDICE NO FINAL =====
+if (filtros.incluirIndice) {
+  doc.content.push({
+    pageBreak: "before",
+    stack: [
       {
-        pageBreak: "before",
-        stack: [
-          {
-            text: "ÍNDICE",
-            style: "posto",
-            alignment: "center",
-            margin: [0, 0, 0, 6]
-          },
-          montarIndiceEmTresColunas(listaIndice)
-        ]
-      }
+        text: "ÍNDICE",
+        style: "posto",
+        alignment: "center",
+        margin: [0, 0, 0, 6]
+      },
+      montarIndiceEmTresColunas(listaIndice)
     ]
-  };
+  });
+}
 
-  pdfMake.createPdf(docFinal).open();
-
-});
-
-  
+// ===== GERA O PDF =====
+pdfMake.createPdf(doc).open(); 
 }
 
 
