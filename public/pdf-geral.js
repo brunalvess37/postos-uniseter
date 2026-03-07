@@ -496,3 +496,5 @@ if (filtros.incluirIndice) {
 pdfMake.createPdf(doc).open();
 
 });
+  
+}
