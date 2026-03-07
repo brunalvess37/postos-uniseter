@@ -270,13 +270,9 @@ if (filtros.ordem === "zona") {
 const blocoPosto = {
   margin: [0, 0, 0, 0],
   unbreakable: true,
+  id: mapaPaginas[i].id,
   stack: [
 
-    // 🔹 MARCADOR INVISÍVEL PARA PAGINAÇÃO REAL
-    {
-      text: "",
-      id: mapaPaginas[i].id
-    },
 
     // Nome do posto
 {
