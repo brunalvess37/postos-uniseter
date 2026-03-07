@@ -325,18 +325,14 @@ const blocoPosto = {
 const linhaPosto = {
   stack: [
     {
-      text: "",
-      id: mapaPaginas[i].id
-    },
-    {
       unbreakable: true,
       table: {
-    widths: isCadastroInativo(p) ? [2, "*"] : [0.1, "*"], // 👈 Largura da Tarja - nunca zero
-    body: [[
-      isCadastroInativo(p)
-        ? { fillColor: "#b71c1c", text: "" }
-        : { text: "" },
-      blocoPosto
+        widths: isCadastroInativo(p) ? [2, "*"] : [0.1, "*"], // 👈 Largura da Tarja - nunca zero
+        body: [[
+          isCadastroInativo(p)
+          ? { fillColor: "#b71c1c", text: "" }
+          : { text: "" },
+        blocoPosto
     ]]
   },
   layout: "noBorders"
