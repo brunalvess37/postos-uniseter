@@ -348,8 +348,14 @@ const blocoPosto = {
 
 // 🔒 linha do posto (como tabela)
 const linhaPosto = {
-  unbreakable: true,
-  table: {
+  stack: [
+    {
+      text: "",
+      id: mapaPaginas[i].id
+    },
+    {
+      unbreakable: true,
+      table: {
     widths: isCadastroInativo(p) ? [2, "*"] : [0.1, "*"], // 👈 Largura da Tarja - nunca zero
     body: [[
       isCadastroInativo(p)
@@ -359,6 +365,8 @@ const linhaPosto = {
     ]]
   },
   layout: "noBorders"
+}
+]
 };
 
 
