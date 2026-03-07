@@ -476,28 +476,13 @@ if (primeiroDaCidade) {
         }
   };
 
- // ===== INSERE O ÍNDICE NO FINAL =====
-if (filtros.incluirIndice) {
-  doc.content.push({
-    pageBreak: "before",
-    stack: [
-      {
-        text: "ÍNDICE",
-        style: "posto",
-        alignment: "center",
-        margin: [0, 0, 0, 6]
-      },
-      montarIndiceEmTresColunas(listaIndice)
-    ]
-  });
-}
 
 // ===== GERA O PDF =====
 const pdfTemp = pdfMake.createPdf(doc);
 
 pdfTemp.getBuffer(() => {
 
-  const pages = pdfTemp._pdfMakePages;
+  const pages = pdfTemp._pdfMakeDoc._pages;
 
   mapaPaginas.forEach((mp) => {
 
