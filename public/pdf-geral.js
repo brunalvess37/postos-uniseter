@@ -151,12 +151,21 @@ function dividirEmTresColunas(lista) {
 
   const resultado = [];
 
-  for (let i = 0; i < lista.length; i += 3) {
+  for (let i = 0; i < lista.length; i++) {
+
+    // Se for faixa de grupo (array com colSpan), mantém sozinho
+    if (Array.isArray(lista[i])) {
+      resultado.push(lista[i]);
+      continue;
+    }
+
     resultado.push([
       lista[i] || { text: "" },
       lista[i + 1] || { text: "" },
       lista[i + 2] || { text: "" }
     ]);
+
+    i += 2;
   }
 
   return resultado;
