@@ -82,7 +82,8 @@ const mapaPaginas = dados.map((p, i) => ({
 const listaIndice = mapaPaginas.map(mp => ({
   rotulo: mp.rotulo,
   grupo: mp.grupo,
-  id: mp.id
+  id: mp.id,
+  pagina: mp.pagina
 }));
 
 // ===== FUNÇÕES DO ÍNDICE =====
@@ -117,7 +118,12 @@ function montarIndiceEmTresColunas(lista) {
     }
 
     linhas.push({
-  text: item.rotulo,
+  text: [
+    { text: 'Pág. ', bold: true, color: "#003c8d" },
+    { text: String(item.pagina || ''), bold: true, color: "#003c8d" },
+    { text: ' - ' },
+    { text: item.rotulo }
+  ],
   fontSize: 8,
   noWrap: false,
   margin: [0, 0, 0, 2]
