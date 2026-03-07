@@ -120,7 +120,7 @@ function montarIndiceEmTresColunas(lista) {
     linhas.push({
   text: [
     { text: 'Pág. ', bold: true, color: "#003c8d" },
-    { text: '', pageReference: item.id, bold: true, color: "#003c8d" },
+    { text: String(item.pagina || ''), bold: true, color: "#003c8d" },
     { text: ' - ' },
     { text: item.rotulo }
   ],
@@ -493,7 +493,47 @@ if (filtros.incluirIndice) {
 }
 
 // ===== GERA O PDF =====
-pdfMake.createPdf(doc).open(); 
+const pdfTemp = pdfMake.createPdf(doc);
+
+pdfTemp.getBuffer(() => {
+
+  const pages = pdfTemp._pdfMakePages;
+
+  mapaPaginas.forEach((mp) => {
+
+    const pageIndex = pages.findIndex(page =>
+      page.items.some(item => item.id === mp.id)
+    );
+
+    mp.pagina = pageIndex >= 0 ? pageIndex + 1 : "";
+  });
+
+  listaIndice.forEach((item, i) => {
+    item.pagina = mapaPaginas[i].pagina;
+  });
+
+  // recria documento com índice atualizado
+  const docFinal = JSON.parse(JSON.stringify(doc));
+
+  if (filtros.incluirIndice) {
+    docFinal.content.push({
+      pageBreak: "before",
+      stack: [
+        {
+          text: "ÍNDICE",
+          style: "posto",
+          alignment: "center",
+          margin: [0, 0, 0, 6]
+        },
+        montarIndiceEmTresColunas(listaIndice)
+      ]
+    });
+  }
+
+  pdfMake.createPdf(docFinal).open();
+
+});
+  
 }
 
 
