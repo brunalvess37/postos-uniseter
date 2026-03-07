@@ -88,69 +88,39 @@ const listaIndice = mapaPaginas.map(mp => ({
 
 // ===== FUNÇÕES DO ÍNDICE =====
 
-// Distribui itens em 3 colunas (coluna 0, 1 ou 2)
-// Monta o índice em 3 colunas alinhadas linha a linha (tabela)
 function montarIndiceEmTresColunas(lista) {
 
-  const colunasFixas = [170, 170, 170];
-  const linhas = [];
-  let grupoAtual = null;
+  const coluna1 = []
+  const coluna2 = []
+  const coluna3 = []
 
-  lista.forEach(item => {
+  lista.forEach((item, i) => {
 
-    // FAIXA DE GRUPO
-    if (item.grupo && item.grupo !== grupoAtual) {
-      grupoAtual = item.grupo;
-
-      linhas.push([
-        {
-          colSpan: 3,
-          fillColor: "#003c8d",
-          color: "white",
-          bold: true,
-          fontSize: 9,
-          text: grupoAtual.toUpperCase(),
-          margin: [4, 3, 0, 3]
-        },
-        {},
-        {}
-      ]);
+    const linha = {
+      text: [
+        { text: 'Pág. ', bold: true, color: "#003c8d" },
+        { text: '', pageReference: item.id, bold: true, color: "#003c8d" },
+        { text: ' - ' },
+        { text: item.rotulo }
+      ],
+      fontSize: 8,
+      margin: [0,0,0,3]
     }
 
-    linhas.push({
-  text: [
-    { text: 'Pág. ', bold: true, color: "#003c8d" },
-    {
-      text: ' ',
-      linkToDestination: item.id,
-      bold: true,
-      color: "#003c8d"
-    },
-    { text: ' - ' },
-    { text: item.rotulo }
-  ],
-      
-  fontSize: 8,
-  noWrap: false,
-  margin: [0, 0, 0, 2]
-});
+    if (i % 3 === 0) coluna1.push(linha)
+    else if (i % 3 === 1) coluna2.push(linha)
+    else coluna3.push(linha)
 
-
-  });
+  })
 
   return {
-    table: {
-      widths: colunasFixas,
-      body: dividirEmTresColunas(linhas)
-    },
-    layout: {
-      fillColor: function (rowIndex, node, columnIndex) {
-        return columnIndex === 1 ? "#f3f3f3" : null;
-      },
-      hLineWidth: () => 0,
-      vLineWidth: () => 0
-    }
-  };
+    columns: [
+      { width: "*", stack: coluna1 },
+      { width: "*", stack: coluna2 },
+      { width: "*", stack: coluna3 }
+    ],
+    columnGap: 20
+  }
 }
 
 
