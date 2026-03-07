@@ -324,6 +324,12 @@ const blocoPosto = {
 // 🔒 linha do posto (como tabela)
 const linhaPosto = {
   stack: [
+
+    {
+      text: "",
+      id: mapaPaginas[i].id
+    },
+
     {
       unbreakable: true,
       table: {
