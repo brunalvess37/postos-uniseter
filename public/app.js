@@ -138,6 +138,13 @@ ${inativo ? `
     <p><b>Endereço:</b> ${end}</p>
 
     ${montarListaContatos(p)}
+    
+    ${(p["OBSERVAÇÃO"] || p["OBSERVACAO"] || p.observacao) ? `
+      <p style="margin-top:10px;">
+        <b>Observação:</b><br>
+        ${p["OBSERVAÇÃO"] || p["OBSERVACAO"] || p.observacao}
+      </p>
+    ` : ""}
 
     <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
       <a href="${mapsUrl}" target="_blank"><button>📍 Google Maps</button></a>
