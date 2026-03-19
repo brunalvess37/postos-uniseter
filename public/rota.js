@@ -42,11 +42,29 @@ function listar(){
   let box=document.getElementById("rota-lista");
   box.innerHTML="";
   document.getElementById("rota-info").innerHTML= dataRota?`📅 Rota criada em: ${dataRota}`:"Nenhuma rota salva";
+  
   rota.forEach((p,i)=>{
-    box.innerHTML+= `<div class='card'>${i+1}. ${p.nome}
-    <br><small>${p.lat},${p.lon}</small>
-    <button onclick="remo(${i})">✖</button></div>`;
-  });
+
+  const nome = p.nome || p["POSTOS DE SERVIÇOS / GRUPO SETER"] || "Sem nome";
+  const cidade = p.cidade || p.CIDADE || "";
+
+  const endereco = [
+  p["ENDEREÇO I"],
+  p["ENDEREÇO II"],
+  p["ENDEREÇO III"],
+  p["ENDEREÇO IV"]
+].filter(Boolean).join(" - ");
+
+box.innerHTML+= `
+  <div class='card'>
+    <b>${i+1}. ${nome}</b>
+    <br><small style="color:#555;">${cidade}</small>
+    <br><small style="color:#777;">${endereco || "Endereço não disponível"}</small>
+    <button onclick="remo(${i})">✖</button>
+  </div>`;
+    
+});
+  
 }
 function remo(i){ rota.splice(i,1); salvarRota(); }
 
