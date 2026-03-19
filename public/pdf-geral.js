@@ -65,89 +65,6 @@ if (filtros.tipo === "ativos") {
     .localeCompare(b["POSTOS DE SERVIÇOS / GRUPO SETER"] || "");
 });
 
-  // ===== MAPA PARA RASTREAR PÁGINAS REAIS =====
-const mapaPaginas = dados.map((p, i) => ({
-  id: `posto_${i}`,
-  rotulo: `${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || ""}`,
-  grupo:
-    filtros.ordem === "zona"
-      ? p.ZONA
-      : filtros.ordem === "cidade"
-      ? p.CIDADE
-      : null,
-  pagina: null
-}));
-
-// ===== LISTA DO ÍNDICE (derivada do mapa de páginas) =====
-const listaIndice = mapaPaginas.map(mp => ({
-  rotulo: mp.rotulo,
-  grupo: mp.grupo,
-  id: mp.id,
-  pagina: mp.pagina
-}));
-
-// ===== FUNÇÕES DO ÍNDICE =====
-
-function montarIndiceEmTresColunas(lista) {
-
-  const coluna1 = []
-  const coluna2 = []
-  const coluna3 = []
-
-  lista.forEach((item, i) => {
-
-    const linha = {
-      text: [
-        { text: 'Pág. ', bold: true, color: "#003c8d" },
-        { text: '', pageReference: item.id || '', bold: true, color: "#003c8d" },
-        { text: ' - ' },
-        { text: item.rotulo }
-      ],
-      fontSize: 8,
-      margin: [0,0,0,3]
-    }
-
-    if (i % 3 === 0) coluna1.push(linha)
-    else if (i % 3 === 1) coluna2.push(linha)
-    else coluna3.push(linha)
-
-  })
-
-  return {
-    columns: [
-      { width: "*", stack: coluna1 },
-      { width: "*", stack: coluna2 },
-      { width: "*", stack: coluna3 }
-    ],
-    columnGap: 20
-  }
-}
-
-
-function dividirEmTresColunas(lista) {
-
-  const resultado = [];
-
-  for (let i = 0; i < lista.length; i++) {
-
-    // Se for faixa de grupo (array com colSpan), mantém sozinho
-    if (Array.isArray(lista[i])) {
-      resultado.push(lista[i]);
-      continue;
-    }
-
-    resultado.push([
-      lista[i] || { text: "" },
-      lista[i + 1] || { text: "" },
-      lista[i + 2] || { text: "" }
-    ]);
-
-    i += 2;
-  }
-
-  return resultado;
-}
-
 
   // ===== FUNÇÕES AUXILIARES =====
   function enderecoCompleto(p) {
@@ -341,20 +258,11 @@ if (primeiroDaCidade) {
   const faixa = conteudo.pop(); // remove a faixa recém inserida
 
   conteudo.push(faixa);
-  conteudo.push({
-    text: "",
-    id: mapaPaginas[i].id
-  });
   
   conteudo.push(linhaPosto);
 
   primeiroDaCidade = false;
 } else {
-  conteudo.push({
-    text: "",
-    id: mapaPaginas[i].id
-  });
-
   conteudo.push(linhaPosto);
 }
 
