@@ -99,7 +99,7 @@ function montarIndiceEmTresColunas(lista) {
     const linha = {
       text: [
         { text: 'Pág. ', bold: true, color: "#003c8d" },
-        { text: '', pageReference: item.id, bold: true, color: "#003c8d" },
+        { text: '', pageReference: item.id || '', bold: true, color: "#003c8d" },
         { text: ' - ' },
         { text: item.rotulo }
       ],
@@ -245,7 +245,6 @@ if (filtros.ordem === "zona") {
 const blocoPosto = {
   margin: [0, 0, 0, 0],
   unbreakable: true,
-  destination: mapaPaginas[i].id,
   stack: [
 
 
