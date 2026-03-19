@@ -643,6 +643,33 @@ function salvarRota(rota){
   localStorage.setItem("rota_postos",JSON.stringify({rota}));
 }
 
+function montarTextoRota() {
+  const rota = getRota();
+
+  if (!rota.length) {
+    alert("A rota está vazia.");
+    return null;
+  }
+
+  let texto = "📍 Rota do dia — UNISETER\n\n";
+
+  rota.forEach((p, i) => {
+    const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"] || "Sem nome";
+
+    const endereco = [
+      p["ENDEREÇO I"],
+      p["ENDEREÇO II"],
+      p["ENDEREÇO III"],
+      p["ENDEREÇO IV"]
+    ].filter(Boolean).join(" - ");
+
+    texto += `${i + 1}) *${nome}*\n`;
+    texto += `📍 ${endereco || "Endereço não disponível"}\n\n`;
+  });
+
+  return texto;
+}
+    
 function desenharRota(){
   layerRota.clearLayers();
   const rota=getRota();
