@@ -174,13 +174,6 @@ if (tipo === "manual" && temSelecao) {
 </div>
 
 <div class="card">
-  <label style="display:flex; align-items:center; gap:6px;">
-    <input type="checkbox" id="incluirIndice">
-    Incluir página de índice no relatório
-  </label>
-</div>
-
-<div class="card">
   <label>Ordenação</label>
 
   <div class="radio-group">
@@ -224,8 +217,7 @@ function gerar(){
   gerarPDFGeral({
     tipo: document.querySelector("input[name=tipo]:checked").value,
     ordem: document.querySelector("input[name=ordem]:checked").value,
-    usuario: usuarioRelatorio,
-    incluirIndice: document.getElementById("incluirIndice").checked
+    usuario: usuarioRelatorio
   });
 }
 </script>
