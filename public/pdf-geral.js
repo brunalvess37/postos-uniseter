@@ -320,42 +320,33 @@ const blocoPosto = {
   ].filter(Boolean)
 };
 
-// 🔒 linha do posto (como tabela)
+// 🔹 âncora de página (SEPARADA!)
+conteudo.push({
+  text: "",
+  id: mapaPaginas[i].id
+});
+
+// 🔹 bloco visual do posto
 const linhaPosto = {
-  stack: [
-
-    {
-      text: "",
-      id: mapaPaginas[i].id
-    },
-
-    {
-      unbreakable: true,
-      table: {
-        widths: isCadastroInativo(p) ? [2, "*"] : [0.1, "*"], // 👈 Largura da Tarja - nunca zero
-        body: [[
-          isCadastroInativo(p)
-          ? { fillColor: "#b71c1c", text: "" }
-          : { text: "" },
-        blocoPosto
+  unbreakable: true,
+  table: {
+    widths: isCadastroInativo(p) ? [2, "*"] : [0.1, "*"],
+    body: [[
+      isCadastroInativo(p)
+        ? { fillColor: "#b71c1c", text: "" }
+        : { text: "" },
+      blocoPosto
     ]]
   },
   layout: "noBorders"
-}
-]
 };
 
 
 if (primeiroDaCidade) {
   const faixa = conteudo.pop(); // remove a faixa recém inserida
 
-  conteudo.push({
-    unbreakable: true,
-    stack: [
-      faixa,
-      linhaPosto
-    ]
-  });
+  conteudo.push(faixa);
+  conteudo.push(linhaPosto);
 
   primeiroDaCidade = false;
 } else {
