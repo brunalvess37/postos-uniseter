@@ -454,20 +454,7 @@ if (primeiroDaCidade) {
 
 
 // ===== GERA O PDF =====
-if (filtros.incluirIndice) {
-  doc.content.push({
-    pageBreak: "before",
-    stack: [
-      {
-        text: "ÍNDICE",
-        style: "posto",
-        alignment: "center",
-        margin: [0, 0, 0, 6]
-      },
-      montarIndiceEmTresColunas(listaIndice)
-    ]
-  });
-}
+
 
 pdfMake.createPdf(doc).open();
 
