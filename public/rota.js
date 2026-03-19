@@ -105,7 +105,9 @@ box.innerHTML+= `
 
   </div>`;
   
+});
 }
+
 function remo(i){ rota.splice(i,1); salvarRota(); }
 
 // ================= 🌍 MAPA EXPANSÍVEL =================
