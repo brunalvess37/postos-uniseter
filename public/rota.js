@@ -92,15 +92,14 @@ box.innerHTML+= `
     </small>
 
     <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
-      <a href="${mapsUrl}" target="_blank"
-         style="padding:4px 8px; border:1px solid #ccc; border-radius:6px; text-decoration:none;">
-        📍 Google Maps
-      </a>
+    <a href="${mapsUrl}" target="_blank" class="secondary">
+      📍 Google Maps
+    </a>
 
-      <a href="${wazeUrl}" target="_blank"
-         style="padding:4px 8px; border:1px solid #ccc; border-radius:6px; text-decoration:none;">
-        🚗 Waze
-      </a>
+    <a href="${wazeUrl}" target="_blank" class="secondary">
+      🚗 Waze
+    </a>
+
     </div>
 
   </div>`;
