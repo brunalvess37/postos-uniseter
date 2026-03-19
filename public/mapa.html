@@ -438,8 +438,9 @@ handle    = document.querySelector(".sheet-handle");
 
    
 // deixa a rota já "presente" em modo minimizado por padrão
-rotaSheet.classList.add("minimized"); // já nasce minimizado
-rotaList.style.display = "none";      // lista começa escondida
+rotaSheet.classList.add("active");     // 👈 torna visível
+rotaSheet.classList.add("minimized");  // 👈 mantém minimizado
+rotaList.style.display = "none";
 
     
 map.on("click", (e) => {
