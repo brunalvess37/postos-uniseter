@@ -92,12 +92,12 @@ box.innerHTML+= `
     </small>
 
     <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
-    <a href="${mapsUrl}" target="_blank" class="secondary">
-      📍 Google Maps
+    <a href="${mapsUrl}" target="_blank">
+      <button>📍 Google Maps</button>
     </a>
-
-    <a href="${wazeUrl}" target="_blank" class="secondary">
-      🚗 Waze
+    
+    <a href="${wazeUrl}" target="_blank">
+      <button>🚗 Waze</button>
     </a>
 
     </div>
