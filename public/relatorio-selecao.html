@@ -151,8 +151,14 @@ function removerSelecionado(indice){
 
 function limparSelecao(){
   selecionados = [];
+
+  // 🔥 LIMPA TAMBÉM DO LOCALSTORAGE
+  localStorage.removeItem("postos_selecionados");
+
   renderLista();
   renderChips();
+  
+  alert("Seleção limpa com sucesso!");
 }
 
 function confirmarSelecao(){
