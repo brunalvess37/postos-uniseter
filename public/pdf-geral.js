@@ -320,11 +320,6 @@ const blocoPosto = {
   ].filter(Boolean)
 };
 
-// 🔹 âncora de página (SEPARADA!)
-conteudo.push({
-  text: "",
-  id: mapaPaginas[i].id
-});
 
 // 🔹 bloco visual do posto
 const linhaPosto = {
@@ -346,10 +341,20 @@ if (primeiroDaCidade) {
   const faixa = conteudo.pop(); // remove a faixa recém inserida
 
   conteudo.push(faixa);
+  conteudo.push({
+    text: "",
+    id: mapaPaginas[i].id
+  });
+  
   conteudo.push(linhaPosto);
 
   primeiroDaCidade = false;
 } else {
+  conteudo.push({
+    text: "",
+    id: mapaPaginas[i].id
+  });
+
   conteudo.push(linhaPosto);
 }
 
