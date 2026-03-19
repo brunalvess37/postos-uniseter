@@ -63,10 +63,33 @@ const wazeUrl = `https://waze.com/ul?ll=${lat},${lon}&navigate=yes`;
 
     
 box.innerHTML+= `
-  <div class='card'>
-    <b>${i+1}. ${nome}</b>
-    <br><small style="color:#555;">${cidade}</small>
-    <br><small style="color:#777;">${endereco || "Endereço não disponível"}</small>
+  <div class='card' style="position:relative;">
+
+    <button onclick="remo(${i})"
+      style="
+        position:absolute;
+        top:8px;
+        right:8px;
+        border:none;
+        background:#eee;
+        border-radius:6px;
+        padding:4px 8px;
+        cursor:pointer;
+      ">
+      ✖
+    </button>
+
+    <b style="display:block; padding-right:30px;">
+      ${i+1}. ${nome}
+    </b>
+
+    <small style="display:block; color:#555;">
+      ${cidade}
+    </small>
+
+    <small style="display:block; color:#777;">
+      ${endereco || "Endereço não disponível"}
+    </small>
 
     <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
       <a href="${mapsUrl}" target="_blank"
@@ -80,10 +103,7 @@ box.innerHTML+= `
       </a>
     </div>
 
-    <button onclick="remo(${i})">✖</button>
   </div>`;
-    
-});
   
 }
 function remo(i){ rota.splice(i,1); salvarRota(); }
