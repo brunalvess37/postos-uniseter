@@ -55,11 +55,31 @@ function listar(){
   p["ENDEREÇO IV"]
 ].filter(Boolean).join(" - ");
 
+const lat = p.lat || p.Latitude;
+const lon = p.lon || p.Longitude;
+
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+const wazeUrl = `https://waze.com/ul?ll=${lat},${lon}&navigate=yes`;
+
+    
 box.innerHTML+= `
   <div class='card'>
     <b>${i+1}. ${nome}</b>
     <br><small style="color:#555;">${cidade}</small>
     <br><small style="color:#777;">${endereco || "Endereço não disponível"}</small>
+
+    <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+      <a href="${mapsUrl}" target="_blank"
+         style="padding:4px 8px; border:1px solid #ccc; border-radius:6px; text-decoration:none;">
+        📍 Google Maps
+      </a>
+
+      <a href="${wazeUrl}" target="_blank"
+         style="padding:4px 8px; border:1px solid #ccc; border-radius:6px; text-decoration:none;">
+        🚗 Waze
+      </a>
+    </div>
+
     <button onclick="remo(${i})">✖</button>
   </div>`;
     
