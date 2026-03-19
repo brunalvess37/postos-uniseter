@@ -41,7 +41,10 @@ document.addEventListener("DOMContentLoaded",()=>{
 function listar(){
   let box=document.getElementById("rota-lista");
   box.innerHTML="";
-  document.getElementById("rota-info").innerHTML= dataRota?`📅 Rota criada em: ${dataRota}`:"Nenhuma rota salva";
+  document.getElementById("rota-info").innerHTML =
+  rota.length
+    ? (dataRota ? `📅 Rota criada em: ${dataRota}` : "")
+    : "Nenhuma rota salva";
   
   rota.forEach((p,i)=>{
 
