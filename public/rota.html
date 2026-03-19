@@ -45,7 +45,16 @@ body{
 }
     
 #rota-info{ margin:10px;font-size:14px;color:#333; }
-#rota-lista .card{ padding:10px;border:1px solid #ddd;margin:6px;border-radius:8px; }
+
+#rota-lista .card{
+  background:white;
+  border:1px solid #e0e0e0;
+  border-radius:12px;
+  padding:14px;
+  margin:10px 0;
+  box-shadow:0 2px 6px rgba(0,0,0,0.05);
+}
+    
 #mapa{ width:100%;max-height:350px;background:#eee;margin-top:10px; }
 button{ margin:4px;padding:8px 12px;font-size:14px; }
 </style>
@@ -53,21 +62,28 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
 </head>
 <body>
 
-<header>
-  <button onclick="location='home.html'">← Voltar</button>
-  <h2 style="margin:0;">Rota — Postos UNISETER</h2>
+<header style="display:flex; justify-content:space-between; align-items:center;">
+  <h2 style="margin:0;">POSTOS UNISETER</h2>
+
+  <div style="display:flex; gap:8px;">
+    <button onclick="location='home.html'">Menu</button>
+    <button onclick="location='mapa.html'">Mapa</button>
+  </div>
 </header>
 
-<p id="rota-info"></p>
+<p id="rota-info" style="margin:10px 0; color:#555;"></p>
+    
 <div id="rota-lista"></div>
 
 <hr>
 
-<button onclick="ordenarRota()">📍 Otimizar rota</button>
-<button onclick="salvarRota()">💾 Salvar rota</button>
-<button onclick="limparRota()">🗑 Limpar rota</button>
-<button onclick="abrirNoWaze()">🚗 Abrir no Waze</button>
-<button onclick="gerarPDFRota()">📄 PDF da rota</button>
+<div style="display:flex; flex-wrap:wrap; gap:8px; margin:10px 0;">
+  <button class="secondary" onclick="ordenarRota()">📍 Otimizar rota</button>
+  <button class="secondary" onclick="salvarRota()">💾 Salvar rota</button>
+  <button class="secondary" onclick="limparRota()">🗑 Limpar rota</button>
+  <button class="secondary" onclick="abrirNoWaze()">🚗 Waze</button>
+  <button class="secondary" onclick="gerarPDFRota()">📄 PDF</button>
+</div>
 
 <hr>
 
