@@ -971,20 +971,30 @@ document.getElementById("btnLimpar").onclick = () => {
 };
 
   /* COMPARTILHAR */
-  document.getElementById("btnCompartilhar").onclick = () => {
+  document.getElementById("btnCompartilhar").onclick = async () => {
   const texto = montarTextoRota();
   if (!texto) return;
 
-  // 📱 Se for celular → abre WhatsApp
-  const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+  // ✅ 1. Tenta usar compartilhamento nativo
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Rota do dia — UNISETER",
+        text: texto
+      });
+      return;
+    } catch (err) {
+      console.log("Compartilhamento cancelado ou falhou");
+    }
+  }
 
-  // tenta abrir WhatsApp
-  window.open(url, "_blank");
-
-  // 💻 fallback: copiar também
-  navigator.clipboard.writeText(texto)
-    .then(() => console.log("Rota copiada"))
-    .catch(() => console.log("Falha ao copiar"));
+  // ✅ 2. Fallback: copiar
+  try {
+    await navigator.clipboard.writeText(texto);
+    alert("Rota copiada! Agora você pode colar onde quiser.");
+  } catch (e) {
+    alert("Não foi possível compartilhar automaticamente.\n\n" + texto);
+  }
 };
 
 /* 📱 HANDLE → alterna expandido ↔ minimizado */
