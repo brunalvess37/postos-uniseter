@@ -933,6 +933,20 @@ window.addRota = i => {
 /* 🧭 ABRIR ROTA → sempre EXPANDIDA */
 document.getElementById("btnRota").onclick = () => {
 
+  // 📌 MENU (⋮)
+const btnMenu = document.getElementById("btnMenu");
+const menu = document.getElementById("menuOpcoes");
+
+btnMenu.onclick = () => {
+  const aberto = menu.style.display === "flex";
+  menu.style.display = aberto ? "none" : "flex";
+};
+
+// 👇 FECHA MENU AO CLICAR NO MAPA
+map.on("click", () => {
+  menu.style.display = "none";
+});
+  
   // 👉 limpa destaque ao abrir rota
   if (marcadorDestacado) {
     const el = marcadorDestacado.getElement();
@@ -964,13 +978,6 @@ document.getElementById("btnGps").onclick = () => {
 /* 🗑️ LIMPAR */
 document.getElementById("btnLimpar").onclick = () => {
 
-const btnMenu = document.getElementById("btnMenu");
-const menu = document.getElementById("menuOpcoes");
-
-btnMenu.onclick = () => {
-  const aberto = menu.style.display === "flex";
-  menu.style.display = aberto ? "none" : "flex";
-};
   
   // 👉 limpa destaque também
   if (marcadorDestacado) {
