@@ -68,24 +68,24 @@ const wazeUrl = `https://waze.com/ul?ll=${lat},${lon}&navigate=yes`;
 box.innerHTML+= `
   <div class='card' style="
   position:relative;
-  background:#fff;
-  border-radius:14px;
   padding:16px;
   margin:12px 0;
-  box-shadow:0 4px 12px rgba(0,0,0,0.06);
+  border:1px solid #e0e0e0;
+  border-radius:12px;
+  background:#fff;
 ">
 
     <button onclick="remo(${i})"
       style="
-        position:absolute;
-        top:8px;
-        right:8px;
-        border:none;
-        background:#eee;
-        border-radius:6px;
-        padding:4px 8px;
-        cursor:pointer;
-      ">
+  position:absolute;
+  top:10px;
+  right:10px;
+  border:none;
+  background:#f0f0f0;
+  border-radius:6px;
+  padding:4px 8px;
+  cursor:pointer;
+">
       ✖
     </button>
 
@@ -93,7 +93,7 @@ box.innerHTML+= `
   display:block;
   padding-right:30px;
   font-size:16px;
-  color:#1a1a1a;
+  margin-bottom:4px;
 ">
       ${i+1}. ${nome}
     </b>
@@ -102,17 +102,44 @@ box.innerHTML+= `
       ${cidade}
     </small>
 
-    <small style="display:block; color:#888;">
-      ${endereco || "Endereço não disponível"}
-    </small>
+    <small style="
+  display:block;
+  color:#666;
+  margin-bottom:10px;
+">
+  ${endereco || "Endereço não disponível"}
+</small>
 
-    <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+    <div style="
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:16px 0;
+">
+
     <a href="${mapsUrl}" target="_blank">
-      <button>📍 Google Maps</button>
+      <button style="
+  padding:8px 14px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  background:#f9f9f9;
+  cursor:pointer;
+">
+  📍 Google Maps
+</button>
+
     </a>
     
     <a href="${wazeUrl}" target="_blank">
-      <button>🚗 Waze</button>
+      <button style="
+  padding:8px 14px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  background:#f9f9f9;
+  cursor:pointer;
+">
+  🚗 Waze
+</button>
     </a>
 
     </div>
