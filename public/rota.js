@@ -66,7 +66,14 @@ const wazeUrl = `https://waze.com/ul?ll=${lat},${lon}&navigate=yes`;
 
     
 box.innerHTML+= `
-  <div class='card' style="position:relative;">
+  <div class='card' style="
+  position:relative;
+  background:#fff;
+  border-radius:14px;
+  padding:16px;
+  margin:12px 0;
+  box-shadow:0 4px 12px rgba(0,0,0,0.06);
+">
 
     <button onclick="remo(${i})"
       style="
@@ -82,15 +89,20 @@ box.innerHTML+= `
       ✖
     </button>
 
-    <b style="display:block; padding-right:30px;">
+    <b style="
+  display:block;
+  padding-right:30px;
+  font-size:16px;
+  color:#1a1a1a;
+">
       ${i+1}. ${nome}
     </b>
 
-    <small style="display:block; color:#555;">
+    <small style="display:block; color:#666;">
       ${cidade}
     </small>
 
-    <small style="display:block; color:#777;">
+    <small style="display:block; color:#888;">
       ${endereco || "Endereço não disponível"}
     </small>
 
