@@ -62,52 +62,39 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
 </head>
 <body>
 
-<header style="display:flex; justify-content:space-between; align-items:center;">
-  <h2 style="margin:0;">POSTOS UNISETER</h2>
+<header style="
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+">
 
-<div style="display:flex; gap:8px;">
+  <h2 style="margin:0; font-size:22px;">
+    📋 Rota do dia
+  </h2>
 
-  <button onclick="location='mapa.html'"
-    style="
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    ">
-    Mapa
-  </button>
+  <div style="display:flex; gap:8px;">
+    <button onclick="location='mapa.html'" class="secondary">Mapa</button>
+    <button onclick="location='home.html'" class="secondary">Menu</button>
+  </div>
 
-  <button onclick="location='home.html'"
-    style="
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    ">
-    Menu
-  </button>
-
-</div>
-    
 </header>
 
 <p id="rota-info" style="margin:10px 0; color:#555;"></p>
     
 <div id="rota-lista"></div>
 
-<hr>
 
-<div style="display:flex; flex-wrap:wrap; gap:8px; margin:10px 0;">
+<div style="
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:20px 0;
+  padding:12px;
+  background:#fff;
+  border:1px solid #e0e0e0;
+  border-radius:12px;
+">
   <button class="secondary" onclick="ordenarRota()">📍 Otimizar rota</button>
   <button class="secondary" onclick="salvarRota()">💾 Salvar rota</button>
   <button class="secondary" onclick="limparRota()">🗑 Limpar rota</button>
@@ -115,7 +102,6 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
   <button class="secondary" onclick="gerarPDFRota()">📄 PDF</button>
 </div>
 
-<hr>
 
 <button onclick="toggleMapa()">🗺 Mostrar / Ocultar mapa</button>
 <div id="mapa" style="height:0; overflow:hidden; transition:.3s"></div>
