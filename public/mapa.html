@@ -961,6 +961,8 @@ document.getElementById("btnRota").onclick = () => {
   rotaSheet.classList.add("active");   // marca como ativa
   rotaSheet.classList.remove("minimized");
   rotaList.style.display = "block";
+
+  menu.style.display = "none";
 };
 
 document.getElementById("btnGps").onclick = () => {
@@ -973,6 +975,8 @@ document.getElementById("btnGps").onclick = () => {
   }
 
   irParaMeuGps();
+
+  menu.style.display = "none";
 };
 
     
@@ -993,6 +997,8 @@ document.getElementById("btnLimpar").onclick = () => {
   rotaSheet.classList.add("active");
   rotaSheet.classList.add("minimized");
   rotaList.style.display = "none";
+
+  menu.style.display = "none";
 };
 
   /* COMPARTILHAR */
@@ -1020,6 +1026,8 @@ document.getElementById("btnLimpar").onclick = () => {
   } catch (e) {
     alert("Não foi possível compartilhar automaticamente.\n\n" + texto);
   }
+
+    menu.style.display = "none";
 };
 
 /* 📱 HANDLE → alterna expandido ↔ minimizado */
