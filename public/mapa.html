@@ -453,6 +453,11 @@ btnMenu.onclick = () => {
   menu.style.display = aberto ? "none" : "flex";
 };
 
+document.addEventListener("click", (e) => {
+  if (!menu.contains(e.target) && !btnMenu.contains(e.target)) {
+    menu.style.display = "none";
+  }
+});
     
 // deixa a rota já "presente" em modo minimizado por padrão
 rotaSheet.classList.add("active");     // 👈 torna visível
