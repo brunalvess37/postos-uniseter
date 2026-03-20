@@ -1048,13 +1048,22 @@ if (navigator.share) {
 /* 📱 HANDLE → alterna expandido ↔ minimizado */
 handle.onclick = () => {
 
-  // 🔧 GARANTE que sempre esteja ativo
+  const isMin = rotaSheet.classList.contains("minimized");
+
+  // garante que está ativo
   rotaSheet.classList.add("active");
 
-  const minimizado = rotaSheet.classList.toggle("minimized");
-  rotaList.style.display = minimizado ? "none" : "block";
+  if (isMin) {
+    // 🔼 EXPANDE
+    rotaSheet.classList.remove("minimized");
+    rotaList.style.display = "block";
+    renderRotaLista(); // 🔥 garante atualização
+  } else {
+    // 🔽 MINIMIZA
+    rotaSheet.classList.add("minimized");
+    rotaList.style.display = "none";
+  }
 };
-
 
 postos.forEach((p,i)=>{
   if(!p.Latitude||!p.Longitude) return;
