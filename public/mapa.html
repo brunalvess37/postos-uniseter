@@ -985,7 +985,9 @@ document.getElementById("btnLimpar").onclick = () => {
   localStorage.removeItem("rota_postos");
   layerRota.clearLayers();
   rotaList.innerHTML = "";
-  rotaSheet.classList.remove("active","minimized");
+  rotaSheet.classList.add("active");
+  rotaSheet.classList.add("minimized");
+  rotaList.style.display = "none";
 };
 
   /* COMPARTILHAR */
