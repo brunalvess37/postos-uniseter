@@ -336,11 +336,20 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
 <header>
   <h2 style="margin:0;">POSTOS UNISETER - MAPA</h2>
-  <button onclick="location.href='app.html'"
-  style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
-  Voltar
-</button>
 
+  <div style="display:flex; gap:8px; align-items:center;">
+    
+    <button onclick="location.href='app.html'"
+      style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+      Voltar
+    </button>
+
+    <button id="btnMenu"
+      style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+      ⋮
+    </button>
+
+  </div>
 </header>
 
 
@@ -389,13 +398,21 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   <div id="map"></div>
 
   <div class="map-actions">
-  <button id="btnMenu" class="map-btn">⋮</button>
-
+  
   <div id="menuOpcoes" style="
-    display:none;
-    flex-direction:column;
-    gap:6px;
-  ">
+  display:none;
+  position:absolute;
+  top:60px;
+  right:16px;
+  flex-direction:column;
+  gap:6px;
+  z-index:3000;
+  background:white;
+  border:1px solid #ddd;
+  border-radius:10px;
+  padding:8px;
+">
+    
     <button id="btnCompartilhar" class="map-btn">📤 Compartilhar rota</button>
     <button id="btnRota" class="map-btn">🧭 Ver rota</button>
     <button id="btnGps" class="map-btn">📍 Minha localização</button>
