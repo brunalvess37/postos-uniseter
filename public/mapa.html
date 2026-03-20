@@ -1004,10 +1004,13 @@ document.getElementById("btnLimpar").onclick = () => {
   /* COMPARTILHAR */
   document.getElementById("btnCompartilhar").onclick = async () => {
   const texto = montarTextoRota();
-  if (!texto) return;
+if (!texto) return;
 
-  // ✅ 1. Tenta usar compartilhamento nativo
-  if (navigator.share) {
+// 👇 FECHA MENU PRIMEIRO (CORRETO)
+menu.style.display = "none";
+
+// ✅ 1. Tenta usar compartilhamento nativo
+if (navigator.share) {
     try {
       await navigator.share({
         title: "Rota do dia — UNISETER",
@@ -1027,7 +1030,6 @@ document.getElementById("btnLimpar").onclick = () => {
     alert("Não foi possível compartilhar automaticamente.\n\n" + texto);
   }
 
-    menu.style.display = "none";
 };
 
 /* 📱 HANDLE → alterna expandido ↔ minimizado */
