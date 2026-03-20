@@ -30,6 +30,15 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
 <link rel="stylesheet" href="style.css?v=202501">
 
+<script>
+async function sair() {
+  const c = window.Clerk;
+  await c.load();
+  await c.signOut();
+  location.href = "/signin.html";
+}
+</script>
+
 <!-- Bibliotecas -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="pdfmake.min.js?v=202501"></script>
@@ -66,18 +75,28 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:20px;
+  gap:10px;
 ">
+  <h2 style="margin:0;">POSTOS UNISETER</h2>
 
-  <h2 style="margin:0; font-size:20px;">
-  Rota do dia
-</h2>
+  <div style="display:flex;gap:8px;">
+    
+    <button onclick="location.href='home.html'"
+      style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+      Menu
+    </button>
 
-  <div style="display:flex; gap:8px;">
-    <button onclick="location='mapa.html'" class="secondary">Mapa</button>
-    <button onclick="location='home.html'" class="secondary">Menu</button>
+    <button onclick="location.href='mapa.html'"
+      style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+      Mapa
+    </button>
+
+    <button onclick="sair()"
+      style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+      Sair
+    </button>
+
   </div>
-
 </header>
 
 <p id="rota-info" style="margin:10px 0; color:#555;"></p>
