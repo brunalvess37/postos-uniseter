@@ -366,7 +366,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   padding:8px;
 ">
   <button id="btnCompartilhar" class="map-btn">📤 Compartilhar rota</button>
-  <button id="btnRota" class="map-btn">🧭 Ver rota</button>
+  <button id="btnRota" class="map-btn">🧭 Abrir rota</button>
   <button id="btnGps" class="map-btn">📍 Minha localização</button>
   <button id="btnLimpar" class="map-btn">🗑️ Limpar rota</button>
 </div>
@@ -957,25 +957,10 @@ window.addRota = i => {
   }
 };
 
-/* 🧭 ABRIR ROTA → sempre EXPANDIDA */
+/* 🧭 ABRIR ROTA */
 document.getElementById("btnRota").onclick = () => {
-
-  
-  // 👉 limpa destaque ao abrir rota
-  if (marcadorDestacado) {
-    const el = marcadorDestacado.getElement();
-    el?.querySelector("div")?.classList.remove("marker-highlight");
-    marcadorDestacado = null;
-  }
-  
-  desenharRota();
-  renderRotaLista();
-
-  rotaSheet.classList.add("active");   // marca como ativa
-  rotaSheet.classList.remove("minimized");
-  rotaList.style.display = "block";
-
-  menu.style.display = "none";
+  menu.style.display = "none"; // fecha menu
+  location.href = "rota.html";
 };
 
 document.getElementById("btnGps").onclick = () => {
