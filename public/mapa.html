@@ -1047,7 +1047,9 @@ if (navigator.share) {
 
 /* 📱 HANDLE → alterna expandido ↔ minimizado */
 handle.onclick = () => {
-  if (!rotaSheet.classList.contains("active")) return;
+
+  // 🔧 GARANTE que sempre esteja ativo
+  rotaSheet.classList.add("active");
 
   const minimizado = rotaSheet.classList.toggle("minimized");
   rotaList.style.display = minimizado ? "none" : "block";
