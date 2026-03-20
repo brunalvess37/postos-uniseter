@@ -2,6 +2,44 @@ let dados = JSON.parse(localStorage.getItem("rota_postos")||"{}");
 let rota = dados.rota||[];
 let dataRota = dados.data||null;
 
+function distancia(a, b) {
+  const dx = a.Latitude - b.Latitude;
+  const dy = a.Longitude - b.Longitude;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+function otimizarRota() {
+  if (rota.length <= 2) return;
+
+  const inicio = rota[0];
+  const restantes = rota.slice(1);
+  const novaRota = [inicio];
+
+  let atual = inicio;
+
+  while (restantes.length > 0) {
+    let maisProximoIndex = 0;
+    let menorDist = distancia(atual, restantes[0]);
+
+    for (let i = 1; i < restantes.length; i++) {
+      const d = distancia(atual, restantes[i]);
+      if (d < menorDist) {
+        menorDist = d;
+        maisProximoIndex = i;
+      }
+    }
+
+    const proximo = restantes.splice(maisProximoIndex, 1)[0];
+    novaRota.push(proximo);
+    atual = proximo;
+  }
+
+  rota = novaRota;
+
+  salvar();
+  render();
+}
+
 function salvarRota(){
   localStorage.setItem("rota_postos", JSON.stringify({rota,data:new Date().toLocaleString("pt-BR")}));
   listar(); alert("Rota salva.");
