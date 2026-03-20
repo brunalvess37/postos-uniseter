@@ -389,6 +389,13 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   <div id="map"></div>
 
   <div class="map-actions">
+  <button id="btnMenu" class="map-btn">⋮</button>
+
+  <div id="menuOpcoes" style="
+    display:none;
+    flex-direction:column;
+    gap:6px;
+  ">
     <button id="btnCompartilhar" class="map-btn">📤 Compartilhar rota</button>
     <button id="btnRota" class="map-btn">🧭 Ver rota</button>
     <button id="btnGps" class="map-btn">📍 Minha localização</button>
@@ -957,6 +964,14 @@ document.getElementById("btnGps").onclick = () => {
 /* 🗑️ LIMPAR */
 document.getElementById("btnLimpar").onclick = () => {
 
+const btnMenu = document.getElementById("btnMenu");
+const menu = document.getElementById("menuOpcoes");
+
+btnMenu.onclick = () => {
+  const aberto = menu.style.display === "flex";
+  menu.style.display = aberto ? "none" : "flex";
+};
+  
   // 👉 limpa destaque também
   if (marcadorDestacado) {
     const el = marcadorDestacado.getElement();
