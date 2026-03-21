@@ -41,7 +41,13 @@ listar();
 }
 
 function salvarRota(){
-  localStorage.setItem("rota_postos", JSON.stringify({rota,data:new Date().toLocaleString("pt-BR")}));
+  dataRota = new Date().toLocaleString("pt-BR");
+  
+  localStorage.setItem("rota_postos", JSON.stringify({
+    rota,
+    data: dataRota
+  }));
+  
   listar();
 
 const info = document.getElementById("rota-info");
