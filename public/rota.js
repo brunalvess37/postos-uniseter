@@ -40,6 +40,37 @@ salvarRota();
 listar();
 }
 
+function abrirNoGoogleMaps(){
+  if(!rota.length) return alert("Sem rota.");
+
+  // 🔹 origem = primeiro ponto
+  const origem = rota[0];
+  const latOrigem = origem.lat || origem.Latitude;
+  const lonOrigem = origem.lon || origem.Longitude;
+
+  // 🔹 destino = último ponto
+  const destino = rota[rota.length - 1];
+  const latDestino = destino.lat || destino.Latitude;
+  const lonDestino = destino.lon || destino.Longitude;
+
+  // 🔹 pontos intermediários
+  const waypoints = rota.slice(1, -1).map(p => {
+    const lat = p.lat || p.Latitude;
+    const lon = p.lon || p.Longitude;
+    return `${lat},${lon}`;
+  }).join("|");
+
+  let url = `https://www.google.com/maps/dir/?api=1`;
+  url += `&origin=${latOrigem},${lonOrigem}`;
+  url += `&destination=${latDestino},${lonDestino}`;
+
+  if(waypoints){
+    url += `&waypoints=${waypoints}`;
+  }
+
+  window.open(url, "_blank");
+}
+
 function salvarRota(){
   dataRota = new Date().toLocaleString("pt-BR");
   
