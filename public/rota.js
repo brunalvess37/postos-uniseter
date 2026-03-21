@@ -240,12 +240,12 @@ function remo(i){ rota.splice(i,1); salvarRota(); }
 
 // ================= 🌍 MAPA EXPANSÍVEL =================
 let mapRota = null;
+let layerRotaMap = null;
 
 function toggleMapa(){
 
   const div = document.getElementById("map-rota");
 
-  // alterna visibilidade
   const visivel = div.style.display === "block";
   div.style.display = visivel ? "none" : "block";
 
@@ -258,39 +258,60 @@ function toggleMapa(){
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
       .addTo(mapRota);
+
+    layerRotaMap = L.layerGroup().addTo(mapRota);
   }
 
-  // 🔹 limpa pins antigos
-  mapRota.eachLayer(layer => {
-    if (layer instanceof L.Marker) {
-      mapRota.removeLayer(layer);
-    }
-  });
+  // 🔹 limpa tudo
+  layerRotaMap.clearLayers();
 
-  // 🔹 pega rota salva
   const rota = JSON.parse(localStorage.getItem("rota_postos") || "{}").rota || [];
 
   if (!rota.length) return;
 
   const pontos = [];
 
-  rota.forEach(p => {
+  rota.forEach((p, i) => {
 
     if (!p.Latitude || !p.Longitude) return;
 
-    const marker = L.marker([p.Latitude, p.Longitude])
-      .addTo(mapRota)
-      .bindPopup(`<b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b>`);
+    const lat = p.Latitude;
+    const lon = p.Longitude;
 
-    pontos.push([p.Latitude, p.Longitude]);
+    pontos.push([lat, lon]);
+
+    // 🎯 MARCADORES DIFERENTES
+    let cor = "#003c8d";
+
+    if (i === 0) cor = "#2e7d32";        // 🟢 início
+    else if (i === rota.length - 1) cor = "#c62828"; // 🔴 fim
+
+    const marker = L.circleMarker([lat, lon], {
+      radius: 6,
+      color: cor,
+      fillColor: cor,
+      fillOpacity: 1
+    }).addTo(layerRotaMap);
+
+    marker.bindPopup(`
+      <b>${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || ""}</b>
+    `);
   });
 
-  // 🔹 ajusta zoom automaticamente
-  if (pontos.length){
-    mapRota.fitBounds(pontos);
+  // 🔹 LINHA DA ROTA (tipo Google Maps)
+  if (pontos.length > 1){
+    L.polyline(pontos, {
+      color: "#0066ff",
+      weight: 4
+    }).addTo(layerRotaMap);
   }
 
-  // 🔧 corrige bug visual do Leaflet (ESSENCIAL)
+  // 🔹 AJUSTA ZOOM
+  if (pontos.length){
+    mapRota.fitBounds(pontos, { padding: [20, 20] });
+  }
+
+  // 🔧 corrigir render
   setTimeout(() => {
     mapRota.invalidateSize();
   }, 200);
