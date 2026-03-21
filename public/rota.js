@@ -36,8 +36,8 @@ function otimizarRota() {
 
   rota = novaRota;
 
-  salvar();
-  render();
+salvarRota();
+listar();
 }
 
 function salvarRota(){
@@ -47,12 +47,6 @@ function salvarRota(){
 
 function limparRota(){
   if(confirm("Apagar rota?")){ rota=[]; dataRota=null; salvarRota(); }
-}
-
-function distancia(a,b){
-  const R=6371, dLat=(b.lat-a.lat)*Math.PI/180, dLon=(b.lon-a.lon)*Math.PI/180;
-  const s=Math.sin(dLat/2)**2 + Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));
 }
 
 function ordenarRota(){
