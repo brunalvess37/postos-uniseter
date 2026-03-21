@@ -286,25 +286,34 @@ function toggleMapa(){
     if (i === 0) cor = "#2e7d32";        // 🟢 início
     else if (i === rota.length - 1) cor = "#c62828"; // 🔴 fim
 
-    const marker = L.circleMarker([lat, lon], {
-      radius: 6,
-      color: cor,
-      fillColor: cor,
-      fillOpacity: 1
-    }).addTo(layerRotaMap);
+    const icon = L.divIcon({
+  className: "",
+  html: `
+    <div style="
+      background:${cor};
+      width:26px;
+      height:26px;
+      border-radius:50%;
+      border:2px solid white;
+      box-shadow:0 2px 6px rgba(0,0,0,.3);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:12px;
+      font-weight:bold;
+    ">
+      ${i+1}
+    </div>
+  `
+});
+
+const marker = L.marker([lat, lon], { icon }).addTo(layerRotaMap);
 
     marker.bindPopup(`
       <b>${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || ""}</b>
     `);
   });
-
-  // 🔹 LINHA DA ROTA (tipo Google Maps)
-  if (pontos.length > 1){
-    L.polyline(pontos, {
-      color: "#0066ff",
-      weight: 4
-    }).addTo(layerRotaMap);
-  }
 
   // 🔹 AJUSTA ZOOM
   if (pontos.length){
