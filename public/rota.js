@@ -322,63 +322,8 @@ function toggleMapa(){
     layerRotaMap = L.layerGroup().addTo(mapRota);
   }
 
-  // 🔹 limpa tudo
-  layerRotaMap.clearLayers();
-
-  const rota = JSON.parse(localStorage.getItem("rota_postos") || "{}").rota || [];
-
-  if (!rota.length) return;
-
-  const pontos = [];
-
-  rota.forEach((p, i) => {
-
-    if (!p.Latitude || !p.Longitude) return;
-
-    const lat = p.Latitude;
-    const lon = p.Longitude;
-
-    pontos.push([lat, lon]);
-
-    // 🎯 MARCADORES DIFERENTES
-    let cor = "#003c8d";
-
-    if (i === 0) cor = "#2e7d32";        // 🟢 início
-    else if (i === rota.length - 1) cor = "#c62828"; // 🔴 fim
-
-    const icon = L.divIcon({
-  className: "",
-  html: `
-    <div style="
-      background:${cor};
-      width:26px;
-      height:26px;
-      border-radius:50%;
-      border:2px solid white;
-      box-shadow:0 2px 6px rgba(0,0,0,.3);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:white;
-      font-size:12px;
-      font-weight:bold;
-    ">
-      ${i+1}
-    </div>
-  `
-});
-
-const marker = L.marker([lat, lon], { icon }).addTo(layerRotaMap);
-
-    marker.bindPopup(`
-      <b>${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || ""}</b>
-    `);
-  });
-
-  // 🔹 AJUSTA ZOOM
-  if (pontos.length){
-    mapRota.fitBounds(pontos, { padding: [20, 20] });
-  }
+  // ✅ ÚNICA LINHA RESPONSÁVEL PELO DESENHO
+  atualizarMapaRota();
 
   // 🔧 corrigir render
   setTimeout(() => {
