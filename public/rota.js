@@ -205,7 +205,20 @@ function toggleMapa(){
 // ================= 🚗 WAZE =================
 function abrirNoWaze(){
   if(!rota.length) return alert("Sem rota.");
-  let u=`https://waze.com/ul?ll=${rota[0].lat},${rota[0].lon}&navigate=yes`;
-  rota.slice(1).forEach(p=>u+=`&ll=${p.lat},${p.lon}`);
-  window.open(u,"_blank");
+
+  // 🔹 pega primeiro ponto corretamente
+  const primeiro = rota[0];
+  const lat = primeiro.lat || primeiro.Latitude;
+  const lon = primeiro.lon || primeiro.Longitude;
+
+  let url = `https://waze.com/ul?ll=${lat},${lon}&navigate=yes`;
+
+  // 🔹 adiciona os demais pontos
+  rota.slice(1).forEach(p => {
+    const lat = p.lat || p.Latitude;
+    const lon = p.lon || p.Longitude;
+    url += `&ll=${lat},${lon}`;
+  });
+
+  window.open(url, "_blank");
 }
