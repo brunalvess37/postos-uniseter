@@ -42,7 +42,8 @@ listar();
 
 function salvarRota(){
   localStorage.setItem("rota_postos", JSON.stringify({rota,data:new Date().toLocaleString("pt-BR")}));
-  listar(); alert("Rota salva.");
+  listar();
+  document.getElementById("rota-info").innerText = "✔ Rota atualizada automaticamente";
 }
 
 function limparRota(){
