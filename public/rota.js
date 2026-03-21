@@ -43,18 +43,29 @@ listar();
 function abrirNoGoogleMaps(){
   if(!rota.length) return alert("Sem rota.");
 
-  // 🔹 origem = primeiro ponto
-  const origem = rota[0];
+  // 🔹 filtra apenas pontos válidos
+  const pontosValidos = rota.filter(p => {
+    const lat = p.lat || p.Latitude;
+    const lon = p.lon || p.Longitude;
+    return lat && lon;
+  });
+
+  if(pontosValidos.length < 2){
+    return alert("Rota precisa de pelo menos 2 pontos válidos.");
+  }
+
+  // 🔹 origem
+  const origem = pontosValidos[0];
   const latOrigem = origem.lat || origem.Latitude;
   const lonOrigem = origem.lon || origem.Longitude;
 
-  // 🔹 destino = último ponto
-  const destino = rota[rota.length - 1];
+  // 🔹 destino
+  const destino = pontosValidos[pontosValidos.length - 1];
   const latDestino = destino.lat || destino.Latitude;
   const lonDestino = destino.lon || destino.Longitude;
 
-  // 🔹 pontos intermediários
-  const waypoints = rota.slice(1, -1).map(p => {
+  // 🔹 intermediários
+  const waypoints = pontosValidos.slice(1, -1).map(p => {
     const lat = p.lat || p.Latitude;
     const lon = p.lon || p.Longitude;
     return `${lat},${lon}`;
