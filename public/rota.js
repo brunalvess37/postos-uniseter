@@ -239,9 +239,61 @@ box.innerHTML+= `
 function remo(i){ rota.splice(i,1); salvarRota(); }
 
 // ================= 🌍 MAPA EXPANSÍVEL =================
+let mapRota = null;
+
 function toggleMapa(){
-  let m=document.getElementById("mapa");
-  m.style.height= m.style.height=="0px"?"350px":"0px";
+
+  const div = document.getElementById("map-rota");
+
+  // alterna visibilidade
+  const visivel = div.style.display === "block";
+  div.style.display = visivel ? "none" : "block";
+
+  if (visivel) return;
+
+  // 🔹 cria mapa só uma vez
+  if (!mapRota){
+
+    mapRota = L.map("map-rota").setView([-22.9,-47.06], 10);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+      .addTo(mapRota);
+  }
+
+  // 🔹 limpa pins antigos
+  mapRota.eachLayer(layer => {
+    if (layer instanceof L.Marker) {
+      mapRota.removeLayer(layer);
+    }
+  });
+
+  // 🔹 pega rota salva
+  const rota = JSON.parse(localStorage.getItem("rota_postos") || "{}").rota || [];
+
+  if (!rota.length) return;
+
+  const pontos = [];
+
+  rota.forEach(p => {
+
+    if (!p.Latitude || !p.Longitude) return;
+
+    const marker = L.marker([p.Latitude, p.Longitude])
+      .addTo(mapRota)
+      .bindPopup(`<b>${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}</b>`);
+
+    pontos.push([p.Latitude, p.Longitude]);
+  });
+
+  // 🔹 ajusta zoom automaticamente
+  if (pontos.length){
+    mapRota.fitBounds(pontos);
+  }
+
+  // 🔧 corrige bug visual do Leaflet (ESSENCIAL)
+  setTimeout(() => {
+    mapRota.invalidateSize();
+  }, 200);
 }
 
 // ================= 🚗 WAZE =================
