@@ -92,6 +92,8 @@ function salvarRota(){
   
   listar();
 
+  atualizarMapaRota();
+
 const info = document.getElementById("rota-info");
 info.innerText = "✔ Rota atualizada automaticamente";
 
@@ -241,6 +243,64 @@ function remo(i){ rota.splice(i,1); salvarRota(); }
 // ================= 🌍 MAPA EXPANSÍVEL =================
 let mapRota = null;
 let layerRotaMap = null;
+
+function atualizarMapaRota(){
+
+  if (!mapRota || !layerRotaMap) return;
+
+  layerRotaMap.clearLayers();
+
+  const rota = JSON.parse(localStorage.getItem("rota_postos") || "{}").rota || [];
+
+  if (!rota.length) return;
+
+  rota.forEach((p, i) => {
+
+    if (!p.Latitude || !p.Longitude) return;
+
+    const lat = p.Latitude;
+    const lon = p.Longitude;
+
+    let cor = "#003c8d";
+    if (i === 0) cor = "#2e7d32";
+    else if (i === rota.length - 1) cor = "#c62828";
+
+    const icon = L.divIcon({
+      className: "",
+      html: `
+        <div style="
+          background:${cor};
+          width:26px;
+          height:26px;
+          border-radius:50%;
+          border:2px solid white;
+          box-shadow:0 2px 6px rgba(0,0,0,.3);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          color:white;
+          font-size:12px;
+          font-weight:bold;
+        ">
+          ${i+1}
+        </div>
+      `
+    });
+
+    const marker = L.marker([lat, lon], { icon }).addTo(layerRotaMap);
+
+    marker.bindPopup(`<b>${i+1}. ${p["POSTOS DE SERVIÇOS / GRUPO SETER"] || ""}</b>`);
+  });
+
+  // 🔹 ajustar zoom
+  const pontos = rota
+    .filter(p => p.Latitude && p.Longitude)
+    .map(p => [p.Latitude, p.Longitude]);
+
+  if (pontos.length){
+    mapRota.fitBounds(pontos, { padding: [20, 20] });
+  }
+}
 
 function toggleMapa(){
 
