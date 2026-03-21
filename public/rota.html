@@ -30,6 +30,9 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
 <link rel="stylesheet" href="style.css?v=202501">
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
 <script>
 async function sair() {
   const c = window.Clerk;
@@ -124,7 +127,16 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
 <button class="secondary" onclick="toggleMapa()">
   🗺 Mostrar / Ocultar mapa
 </button>
-    
+
+<div id="map-rota" style="
+  width:100%;
+  height:300px;
+  margin-top:16px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  display:none;
+"></div>
+
 <div id="mapa" style="height:0; overflow:hidden; transition:.3s"></div>
 
 </body>
