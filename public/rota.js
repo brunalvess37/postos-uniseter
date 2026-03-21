@@ -43,7 +43,13 @@ listar();
 function salvarRota(){
   localStorage.setItem("rota_postos", JSON.stringify({rota,data:new Date().toLocaleString("pt-BR")}));
   listar();
-  document.getElementById("rota-info").innerText = "✔ Rota atualizada automaticamente";
+
+const info = document.getElementById("rota-info");
+info.innerText = "✔ Rota atualizada automaticamente";
+
+setTimeout(() => {
+  info.innerText = dataRota ? `📅 Rota criada em: ${dataRota}` : "";
+}, 2000);
 }
 
 function limparRota(){
