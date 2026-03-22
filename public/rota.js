@@ -351,3 +351,60 @@ function abrirNoWaze(){
 
   window.open(url, "_blank");
 }
+
+// ================= 📤 COMPARTILHAR =================
+function montarTextoRota() {
+
+  const rota = JSON.parse(localStorage.getItem("rota_postos") || "{}").rota || [];
+
+  if (!rota.length) {
+    alert("A rota está vazia.");
+    return null;
+  }
+
+  let texto = "Rota do dia — UNISETER\n\n";
+
+  rota.forEach((p, i) => {
+
+    const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"] || "Sem nome";
+
+    const endereco = [
+      p["ENDEREÇO I"],
+      p["ENDEREÇO II"],
+      p["ENDEREÇO III"],
+      p["ENDEREÇO IV"]
+    ].filter(Boolean).join(" - ");
+
+    texto += `${i + 1}) *${nome}*\n`;
+    texto += `${endereco || "Endereço não disponível"}\n\n`;
+  });
+
+  return texto;
+}
+
+document.getElementById("btnCompartilharRota").onclick = async () => {
+
+  const texto = montarTextoRota();
+  if (!texto) return;
+
+  // 📱 Compartilhamento nativo
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Rota do dia — UNISETER",
+        text: texto
+      });
+      return;
+    } catch (err) {
+      console.log("Compartilhamento cancelado");
+    }
+  }
+
+  // 💻 fallback (copiar)
+  try {
+    await navigator.clipboard.writeText(texto);
+    alert("Rota copiada! Agora você pode colar.");
+  } catch (e) {
+    alert("Não foi possível copiar.\n\n" + texto);
+  }
+};
