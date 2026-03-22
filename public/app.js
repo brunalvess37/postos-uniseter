@@ -147,9 +147,36 @@ ${inativo ? `
     ` : ""}
 
     <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-      <a href="${mapsUrl}" target="_blank"><button>📍 Google Maps</button></a>
-      <a href="${wazeUrl}" target="_blank"><button>🚗 Waze</button></a>
-    </div>
+
+  <button onclick="window.open('${mapsUrl}', '_blank')" style="
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:8px 14px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    background:#f9f9f9;
+    cursor:pointer;
+  ">
+    <img src="icons/google-maps.png" style="width:18px;height:18px;">
+    Google Maps
+  </button>
+
+  <button onclick="window.open('${wazeUrl}', '_blank')" style="
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:8px 14px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    background:#f9f9f9;
+    cursor:pointer;
+  ">
+    <img src="icons/waze.png" style="width:18px;height:18px;">
+    Waze
+  </button>
+
+</div>
 
     <div style="margin-top:12px;">
   <button
