@@ -145,13 +145,19 @@ document.getElementById("btnCompartilharRota").onclick = async () => {
 
   
   Sortable.create(document.getElementById("rota-lista"),{
-    animation:150,
-    onEnd:e=>{
-      const item=rota.splice(e.oldIndex,1)[0];
-      rota.splice(e.newIndex,0,item);
-      salvarRota();
-    }
-  });
+  animation:150,
+  handle: ".drag-handle",   // 👈 ESSENCIAL
+  delay: 150,               // 👈 evita drag acidental
+  delayOnTouchOnly: true,   // 👈 só no celular
+  touchStartThreshold: 5,   // 👈 melhora precisão
+
+  onEnd:e=>{
+    const item=rota.splice(e.oldIndex,1)[0];
+    rota.splice(e.newIndex,0,item);
+    salvarRota();
+  }
+});
+  
 });
 
 // LISTA
@@ -212,6 +218,14 @@ box.innerHTML+= `
   font-size:16px;
   margin-bottom:4px;
 ">
+
+<span class="drag-handle" style="
+  cursor:grab;
+  margin-right:8px;
+  color:#003c8d;
+  font-size:18px;
+">☰</span>
+
       ${i+1}. ${nome}
     </b>
 
