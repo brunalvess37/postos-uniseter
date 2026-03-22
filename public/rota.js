@@ -116,6 +116,34 @@ function ordenarRota(){
 // 🔥 Drag & Drop
 document.addEventListener("DOMContentLoaded",()=>{
   listar();
+  
+  // 📤 Compartilhar rota (AGORA FUNCIONA)
+document.getElementById("btnCompartilharRota").onclick = async () => {
+
+  const texto = montarTextoRota();
+  if (!texto) return;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Rota do dia — UNISETER",
+        text: texto
+      });
+      return;
+    } catch (err) {
+      console.log("Compartilhamento cancelado");
+    }
+  }
+
+  try {
+    await navigator.clipboard.writeText(texto);
+    alert("Rota copiada! Agora você pode colar.");
+  } catch (e) {
+    alert("Não foi possível copiar.\n\n" + texto);
+  }
+};
+
+  
   Sortable.create(document.getElementById("rota-lista"),{
     animation:150,
     onEnd:e=>{
@@ -382,29 +410,3 @@ function montarTextoRota() {
   return texto;
 }
 
-document.getElementById("btnCompartilharRota").onclick = async () => {
-
-  const texto = montarTextoRota();
-  if (!texto) return;
-
-  // 📱 Compartilhamento nativo
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: "Rota do dia — UNISETER",
-        text: texto
-      });
-      return;
-    } catch (err) {
-      console.log("Compartilhamento cancelado");
-    }
-  }
-
-  // 💻 fallback (copiar)
-  try {
-    await navigator.clipboard.writeText(texto);
-    alert("Rota copiada! Agora você pode colar.");
-  } catch (e) {
-    alert("Não foi possível copiar.\n\n" + texto);
-  }
-};
