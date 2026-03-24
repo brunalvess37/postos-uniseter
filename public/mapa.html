@@ -282,6 +282,16 @@ header{
   transition: opacity .25s ease, transform .25s ease;
 }
 
+/* ✨ ANIMAÇÃO AO ADICIONAR NA ROTA */
+#rota-sheet.pulse{
+  animation:pulseSheet .35s ease;
+}
+
+@keyframes pulseSheet{
+  0%   { transform:translateY(0) scale(1); }
+  50%  { transform:translateY(0) scale(1.02); }
+  100% { transform:translateY(0) scale(1); }
+}
   
 .leaflet-popup-content{margin:0;width:260px;}
 .popup-card{padding:14px;}
@@ -1167,6 +1177,14 @@ marcadores[i] = m;
 
     addRota(i);
 
+// ✨ animação do bottom sheet
+const sheet = document.getElementById("rota-sheet");
+sheet.classList.add("pulse");
+
+setTimeout(() => {
+  sheet.classList.remove("pulse");
+}, 350);
+    
     if (marcadorDestacado) {
       const el = marcadorDestacado.getElement();
       const ponto = el?.querySelector("div");
