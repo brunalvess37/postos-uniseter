@@ -295,6 +295,12 @@ header{
   
 .leaflet-popup-content{margin:0;width:260px;}
 .popup-card{padding:14px;}
+/* ✨ fade ao fechar popup */
+.leaflet-popup.fade-out {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .25s ease, transform .25s ease;
+}
 .popup-title{font-weight:700;color:#003c8d;font-size:15px;margin-bottom:6px;}
 .popup-address{font-size:13px;color:#444;margin-bottom:12px;}
 .popup-actions{display:flex;flex-direction:column;gap:8px;}
@@ -1170,12 +1176,39 @@ marcadores[i] = m;
   }
 
   btn.onclick = () => {
-    
-    if (navigator.vibrate) {
-      navigator.vibrate(20);
-    }
 
-    addRota(i);
+  if (navigator.vibrate) {
+    navigator.vibrate(20);
+  }
+
+  addRota(i);
+
+  // ✨ FECHAR POPUP COM ANIMAÇÃO
+  const popupEl = e.popup.getElement();
+
+  if (popupEl) {
+    popupEl.classList.add("fade-out");
+
+    setTimeout(() => {
+      map.closePopup(e.popup);
+    }, 200);
+  }
+
+  // ✨ animação do bottom sheet
+  const sheet = document.getElementById("rota-sheet");
+  sheet.classList.add("pulse");
+
+  setTimeout(() => {
+    sheet.classList.remove("pulse");
+  }, 350);
+
+  if (marcadorDestacado) {
+    const el = marcadorDestacado.getElement();
+    const ponto = el?.querySelector("div");
+    ponto?.classList.remove("marker-highlight");
+    marcadorDestacado = null;
+  }
+};
 
 // ✨ animação do bottom sheet
 const sheet = document.getElementById("rota-sheet");
