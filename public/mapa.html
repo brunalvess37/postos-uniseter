@@ -1191,6 +1191,7 @@ postos.forEach((p,i)=>{
 
 const popup=`
   <div class="popup-card">
+
     <div class="popup-title">
       ${p["POSTOS DE SERVIÇOS / GRUPO SETER"]}
     </div>
@@ -1213,26 +1214,27 @@ const popup=`
     <div class="popup-address">${endereco}</div>
 
     <div class="popup-actions">
-  <button
-    class="popup-btn js-add-rota"
-    ${inativo ? "disabled title='Cadastro inativo não pode entrar na rota'" : ""}
-  >
-    ➕ Incluir na rota
-  </button>
-</div>
+      <button
+        class="popup-btn js-add-rota"
+        ${inativo ? "disabled title='Cadastro inativo não pode entrar na rota'" : ""}
+      >
+        ➕ Incluir na rota
+      </button>
+    </div>
 
-${p.ZONA ? `
-  <div style="
-    margin-top:10px;
-    padding-top:8px;
-    border-top:1px solid #eee;
-    font-size:12px;
-    color:#777;
-    text-align:center;
-  ">
-    Zona: ${p.ZONA}
-  </div>
-` : ""}
+    ${p.ZONA ? `
+      <div style="
+        margin-top:10px;
+        padding-top:8px;
+        border-top:1px solid #eee;
+        font-size:12px;
+        color:#777;
+        text-align:center;
+      ">
+        Zona: ${p.ZONA}
+      </div>
+    ` : ""}
+
   </div>
 `;
 
