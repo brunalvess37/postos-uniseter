@@ -3,6 +3,13 @@ let rota = dados.rota||[];
 let dataRota = dados.data||null;
 let selecionadosBusca = [];
 
+function isCadastroInativo(p) {
+  return !!(
+    p.DATA_INATIVO &&
+    String(p.DATA_INATIVO).trim() !== ""
+  );
+}
+
 function distancia(a, b) {
   const dx = a.Latitude - b.Latitude;
   const dy = a.Longitude - b.Longitude;
@@ -669,16 +676,19 @@ function confirmarAdicao(){
   // 🔹 ADICIONA NA ROTA (SEM DUPLICAR)
   listaFinal.forEach(p => {
 
-    const existe = rota.some(r =>
-      r["POSTOS DE SERVIÇOS / GRUPO SETER"] ===
-      p["POSTOS DE SERVIÇOS / GRUPO SETER"]
-    );
+  // ❌ bloqueia inativos
+  if (isCadastroInativo(p)) return;
 
-    if (!existe){
-      rota.push(p);
-    }
+  const existe = rota.some(r =>
+    r["POSTOS DE SERVIÇOS / GRUPO SETER"] ===
+    p["POSTOS DE SERVIÇOS / GRUPO SETER"]
+  );
 
-  });
+  if (!existe){
+    rota.push(p);
+  }
+
+});
 
   salvarRota();
 
