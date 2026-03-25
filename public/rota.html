@@ -262,14 +262,33 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
 
 <div style="position:relative; margin-bottom:12px;">
   
-  <input id="buscaRota" type="text" placeholder="Nome, cidade ou bairro..." style="
-    width:100%;
-    padding:10px 12px;
-    border-radius:8px;
-    border:1px solid #ccc;
-    font-size:14px;
-  ">
+  <input id="buscaRota" type="text" placeholder="Digite e selecione os postos..." 
+      style="
+  width:100%;
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:14px;
+  box-sizing:border-box;
+">
 
+<!-- ✅ BOTÃO LIMPAR (AQUI) -->
+<button onclick="
+  document.getElementById('buscaRota').value='';
+  document.getElementById('sugestoesRota').innerHTML='';
+" style="
+  position:absolute;
+  right:8px;
+  top:50%;
+  transform:translateY(-50%);
+  border:none;
+  background:none;
+  cursor:pointer;
+  color:#999;
+">
+  ✕
+</button>
+    
   <div id="sugestoesRota" style="
     position:absolute;
     width:100%;
