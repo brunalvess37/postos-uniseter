@@ -117,31 +117,85 @@
 
   <!-- ===== HEADER ===== -->
   <header style="
+  background:#003c8d;
+  color:white;
+  padding:18px 16px 14px;
+  border-radius:0 0 18px 18px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+">
+
+  <!-- TÍTULO -->
+  <div style="text-align:center; font-size:20px; font-weight:600;">
+    Postos Uniseter
+  </div>
+
+  <!-- BOTÕES -->
+  <div style="
     display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
+    justify-content:center;
+    gap:14px;
+    margin-top:14px;
   ">
-    <h2 style="margin:0;">POSTOS UNISETER</h2>
 
-    <div style="display:flex;gap:8px;">
-      <button onclick="location.href='home.html'"
-        style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+    <button onclick="location.href='home.html'" style="all:unset; cursor:pointer;">
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:6px;
+        padding:10px 14px;
+        border-radius:10px;
+        background:rgba(255,255,255,0.15);
+      ">
+        <img src="https://img.icons8.com/ios-filled/100/menu.png" style="width:18px;">
         Menu
-      </button>
+      </div>
+    </button>
 
-      <!-- ✅ NOVO BOTÃO -->
-      <button onclick="location.href='mapa.html'"
-        style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+    <button onclick="location.href='mapa.html'" style="all:unset; cursor:pointer;">
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:6px;
+        padding:10px 14px;
+        border-radius:10px;
+        background:rgba(255,255,255,0.15);
+      ">
+        <img src="https://img.icons8.com/ios-filled/100/marker.png" style="width:18px;">
         Mapa
-      </button>
+      </div>
+    </button>
 
-      <button onclick="sair()"
-        style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
+    <button onclick="sair()" style="all:unset; cursor:pointer;">
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:6px;
+        padding:10px 14px;
+        border-radius:10px;
+        border:1px solid rgba(255,255,255,0.4);
+      ">
+        <img src="https://img.icons8.com/ios-filled/100/exit.png" style="width:18px;">
         Sair
-      </button>
-    </div>
-  </header>
+      </div>
+    </button>
+
+  </div>
+
+</header>
+
+<div style="
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 16px;
+  font-size:18px;
+  font-weight:500;
+">
+
+  <img src="https://img.icons8.com/ios-filled/100/search.png" style="width:22px;">
+  Buscar Postos
+
+</div>
 
   <!-- ===== BUSCA ===== -->
   <div class="search-box">
