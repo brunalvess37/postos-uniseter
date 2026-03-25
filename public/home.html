@@ -89,9 +89,36 @@ async function sair(){
 }
 </script>
 
-<header>
-  <h1>POSTOS UNISETER</h1>
-  <button class="logout-btn" onclick="sair()">Sair</button>
+<header style="
+  background:#003c8d;
+  color:white;
+  padding:18px 16px;
+  border-radius:0 0 18px 18px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+">
+
+  <div style="font-size:14px;">
+    Sistema de visitas, gestão e planejamento
+  </div>
+
+  <button onclick="sair()" style="all:unset; cursor:pointer;">
+    <div style="
+      display:flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 12px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.4);
+    ">
+      <img src="https://img.icons8.com/ios-filled/100/exit.png" style="width:18px;">
+      Sair
+    </div>
+  </button>
+
 </header>
 
 <p style="color:#333;font-size:14px;margin-top:0;">
