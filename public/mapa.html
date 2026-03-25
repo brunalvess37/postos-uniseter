@@ -798,8 +798,52 @@ function irParaMeuGps(){
       layerUsuario.clearLayers();
 
       // adiciona bolinha azul no mapa
-      L.marker([lat, lng], { icon: iconUsuario() })
-        .addTo(layerUsuario);
+      const marker = L.marker([lat, lng], { icon: iconUsuario() })
+  .addTo(layerUsuario)
+  .bindPopup(popup)
+  .openPopup();
+
+      marker.on("popupopen", (e) => {
+
+  const btn = e.popup.getElement().querySelector(".js-add-gps");
+  if (!btn) return;
+
+  btn.onclick = () => {
+
+    if (navigator.vibrate) {
+      navigator.vibrate(20);
+    }
+
+    const pontoUsuario = {
+      Latitude: lat,
+      Longitude: lng,
+      "POSTOS DE SERVIÇOS / GRUPO SETER": "📍 Minha localização"
+    };
+
+    const rota = getRota();
+
+    // evita duplicado
+    const existe = rota.some(r =>
+      r.Latitude === lat && r.Longitude === lng
+    );
+
+    if (!existe) {
+      rota.unshift(pontoUsuario);
+      salvarRota(rota);
+      desenharRota();
+      renderRotaLista();
+    }
+
+    // feedback visual
+    btn.innerHTML = "✔ Adicionado";
+    btn.disabled = true;
+
+    setTimeout(() => {
+      map.closePopup(e.popup);
+    }, 300);
+  };
+
+});
 
       // centraliza o mapa nesse ponto
       map.setView([lat, lng], 15);
@@ -811,13 +855,24 @@ function irParaMeuGps(){
         "POSTOS DE SERVIÇOS / GRUPO SETER": "📍 Minha localização"
       };
 
-      // adiciona como primeiro ponto da rota
-      const rota = getRota();
-      rota.unshift(pontoUsuario);
-      salvarRota(rota);
+      // cria popup igual aos postos
+const popup = `
+  <div class="popup-card">
+    <div class="popup-title">
+      📍 Minha localização
+    </div>
 
-      desenharRota();
-      renderRotaLista();
+    <div class="popup-address">
+      Localização atual do dispositivo
+    </div>
+
+    <div class="popup-actions">
+      <button class="popup-btn js-add-gps">
+        ➕ Incluir na rota
+      </button>
+    </div>
+  </div>
+`;
     },
     (err) => {
       alert("Não foi possível obter sua localização.");
