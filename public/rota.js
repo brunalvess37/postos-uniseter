@@ -533,21 +533,46 @@ if (inputBusca){
   const bairroH = bairro?.replace(regex, m => `<mark>${m}</mark>`);
 
   return `
-    <div style="
-      padding:8px;
-      border-bottom:1px solid #eee;
-      cursor:pointer;
-    " onclick='toggleSelecionadoBusca(${JSON.stringify(p)})'>
+  <div class="item-busca" 
+       onclick='toggleSelecionadoBusca(${JSON.stringify(p)})'
+       data-nome="${nome}"
+       style="
+        display:flex;
+        align-items:flex-start;
+        gap:10px;
+        padding:10px;
+        border-bottom:1px solid #eee;
+        cursor:pointer;
+        transition:background 0.2s;
+       ">
 
+    <!-- ✅ CHECKBOX VISUAL -->
+    <div class="check-busca" style="
+      width:18px;
+      height:18px;
+      border:2px solid #bbb;
+      border-radius:4px;
+      margin-top:2px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      color:#fff;
+      background:#fff;
+      flex-shrink:0;
+    "></div>
+
+    <!-- TEXTO -->
+    <div style="flex:1;">
       <div style="font-weight:500">${nomeH}</div>
-
       <div style="font-size:12px;color:#666">
         ${cidadeH || ""}
         ${bairroH ? " — " + bairroH : ""}
       </div>
-
     </div>
-  `;
+
+  </div>
+`;
 }).join("");
   });
 
@@ -620,7 +645,7 @@ function toggleSelecionadoBusca(p){
     selecionadosBusca.push(p);
   }
 
-  renderSelecionadosBusca();
+  atualizarUISelecionados();
 }
 
   // Mostrar postos Selecionados na Busca
@@ -663,4 +688,42 @@ function confirmarAdicao(){
   document.getElementById("sugestoesRota").innerHTML = "";
 
   fecharModalZona();
+}
+
+  // Função UI
+function atualizarUISelecionados(){
+
+  const itens = document.querySelectorAll(".item-busca");
+
+  itens.forEach(item => {
+
+    const nome = item.dataset.nome;
+
+    const selecionado = selecionadosBusca.some(p =>
+      p["POSTOS DE SERVIÇOS / GRUPO SETER"] === nome
+    );
+
+    const check = item.querySelector(".check-busca");
+
+    if (selecionado){
+      item.style.background = "#e3f2fd";
+      check.style.background = "#003c8d";
+      check.style.borderColor = "#003c8d";
+      check.innerHTML = "✔";
+    } else {
+      item.style.background = "#fff";
+      check.style.background = "#fff";
+      check.style.borderColor = "#bbb";
+      check.innerHTML = "";
+    }
+
+  });
+
+  // Atualiza contador
+  const box = document.getElementById("infoZona");
+
+  if (selecionadosBusca.length){
+    box.innerText = `${selecionadosBusca.length} selecionado(s)`;
+  }
+
 }
