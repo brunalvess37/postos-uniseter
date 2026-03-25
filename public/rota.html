@@ -117,15 +117,104 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
   border:1px solid #e0e0e0;
   border-radius:12px;
 ">
-  <button class="secondary" onclick="otimizarRota()">📍 Otimizar rota</button>
-  <button class="secondary" onclick="abrirModalZona()">➕ Adicionar</button>
-  <button class="secondary" onclick="limparRota()">🗑 Limpar rota</button>
-  <button class="secondary" onclick="abrirNoGoogleMaps()">Rota no Google Maps</button>
-  <button class="secondary" onclick="gerarPDFRota()">📄 PDF</button>
-  <button class="secondary" id="btnCompartilharRota">📤 Compartilhar</button>
+
+  <!-- 🔵 PRINCIPAL -->
+  <button onclick="otimizarRota()" style="
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:10px 16px;
+    border-radius:8px;
+    border:none;
+    background:#003c8d;
+    color:#fff;
+    font-weight:500;
+    cursor:pointer;
+  ">
+    📍 Otimizar rota
+  </button>
+
+  <!-- ⚪ SECUNDÁRIOS -->
+  <button onclick="abrirModalZona()" style="
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:10px 14px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    background:#f9f9f9;
+    cursor:pointer;
+  ">
+    ➕ Adicionar
+  </button>
+
+  <button onclick="limparRota()" style="
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:10px 14px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    background:#f9f9f9;
+    cursor:pointer;
+  ">
+    🗑 Limpar rota
+  </button>
+
+  <button onclick="abrirNoGoogleMaps()" style="
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:10px 14px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    background:#f9f9f9;
+    cursor:pointer;
+  ">
+    🗺 Google Maps
+  </button>
+
+  <button onclick="gerarPDFRota()" style="
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:10px 14px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    background:#f9f9f9;
+    cursor:pointer;
+  ">
+    📄 PDF
+  </button>
+
+  <button id="btnCompartilharRota" style="
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:10px 14px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    background:#f9f9f9;
+    cursor:pointer;
+  ">
+    📤 Compartilhar
+  </button>
+
 </div>
 
-<button onclick="toggleMapa()">🗺 Mostrar / Ocultar mapa</button>
+<button onclick="toggleMapa()" style="
+  margin-top:10px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:10px 14px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  background:#f9f9f9;
+  cursor:pointer;
+">
+  🗺 Mostrar mapa
+</button>
 
 <div id="map-rota" style="
   width:100%;
