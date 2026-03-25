@@ -437,34 +437,36 @@ function fecharModalZona(){
   document.getElementById("modalZona").style.display = "none";
 }
 
-// 🔹 simulação de base de postos (você pode depois ligar no seu banco real)
 function obterPostosPorZona(zona){
 
-  const todos = JSON.parse(localStorage.getItem("postos") || "[]");
+  // 🔹 usa MESMA BASE do mapa
+  const todos = JSON.parse(localStorage.getItem("postos_cache") || "[]");
 
   return todos.filter(p => {
-    return (p.zona || "").toLowerCase() === zona.toLowerCase();
+    return (p.ZONA || "").toLowerCase() === zona.toLowerCase();
   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const select = document.getElementById("selectZona");
-  if (!select) return;
+const select = document.getElementById("selectZona");
 
-  select.onchange = () => {
+if (select){
 
-    const zona = select.value;
-    if (!zona){
-      document.getElementById("infoZona").innerText = "Selecione uma zona";
-      return;
-    }
+  const postos = JSON.parse(localStorage.getItem("postos_cache") || "[]");
 
-    const lista = obterPostosPorZona(zona);
+  const zonas = [...new Set(
+    postos.map(p => p.ZONA).filter(Boolean)
+  )].sort();
 
-    document.getElementById("infoZona").innerText =
-      `Serão adicionados ${lista.length} postos`;
-  };
+  zonas.forEach(z => {
+    const opt = document.createElement("option");
+    opt.value = z;
+    opt.textContent = z;
+    select.appendChild(opt);
+  });
+
+}
 
 });
 
