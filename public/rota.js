@@ -522,10 +522,12 @@ if (inputBusca){
     const postos = JSON.parse(localStorage.getItem("postos_cache") || "[]");
 
     const lista = postos.filter(p =>
-      p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
-      p.CIDADE?.toLowerCase().includes(q) ||
-      p["ENDEREÇO III"]?.toLowerCase().includes(q)
-    ).slice(0, 8);
+  !isCadastroInativo(p) && (
+    p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
+    p.CIDADE?.toLowerCase().includes(q) ||
+    p["ENDEREÇO III"]?.toLowerCase().includes(q)
+  )
+).slice(0, 8);
 
     sugestoes.innerHTML = lista.map(p => {
 
