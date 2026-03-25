@@ -368,23 +368,84 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 });
 </script>
 
-<header>
-  <h2 style="margin:0;">POSTOS UNISETER - MAPA</h2>
+<header style="
+  background:#003c8d;
+  color:white;
+  padding:18px 16px 14px;
+  border-radius:0 0 18px 18px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+">
 
-  <div style="display:flex; gap:8px; align-items:center;">
-    
-    <button onclick="location.href='app.html'"
-      style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
-      Voltar
+  <div style="text-align:center; font-size:20px; font-weight:600;">
+    Postos Uniseter
+  </div>
+
+  <div style="
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    margin-top:14px;
+  ">
+
+    <button onclick="location.href='home.html'" style="all:unset; cursor:pointer;">
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:6px;
+        padding:10px 14px;
+        border-radius:10px;
+        background:rgba(255,255,255,0.15);
+      ">
+        <img src="https://img.icons8.com/ios-filled/100/menu.png" style="width:18px;">
+        Menu
+      </div>
     </button>
 
-    <button id="btnMenu"
-      style="padding:6px 10px;border-radius:6px;border:1px solid #bbb;cursor:pointer;">
-      ⋮
+    <!-- BOTÃO EXISTENTE (...) -->
+    <button id="btnMenu" style="all:unset; cursor:pointer;">
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:6px;
+        padding:10px 14px;
+        border-radius:10px;
+        background:rgba(255,255,255,0.15);
+      ">
+        ⋮
+      </div>
+    </button>
+
+    <button onclick="sair()" style="all:unset; cursor:pointer;">
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:6px;
+        padding:10px 14px;
+        border-radius:10px;
+        border:1px solid rgba(255,255,255,0.4);
+      ">
+        <img src="https://img.icons8.com/ios-filled/100/exit.png" style="width:18px;">
+        Sair
+      </div>
     </button>
 
   </div>
+
 </header>
+
+<div style="
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 16px;
+  font-size:18px;
+  font-weight:500;
+">
+
+  <img src="https://img.icons8.com/ios-filled/100/marker.png" style="width:22px;">
+  Mapa de Postos
+
+</div>
 
 <div id="menuOpcoes" style="
   display:none;
