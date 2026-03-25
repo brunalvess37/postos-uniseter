@@ -733,5 +733,84 @@ function atualizarUISelecionados(){
   if (selecionadosBusca.length){
     box.innerText = `${selecionadosBusca.length} selecionado(s)`;
   }
+renderChipsSelecionados();
+}
 
+let modoSelecionados = false;
+
+function toggleVerSelecionados(){
+
+  modoSelecionados = !modoSelecionados;
+
+  const sugestoes = document.getElementById("sugestoesRota");
+
+  if (modoSelecionados){
+
+    sugestoes.innerHTML = selecionadosBusca.map(p => {
+
+      const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"];
+      const cidade = p.CIDADE;
+
+      return `
+        <div style="
+          padding:10px;
+          border-bottom:1px solid #eee;
+        ">
+          <div style="font-weight:500">${nome}</div>
+          <div style="font-size:12px;color:#666">${cidade}</div>
+        </div>
+      `;
+    }).join("");
+
+  } else {
+    sugestoes.innerHTML = "";
+  }
+
+}
+
+function renderChipsSelecionados(){
+
+  const box = document.getElementById("chipsSelecionados");
+
+  if (!box) return;
+
+  if (!selecionadosBusca.length){
+    box.innerHTML = "";
+    return;
+  }
+
+  box.innerHTML = selecionadosBusca.map(p => {
+
+    const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"];
+
+    return `
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:6px;
+        padding:4px 8px;
+        border-radius:16px;
+        background:#e3f2fd;
+        font-size:12px;
+      ">
+        ${nome}
+
+        <span onclick='removerChip("${nome}")' style="
+          cursor:pointer;
+          font-weight:bold;
+        ">✕</span>
+      </div>
+    `;
+  }).join("");
+
+}
+
+function removerChip(nome){
+
+  selecionadosBusca = selecionadosBusca.filter(p =>
+    p["POSTOS DE SERVIÇOS / GRUPO SETER"] !== nome
+  );
+
+  atualizarUISelecionados();
+  renderChipsSelecionados();
 }
