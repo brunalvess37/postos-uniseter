@@ -260,12 +260,15 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
 
     <label style="display:block;margin-bottom:6px;">Buscar posto:</label>
 
-<div style="position:relative; margin-bottom:12px;">
-  
-  <input id="buscaRota" type="text" placeholder="Digite e selecione os postos..." 
-      style="
+<div style="
+  position:relative;
+  margin-bottom:12px;
   width:100%;
-  padding:10px 12px;
+">
+  
+  <input id="buscaRota" type="text" placeholder="Digite e selecione os postos..." style="
+  width:100%;
+  padding:10px 36px 10px 12px;
   border-radius:8px;
   border:1px solid #ccc;
   font-size:14px;
@@ -278,13 +281,16 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
   document.getElementById('sugestoesRota').innerHTML='';
 " style="
   position:absolute;
-  right:8px;
+  right:10px;
   top:50%;
   transform:translateY(-50%);
   border:none;
   background:none;
   cursor:pointer;
   color:#999;
+  font-size:14px;
+  line-height:1;
+  padding:0;
 ">
   ✕
 </button>
