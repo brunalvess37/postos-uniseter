@@ -460,14 +460,31 @@ if (select){
   )].sort();
 
   zonas.forEach(z => {
-    const opt = document.createElement("option");
-    opt.value = z;
-    opt.textContent = z;
-    select.appendChild(opt);
-  });
+  const opt = document.createElement("option");
+  opt.value = z;
+  opt.textContent = z;
+  select.appendChild(opt);
+});
+
+// ✅ NOVO BLOCO (ITEM 4)
+select.onchange = () => {
+
+  const zona = select.value;
+
+  if (!zona){
+    document.getElementById("infoZona").innerText = "Selecione uma zona";
+    return;
+  }
+
+  const lista = obterPostosPorZona(zona);
+
+  document.getElementById("infoZona").innerText =
+    lista.length
+      ? `Serão adicionados ${lista.length} postos`
+      : "Nenhum posto encontrado nesta zona";
+};
 
 }
-
 });
 
 function confirmarZona(){
@@ -484,8 +501,11 @@ function confirmarZona(){
   novos.forEach(novo => {
 
     const existe = rota.some(r => {
-      return (r.id || r.nome) === (novo.id || novo.nome);
-    });
+  return (
+    r["POSTOS DE SERVIÇOS / GRUPO SETER"] ===
+    novo["POSTOS DE SERVIÇOS / GRUPO SETER"]
+  );
+});
 
     if (!existe){
       rota.push(novo);
