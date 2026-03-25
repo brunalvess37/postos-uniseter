@@ -427,3 +427,70 @@ function montarTextoRota() {
   return texto;
 }
 
+// ================= 🧭 MODAL ZONA =================
+
+function abrirModalZona(){
+  document.getElementById("modalZona").style.display = "flex";
+}
+
+function fecharModalZona(){
+  document.getElementById("modalZona").style.display = "none";
+}
+
+// 🔹 simulação de base de postos (você pode depois ligar no seu banco real)
+function obterPostosPorZona(zona){
+
+  const todos = JSON.parse(localStorage.getItem("postos") || "[]");
+
+  return todos.filter(p => {
+    return (p.zona || "").toLowerCase() === zona.toLowerCase();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const select = document.getElementById("selectZona");
+  if (!select) return;
+
+  select.onchange = () => {
+
+    const zona = select.value;
+    if (!zona){
+      document.getElementById("infoZona").innerText = "Selecione uma zona";
+      return;
+    }
+
+    const lista = obterPostosPorZona(zona);
+
+    document.getElementById("infoZona").innerText =
+      `Serão adicionados ${lista.length} postos`;
+  };
+
+});
+
+function confirmarZona(){
+
+  const zona = document.getElementById("selectZona").value;
+
+  if (!zona) return alert("Selecione uma zona.");
+
+  const novos = obterPostosPorZona(zona);
+
+  if (!novos.length) return alert("Nenhum posto encontrado.");
+
+  // 🔹 evita duplicados
+  novos.forEach(novo => {
+
+    const existe = rota.some(r => {
+      return (r.id || r.nome) === (novo.id || novo.nome);
+    });
+
+    if (!existe){
+      rota.push(novo);
+    }
+
+  });
+
+  salvarRota();
+  fecharModalZona();
+}
