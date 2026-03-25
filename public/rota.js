@@ -635,3 +635,32 @@ function renderSelecionadosBusca(){
 
   box.innerText = `${selecionadosBusca.length} posto(s) selecionado(s)`;
 }
+
+  // Confirmar Add Busca
+function confirmarAdicao(){
+
+  if (!selecionadosBusca.length){
+    return alert("Selecione ao menos um posto.");
+  }
+
+  selecionadosBusca.forEach(p => {
+
+    const existe = rota.some(r =>
+      r["POSTOS DE SERVIÇOS / GRUPO SETER"] ===
+      p["POSTOS DE SERVIÇOS / GRUPO SETER"]
+    );
+
+    if (!existe){
+      rota.push(p);
+    }
+
+  });
+
+  salvarRota();
+
+  selecionadosBusca = [];
+  document.getElementById("buscaRota").value = "";
+  document.getElementById("sugestoesRota").innerHTML = "";
+
+  fecharModalZona();
+}
