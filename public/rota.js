@@ -672,11 +672,31 @@ function renderSelecionadosBusca(){
   // Confirmar Add Busca
 function confirmarAdicao(){
 
-  if (!selecionadosBusca.length){
+  let listaFinal = [];
+
+  // 🔹 1. SE VEIO DA BUSCA
+  if (selecionadosBusca.length){
+    listaFinal = [...selecionadosBusca];
+  }
+
+  // 🔹 2. SE VEIO DA ZONA
+  else {
+
+    const zona = document.getElementById("selectZona").value;
+
+    if (zona){
+      listaFinal = obterPostosPorZona(zona);
+    }
+
+  }
+
+  // 🔴 VALIDAÇÃO FINAL
+  if (!listaFinal.length){
     return alert("Selecione ao menos um posto.");
   }
 
-  selecionadosBusca.forEach(p => {
+  // 🔹 ADICIONA NA ROTA (SEM DUPLICAR)
+  listaFinal.forEach(p => {
 
     const existe = rota.some(r =>
       r["POSTOS DE SERVIÇOS / GRUPO SETER"] ===
@@ -691,9 +711,11 @@ function confirmarAdicao(){
 
   salvarRota();
 
+  // 🔹 LIMPA ESTADO
   selecionadosBusca = [];
   document.getElementById("buscaRota").value = "";
   document.getElementById("sugestoesRota").innerHTML = "";
+  document.getElementById("chipsSelecionados").innerHTML = "";
 
   fecharModalZona();
 }
