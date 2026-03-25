@@ -208,3 +208,13 @@ button svg {
     padding: 16px;
   }
 }
+
+
+
+.item-busca:hover{
+  background:#f5f5f5;
+}
+
+.item-busca{
+  border-radius:8px;
+}
