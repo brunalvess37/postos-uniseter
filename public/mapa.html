@@ -1202,6 +1202,7 @@ marcadores[i] = m;
     sheet.classList.remove("pulse");
   }, 350);
 
+  // remove destaque
   if (marcadorDestacado) {
     const el = marcadorDestacado.getElement();
     const ponto = el?.querySelector("div");
@@ -1209,22 +1210,6 @@ marcadores[i] = m;
     marcadorDestacado = null;
   }
 };
-
-// ✨ animação do bottom sheet
-const sheet = document.getElementById("rota-sheet");
-sheet.classList.add("pulse");
-
-setTimeout(() => {
-  sheet.classList.remove("pulse");
-}, 350);
-    
-    if (marcadorDestacado) {
-      const el = marcadorDestacado.getElement();
-      const ponto = el?.querySelector("div");
-      ponto?.classList.remove("marker-highlight");
-      marcadorDestacado = null;
-    }
-  };
 });
     
 });
