@@ -258,29 +258,56 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
       <button onclick="fecharModalZona()" style="border:none;background:none;font-size:18px;cursor:pointer;">✖</button>
     </div>
 
-    <label style="display:block;margin-bottom:6px;">Zona:</label>
+    <label style="display:block;margin-bottom:6px;">Buscar posto:</label>
 
-    <select id="selectZona" style="
-      width:100%;
-      padding:8px;
-      border-radius:8px;
-      border:1px solid #ccc;
-      margin-bottom:12px;
-    ">
-    
-    <option value="">Selecione</option>
-    </select>
+<div style="position:relative; margin-bottom:12px;">
+  
+  <input id="buscaRota" type="text" placeholder="Nome, cidade ou bairro..." style="
+    width:100%;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:14px;
+  ">
 
-    <div id="infoZona" style="
-      background:#f1f5f9;
-      padding:10px;
-      border-radius:8px;
-      font-size:13px;
-      color:#333;
-      margin-bottom:15px;
-    ">
-      Selecione uma zona
-    </div>
+  <div id="sugestoesRota" style="
+    position:absolute;
+    width:100%;
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:8px;
+    margin-top:4px;
+    max-height:200px;
+    overflow:auto;
+    z-index:10;
+  "></div>
+
+</div>
+
+<hr style="margin:15px 0;">
+
+<label style="display:block;margin-bottom:6px;">Ou adicionar por zona:</label>
+
+<select id="selectZona" style="
+  width:100%;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  margin-bottom:12px;
+">
+  <option value="">Selecione</option>
+</select>
+
+<div id="infoZona" style="
+  background:#f1f5f9;
+  padding:10px;
+  border-radius:8px;
+  font-size:13px;
+  color:#333;
+  margin-bottom:15px;
+">
+  Selecione uma zona
+</div>
 
     <div style="display:flex;gap:10px;">
       <button onclick="fecharModalZona()" style="flex:1;">Cancelar</button>
