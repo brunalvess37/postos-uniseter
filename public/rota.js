@@ -736,37 +736,6 @@ function atualizarUISelecionados(){
 renderChipsSelecionados();
 }
 
-let modoSelecionados = false;
-
-function toggleVerSelecionados(){
-
-  modoSelecionados = !modoSelecionados;
-
-  const sugestoes = document.getElementById("sugestoesRota");
-
-  if (modoSelecionados){
-
-    sugestoes.innerHTML = selecionadosBusca.map(p => {
-
-      const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"];
-      const cidade = p.CIDADE;
-
-      return `
-        <div style="
-          padding:10px;
-          border-bottom:1px solid #eee;
-        ">
-          <div style="font-weight:500">${nome}</div>
-          <div style="font-size:12px;color:#666">${cidade}</div>
-        </div>
-      `;
-    }).join("");
-
-  } else {
-    sugestoes.innerHTML = "";
-  }
-
-}
 
 function renderChipsSelecionados(){
 
