@@ -1213,14 +1213,13 @@ const popup=`
 
     <div class="popup-address">${endereco}</div>
 
-    <div class="popup-actions">
-      <button
-        class="popup-btn js-add-rota"
-        ${inativo ? "disabled title='Cadastro inativo não pode entrar na rota'" : ""}
-      >
-        ➕ Incluir na rota
-      </button>
-    </div>
+    ${!inativo ? `
+  <div class="popup-actions">
+    <button class="popup-btn js-add-rota">
+      ➕ Incluir na rota
+    </button>
+  </div>
+` : ""}
 
     ${p.ZONA ? `
       <div style="
