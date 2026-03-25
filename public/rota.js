@@ -646,6 +646,9 @@ function toggleSelecionadoBusca(p){
   }
 
   atualizarUISelecionados();
+
+  document.getElementById("buscaRota").value = "";
+  document.getElementById("sugestoesRota").innerHTML = "";
 }
 
   // Mostrar postos Selecionados na Busca
@@ -658,7 +661,7 @@ function renderSelecionadosBusca(){
     return;
   }
 
-  box.innerText = `${selecionadosBusca.length} posto(s) selecionado(s)`;
+  box.innerText = `✔ ${selecionadosBusca.length} posto(s) selecionado(s)`;
 }
 
   // Confirmar Add Busca
