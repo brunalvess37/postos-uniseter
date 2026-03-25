@@ -477,7 +477,7 @@ if (select){
   select.appendChild(opt);
 });
 
-// ✅ NOVO BLOCO (ITEM 4)
+// ✅ NOVO BLOCO 
 select.onchange = () => {
 
   const zona = select.value;
@@ -496,6 +496,49 @@ select.onchange = () => {
 };
 
 }
+
+// ================= 🔎 BUSCA NO MODAL =================
+
+const inputBusca = document.getElementById("buscaRota");
+const sugestoes = document.getElementById("sugestoesRota");
+
+if (inputBusca){
+
+  inputBusca.addEventListener("input", () => {
+
+    const q = inputBusca.value.toLowerCase();
+    sugestoes.innerHTML = "";
+
+    if (!q) return;
+
+    const postos = JSON.parse(localStorage.getItem("postos_cache") || "[]");
+
+    const lista = postos.filter(p =>
+      p["POSTOS DE SERVIÇOS / GRUPO SETER"]?.toLowerCase().includes(q) ||
+      p.CIDADE?.toLowerCase().includes(q) ||
+      p["ENDEREÇO III"]?.toLowerCase().includes(q)
+    ).slice(0, 8);
+
+    sugestoes.innerHTML = lista.map(p => {
+
+      const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"];
+      const cidade = p.CIDADE;
+
+      return `
+        <div style="
+          padding:8px;
+          border-bottom:1px solid #eee;
+          cursor:pointer;
+        " onclick='addPostoBusca(${JSON.stringify(p)})'>
+          <div style="font-weight:500">${nome}</div>
+          <div style="font-size:12px;color:#666">${cidade}</div>
+        </div>
+      `;
+    }).join("");
+  });
+
+}
+  
 });
 
 function confirmarZona(){
@@ -525,5 +568,25 @@ function confirmarZona(){
   });
 
   salvarRota();
+  fecharModalZona();
+}
+
+  // Busca de postos dentro de Adicionar
+function addPostoBusca(p){
+
+  const existe = rota.some(r => {
+    return r["POSTOS DE SERVIÇOS / GRUPO SETER"] ===
+           p["POSTOS DE SERVIÇOS / GRUPO SETER"];
+  });
+
+  if (!existe){
+    rota.push(p);
+    salvarRota();
+  }
+
+  // limpa busca
+  document.getElementById("buscaRota").value = "";
+  document.getElementById("sugestoesRota").innerHTML = "";
+
   fecharModalZona();
 }
