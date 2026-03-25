@@ -229,17 +229,28 @@ box.innerHTML+= `
       ${i+1}. ${nome}
     </b>
 
-    <small style="display:block; color:#666;">
-      ${cidade}
-    </small>
-
-    <small style="
-  display:block;
-  color:#666;
-  margin-bottom:10px;
+    <div style="
+  margin-left:26px;
+  margin-top:4px;
 ">
-  ${endereco || "Endereço não disponível"}
-</small>
+
+  <div style="
+    font-size:14px;
+    font-weight:500;
+    color:#1976d2;
+    margin-bottom:2px;
+  ">
+    ${cidade}
+  </div>
+
+  <div style="
+    font-size:13px;
+    color:#666;
+  ">
+    ${endereco || "Endereço não disponível"}
+  </div>
+
+</div>
 
     <div style="
   display:flex;
