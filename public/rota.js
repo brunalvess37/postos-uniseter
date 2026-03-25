@@ -523,6 +523,9 @@ if (inputBusca){
     sugestoes.innerHTML = lista.map(p => {
 
   const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"];
+  const jaSelecionado = selecionadosBusca.some(x =>
+  x["POSTOS DE SERVIÇOS / GRUPO SETER"] === nome
+);
   const cidade = p.CIDADE;
   const bairro = p["ENDEREÇO III"];
 
@@ -534,33 +537,35 @@ if (inputBusca){
 
   return `
   <div class="item-busca" 
-       onclick='toggleSelecionadoBusca(${JSON.stringify(p)})'
-       data-nome="${nome}"
-       style="
-        display:flex;
-        align-items:flex-start;
-        gap:10px;
-        padding:10px;
-        border-bottom:1px solid #eee;
-        cursor:pointer;
-        transition:background 0.2s;
-       ">
+     onclick='toggleSelecionadoBusca(${JSON.stringify(p)})'
+     data-nome="${nome}"
+     style="
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      padding:10px;
+      border-bottom:1px solid #eee;
+      cursor:pointer;
+      transition:background 0.2s;
+      background:${jaSelecionado ? "#e3f2fd" : "#fff"};
+     ">
 
     <!-- ✅ CHECKBOX VISUAL -->
     <div class="check-busca" style="
-      width:18px;
-      height:18px;
-      border:2px solid #bbb;
-      border-radius:4px;
-      margin-top:2px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:12px;
-      color:#fff;
-      background:#fff;
-      flex-shrink:0;
-    "></div>
+  width:18px;
+  height:18px;
+  border:2px solid ${jaSelecionado ? "#003c8d" : "#bbb"};
+  border-radius:4px;
+  margin-top:2px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  color:#fff;
+  background:${jaSelecionado ? "#003c8d" : "#fff"};
+">
+  ${jaSelecionado ? "✔" : ""}
+</div>
 
     <!-- TEXTO -->
     <div style="flex:1;">
