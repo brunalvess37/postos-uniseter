@@ -868,25 +868,6 @@ marker.on("popupopen", (e) => {
       // centraliza o mapa nesse ponto
       map.setView([lat, lng], 15);
 
-
-      // cria popup igual aos postos
-const popup = `
-  <div class="popup-card">
-    <div class="popup-title">
-      📍 Minha localização
-    </div>
-
-    <div class="popup-address">
-      Localização atual do dispositivo
-    </div>
-
-    <div class="popup-actions">
-      <button class="popup-btn js-add-gps">
-        ➕ Incluir na rota
-      </button>
-    </div>
-  </div>
-`;
     },
     (err) => {
       alert("Não foi possível obter sua localização.");
