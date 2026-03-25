@@ -1,6 +1,7 @@
 let dados = JSON.parse(localStorage.getItem("rota_postos")||"{}");
 let rota = dados.rota||[];
 let dataRota = dados.data||null;
+let selecionadosBusca = [];
 
 function distancia(a, b) {
   const dx = a.Latitude - b.Latitude;
@@ -536,7 +537,7 @@ if (inputBusca){
       padding:8px;
       border-bottom:1px solid #eee;
       cursor:pointer;
-    " onclick='addPostoBusca(${JSON.stringify(p)})'>
+    " onclick='toggleSelecionadoBusca(${JSON.stringify(p)})'>
 
       <div style="font-weight:500">${nomeH}</div>
 
@@ -602,4 +603,35 @@ function addPostoBusca(p){
   document.getElementById("sugestoesRota").innerHTML = "";
 
   fecharModalZona();
+}
+
+  // Selecionar mais de um posto na Busca
+function toggleSelecionadoBusca(p){
+
+  const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"];
+
+  const index = selecionadosBusca.findIndex(x =>
+    x["POSTOS DE SERVIÇOS / GRUPO SETER"] === nome
+  );
+
+  if (index >= 0){
+    selecionadosBusca.splice(index, 1);
+  } else {
+    selecionadosBusca.push(p);
+  }
+
+  renderSelecionadosBusca();
+}
+
+  // Mostrar postos Selecionados na Busca
+function renderSelecionadosBusca(){
+
+  const box = document.getElementById("infoZona");
+
+  if (!selecionadosBusca.length){
+    box.innerText = "Nenhum posto selecionado";
+    return;
+  }
+
+  box.innerText = `${selecionadosBusca.length} posto(s) selecionado(s)`;
 }
