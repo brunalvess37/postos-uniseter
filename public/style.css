@@ -206,7 +206,8 @@ button svg {
    MOBILE
 ========================================================= */
 @media (max-width: 600px) {
-  body {
+  .container,
+  .content {
     padding: 16px;
   }
 }
