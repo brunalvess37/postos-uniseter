@@ -797,13 +797,33 @@ function irParaMeuGps(){
       // limpa marcador antigo do usuário (se houver)
       layerUsuario.clearLayers();
 
-      // adiciona bolinha azul no mapa
-      const marker = L.marker([lat, lng], { icon: iconUsuario() })
+     // cria popup igual ao dos postos
+const popup = `
+  <div class="popup-card">
+    <div class="popup-title">
+      📍 Minha localização
+    </div>
+
+    <div class="popup-address">
+      Localização atual do dispositivo
+    </div>
+
+    <div class="popup-actions">
+      <button class="popup-btn js-add-gps">
+        ➕ Incluir na rota
+      </button>
+    </div>
+  </div>
+`;
+
+// adiciona marcador com popup
+const marker = L.marker([lat, lng], { icon: iconUsuario() })
   .addTo(layerUsuario)
   .bindPopup(popup)
   .openPopup();
 
-      marker.on("popupopen", (e) => {
+// evento do botão (SÓ adiciona se clicar)
+marker.on("popupopen", (e) => {
 
   const btn = e.popup.getElement().querySelector(".js-add-gps");
   if (!btn) return;
@@ -848,12 +868,6 @@ function irParaMeuGps(){
       // centraliza o mapa nesse ponto
       map.setView([lat, lng], 15);
 
-      // cria objeto “posto virtual” para incluir na rota
-      const pontoUsuario = {
-        Latitude: lat,
-        Longitude: lng,
-        "POSTOS DE SERVIÇOS / GRUPO SETER": "📍 Minha localização"
-      };
 
       // cria popup igual aos postos
 const popup = `
