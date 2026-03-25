@@ -118,6 +118,7 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
   border-radius:12px;
 ">
   <button class="secondary" onclick="otimizarRota()">📍 Otimizar rota</button>
+  <button class="secondary" onclick="abrirModalZona()">➕ Adicionar</button>
   <button class="secondary" onclick="limparRota()">🗑 Limpar rota</button>
   <button class="secondary" onclick="abrirNoGoogleMaps()">Rota no Google Maps</button>
   <button class="secondary" onclick="gerarPDFRota()">📄 PDF</button>
@@ -137,5 +138,79 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
 
 <div id="mapa" style="height:0; overflow:hidden; transition:.3s"></div>
 
+<!-- ================= MODAL ZONA ================= -->
+<div id="modalZona" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+">
+
+  <div style="
+    background:#fff;
+    border-radius:12px;
+    padding:20px;
+    width:90%;
+    max-width:400px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+  ">
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:15px;
+    ">
+      <b>Adicionar postos à rota</b>
+      <button onclick="fecharModalZona()" style="border:none;background:none;font-size:18px;cursor:pointer;">✖</button>
+    </div>
+
+    <label style="display:block;margin-bottom:6px;">Zona:</label>
+
+    <select id="selectZona" style="
+      width:100%;
+      padding:8px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      margin-bottom:12px;
+    ">
+      <option value="">Selecione</option>
+      <option value="Centro">Centro</option>
+      <option value="Norte">Norte</option>
+      <option value="Sul">Sul</option>
+      <option value="Leste">Leste</option>
+      <option value="Oeste">Oeste</option>
+    </select>
+
+    <div id="infoZona" style="
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:8px;
+      font-size:13px;
+      color:#333;
+      margin-bottom:15px;
+    ">
+      Selecione uma zona
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button onclick="fecharModalZona()" style="flex:1;">Cancelar</button>
+      <button onclick="confirmarZona()" style="
+        flex:1;
+        background:#003c8d;
+        color:#fff;
+        border:none;
+        border-radius:8px;
+      ">
+        Confirmar
+      </button>
+    </div>
+
+  </div>
+</div>
+    
 </body>
 </html>
