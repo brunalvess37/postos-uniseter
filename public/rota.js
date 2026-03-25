@@ -585,35 +585,6 @@ if (inputBusca){
   
 });
 
-function confirmarZona(){
-
-  const zona = document.getElementById("selectZona").value;
-
-  if (!zona) return alert("Selecione uma zona.");
-
-  const novos = obterPostosPorZona(zona);
-
-  if (!novos.length) return alert("Nenhum posto encontrado.");
-
-  // 🔹 evita duplicados
-  novos.forEach(novo => {
-
-    const existe = rota.some(r => {
-  return (
-    r["POSTOS DE SERVIÇOS / GRUPO SETER"] ===
-    novo["POSTOS DE SERVIÇOS / GRUPO SETER"]
-  );
-});
-
-    if (!existe){
-      rota.push(novo);
-    }
-
-  });
-
-  salvarRota();
-  fecharModalZona();
-}
 
   // Busca de postos dentro de Adicionar
 function addPostoBusca(p){
