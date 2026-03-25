@@ -521,20 +521,33 @@ if (inputBusca){
 
     sugestoes.innerHTML = lista.map(p => {
 
-      const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"];
-      const cidade = p.CIDADE;
+  const nome = p["POSTOS DE SERVIÇOS / GRUPO SETER"];
+  const cidade = p.CIDADE;
+  const bairro = p["ENDEREÇO III"];
 
-      return `
-        <div style="
-          padding:8px;
-          border-bottom:1px solid #eee;
-          cursor:pointer;
-        " onclick='addPostoBusca(${JSON.stringify(p)})'>
-          <div style="font-weight:500">${nome}</div>
-          <div style="font-size:12px;color:#666">${cidade}</div>
-        </div>
-      `;
-    }).join("");
+  const regex = new RegExp(q, "gi");
+
+  const nomeH = nome?.replace(regex, m => `<mark>${m}</mark>`);
+  const cidadeH = cidade?.replace(regex, m => `<mark>${m}</mark>`);
+  const bairroH = bairro?.replace(regex, m => `<mark>${m}</mark>`);
+
+  return `
+    <div style="
+      padding:8px;
+      border-bottom:1px solid #eee;
+      cursor:pointer;
+    " onclick='addPostoBusca(${JSON.stringify(p)})'>
+
+      <div style="font-weight:500">${nomeH}</div>
+
+      <div style="font-size:12px;color:#666">
+        ${cidadeH || ""}
+        ${bairroH ? " — " + bairroH : ""}
+      </div>
+
+    </div>
+  `;
+}).join("");
   });
 
 }
