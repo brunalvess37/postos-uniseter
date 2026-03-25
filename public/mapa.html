@@ -830,38 +830,66 @@ marker.on("popupopen", (e) => {
 
   btn.onclick = () => {
 
-    if (navigator.vibrate) {
-      navigator.vibrate(20);
-    }
+  if (navigator.vibrate) {
+    navigator.vibrate(20);
+  }
 
-    const pontoUsuario = {
-      Latitude: lat,
-      Longitude: lng,
-      "POSTOS DE SERVIÇOS / GRUPO SETER": "📍 Minha localização"
-    };
+  const pontoUsuario = {
+    Latitude: lat,
+    Longitude: lng,
+    "POSTOS DE SERVIÇOS / GRUPO SETER": "📍 Minha localização"
+  };
 
-    const rota = getRota();
+  const rota = getRota();
 
-    // evita duplicado
-    const existe = rota.some(r =>
-      r.Latitude === lat && r.Longitude === lng
-    );
+  // evita duplicado
+  const existe = rota.some(r =>
+    r.Latitude === lat && r.Longitude === lng
+  );
 
-    if (!existe) {
-      rota.unshift(pontoUsuario);
-      salvarRota(rota);
-      desenharRota();
-      renderRotaLista();
-    }
+  if (!existe) {
+    rota.unshift(pontoUsuario);
+    salvarRota(rota);
+    desenharRota();
+    renderRotaLista();
+  }
 
-    // feedback visual
-    btn.innerHTML = "✔ Adicionado";
-    btn.disabled = true;
+  // ✨ muda botão
+  btn.innerHTML = "✔ Adicionado";
+  btn.disabled = true;
+
+  // ✨ anima marcador (IGUAL AOS POSTOS)
+  const el = marker.getElement();
+  const ponto = el?.querySelector("div");
+
+  if (ponto) {
+    ponto.classList.add("marker-added");
+
+    setTimeout(() => {
+      ponto.classList.remove("marker-added");
+    }, 600);
+  }
+
+  // ✨ FECHAR POPUP COM ANIMAÇÃO
+  const popupEl = e.popup.getElement();
+
+  if (popupEl) {
+    popupEl.classList.add("fade-out");
 
     setTimeout(() => {
       map.closePopup(e.popup);
-    }, 300);
-  };
+    }, 200);
+  }
+
+  // ✨ animação do bottom sheet
+  const sheet = document.getElementById("rota-sheet");
+  sheet.classList.add("pulse");
+
+  setTimeout(() => {
+    sheet.classList.remove("pulse");
+  }, 350);
+
+};
 
 });
 
