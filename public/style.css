@@ -291,18 +291,25 @@ button svg {
 @media (min-width: 1000px) {
 
   .app-header {
-    max-width: 1000px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
     border-radius: 0 0 18px 18px;
   }
 
+  .header-top,
+  .header-actions {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
   .content {
-  max-width: 1000px;
-  margin: 16px auto;
-  background: var(--card);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 4px 12px var(--shadow);
-}
+    max-width: 1000px;
+    margin: 16px auto;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 12px var(--shadow);
+  }
 
 }
