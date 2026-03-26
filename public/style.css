@@ -286,3 +286,19 @@ button svg {
 .btn-header img {
   width: 18px;
 }
+
+/* ===== AJUSTE DESKTOP ===== */
+@media (min-width: 900px) {
+
+  .app-header {
+    max-width: 900px;
+    margin: 0 auto;
+    border-radius: 0 0 18px 18px;
+  }
+
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+}
