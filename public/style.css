@@ -233,7 +233,7 @@ button svg {
 .app-header {
   background: #003c8d;
   color: white;
-  padding: 18px 20px 16px;
+  padding: 20px 20px 18px;
   border-radius: 0 0 18px 18px;
   box-shadow: 0 4px 12px rgba(0,0,0,.15);
 }
@@ -267,9 +267,10 @@ button svg {
 /* linha dos botões */
 .header-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 12px;
   margin-top: 14px;
+  align-items: center;
 }
 
 .btn-header {
