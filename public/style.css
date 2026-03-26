@@ -288,16 +288,16 @@ button svg {
 }
 
 /* ===== AJUSTE DESKTOP ===== */
-@media (min-width: 900px) {
+@media (min-width: 1000px) {
 
   .app-header {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     border-radius: 0 0 18px 18px;
   }
 
   .content {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
   }
 
