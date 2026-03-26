@@ -126,12 +126,31 @@
 
   <!-- LINHA 1 -->
   <div style="
-    text-align:center;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+">
+
+  <div style="
     font-size:20px;
     font-weight:600;
   ">
     Postos Uniseter
   </div>
+
+  <div onclick="sair()" style="
+    display:flex;
+    align-items:center;
+    gap:4px;
+    font-size:12px;
+    opacity:.85;
+    cursor:pointer;
+  ">
+    <img src="https://img.icons8.com/ios-filled/100/exit.png" style="width:16px;">
+    Sair
+  </div>
+
+</div>
 
   <!-- LINHA 2 -->
   <div style="
@@ -170,20 +189,7 @@
       Mapa
     </div>
 
-    <!-- SAIR -->
-    <div onclick="sair()" style="
-  display:flex;
-  align-items:center;
-  gap:4px;
-  font-size:12px;
-  opacity:.85;
-  cursor:pointer;
-">
-  <img src="https://img.icons8.com/ios-filled/100/exit.png" style="width:16px;">
-  Sair
-</div>
-
-  </div>
+    </div>
 
 </header>
 
