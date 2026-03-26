@@ -227,3 +227,61 @@ button svg {
 .item-busca{
   border-radius:8px;
 }
+
+/* ===== HEADER PADRÃO ===== */
+
+.app-header {
+  background: #003c8d;
+  color: white;
+  padding: 18px 16px 16px;
+  border-radius: 0 0 18px 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+
+/* linha superior */
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.header-logout {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  opacity: .85;
+  cursor: pointer;
+}
+
+.header-logout img {
+  width: 16px;
+}
+
+/* linha dos botões */
+.header-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.15);
+  cursor: pointer;
+}
+
+.btn-header img {
+  width: 18px;
+}
