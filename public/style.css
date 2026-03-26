@@ -2,7 +2,7 @@
    VARIÁVEIS DE TEMA
 ========================================================= */
 :root {
-  --bg: #fafafa;
+  --bg: #eef1f5;
   --card: #ffffff;
   --text: #222;
   --muted: #666;
@@ -297,8 +297,12 @@ button svg {
   }
 
   .content {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
+  max-width: 1000px;
+  margin: 16px auto;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px var(--shadow);
+}
 
 }
