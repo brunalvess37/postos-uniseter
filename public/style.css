@@ -247,7 +247,7 @@ button svg {
 }
 
 .header-title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 600;
 }
 
@@ -267,7 +267,7 @@ button svg {
 /* linha dos botões */
 .header-actions {
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end; /* 🔥 ALINHA À DIREITA */
   gap: 12px;
   margin-top: 14px;
   align-items: center;
