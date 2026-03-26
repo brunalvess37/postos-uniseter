@@ -294,13 +294,16 @@ button svg {
     width: 100%;
     max-width: none;
     margin: 0;
-    border-radius: 0 0 18px 18px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .header-top,
   .header-actions {
     max-width: 1000px;
     margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
   }
 
   .content {
