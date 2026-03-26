@@ -74,76 +74,30 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
 </head>
 <body>
 
-<header style="
-  background:#003c8d;
-  color:white;
-  padding:18px 16px 16px;
-  border-radius:0 0 18px 18px;
-  box-shadow:0 4px 12px rgba(0,0,0,.15);
-">
+<div class="app-header">
 
-  <!-- LINHA 1 -->
-  <div style="
-    text-align:center;
-    font-size:20px;
-    font-weight:600;
-  ">
-    Postos Uniseter
+  <div class="header-top">
+    <div class="header-title">Postos Uniseter</div>
+
+    <div class="header-logout" onclick="logout()">
+      <img src="icons/logout.svg">
+      <span>Sair</span>
+    </div>
   </div>
 
-  <!-- LINHA 2 -->
-  <div style="
-    display:flex;
-    justify-content:center;
-    gap:12px;
-    margin-top:14px;
-    flex-wrap:wrap;
-  ">
-
-    <!-- MENU -->
-    <div onclick="location.href='home.html'" style="
-      display:flex;
-      align-items:center;
-      gap:6px;
-      padding:10px 14px;
-      border-radius:10px;
-      background:rgba(255,255,255,0.15);
-      cursor:pointer;
-    ">
-      <img src="https://img.icons8.com/ios-filled/100/menu.png" style="width:18px;">
-      Menu
+  <div class="header-actions">
+    <div class="btn-header" onclick="window.location.href='home.html'">
+      <img src="icons/menu.svg">
+      <span>Menu</span>
     </div>
 
-    <!-- MAPA -->
-    <div onclick="location.href='mapa.html'" style="
-      display:flex;
-      align-items:center;
-      gap:6px;
-      padding:10px 14px;
-      border-radius:10px;
-      background:rgba(255,255,255,0.15);
-      cursor:pointer;
-    ">
-      <img src="https://img.icons8.com/ios-filled/100/marker.png" style="width:18px;">
-      Mapa
+    <div class="btn-header" onclick="window.location.href='mapa.html'">
+      <img src="icons/mapa.svg">
+      <span>Mapa</span>
     </div>
+  </div>
 
-    <!-- SAIR -->
-   <div onclick="sair()" style="
-  display:flex;
-  align-items:center;
-  gap:4px;
-  font-size:12px;
-  opacity:.85;
-  cursor:pointer;
-">
-  <img src="https://img.icons8.com/ios-filled/100/exit.png" style="width:16px;">
-  Sair
 </div>
-
-  </div>
-
-</header>
 
 <div style="
   display:flex;
