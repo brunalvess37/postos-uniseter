@@ -202,6 +202,25 @@ button svg {
 }
 
 /* =========================================================
+   MENU LATERAL
+========================================================= */
+
+.menu-lateral {
+  position: fixed;
+  top: 0;
+  left: -260px; /* 🔥 ESSENCIAL (esconde o menu) */
+  width: 260px;
+  height: 100%;
+  background: white;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  transition: 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 999;
+}
+
+/* =========================================================
    MOBILE
 ========================================================= */
 @media (max-width: 600px) {
