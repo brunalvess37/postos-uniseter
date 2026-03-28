@@ -161,7 +161,11 @@
         onclick="
           document.getElementById('search').value='';
           document.getElementById('suggestions').innerHTML='';
-          document.getElementById('details').innerHTML='';
+          
+          const details = document.getElementById('details');
+          details.innerHTML='';
+          details.style.display='none';
+          
           this.style.display='none';
         ">
         ✕
