@@ -383,3 +383,9 @@ button svg {
   display: none;
   z-index: 998;
 }
+
+.menu-item.active {
+  background: #dce9ff;
+  color: #003c8d;
+  font-weight: 600;
+}
