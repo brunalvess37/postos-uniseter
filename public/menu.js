@@ -11,25 +11,10 @@ document.addEventListener("DOMContentLoaded", function () {
   menu.id = "menuLateral";
   menu.className = "menu-lateral";
 
-  menu.innerHTML = `
-    
-    <div class="menu-header" onclick="fecharMenu()">
-      <span class="menu-icon">☰</span>
-      <span>MENU</span>
-    </div>
-
-    <div class="menu-content">
-      <div class="menu-item" onclick="location.href='home.html'">
-        - Mais ferramentas
-      </div>
-    </div>
-
-    <div class="menu-footer" onclick="sair()">
-      <img src="https://img.icons8.com/ios-filled/50/exit.png">
-      <span>Sair</span>
-    </div>
-    
-  `;
+  .menu-item img {
+  width: 18px;
+  opacity: 0.8;
+}
 
   document.body.appendChild(menu);
 
