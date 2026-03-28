@@ -147,6 +147,7 @@ mark {
   border-radius: 12px;
   border: 1px solid var(--border);
   box-shadow: 0 4px 12px var(--shadow);
+  display: none;
 }
 
 #details h3 {
