@@ -11,7 +11,9 @@ document.addEventListener("DOMContentLoaded", function () {
   menu.id = "menuLateral";
   menu.className = "menu-lateral";
 
- menu.innerHTML = `
+ const pagina = window.location.pathname;
+
+menu.innerHTML = `
   
   <div class="menu-header" onclick="fecharMenu()">
     <span class="menu-icon">☰</span>
@@ -20,10 +22,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   <div class="menu-content">
 
-    <div class="menu-item" onclick="location.href='home.html'">
+    <div class="menu-item ${pagina.includes("app") ? "active" : ""}" 
+         onclick="location.href='app.html'">
+      <img src="https://img.icons8.com/ios-filled/50/search.png">
+      <span>Buscar postos</span>
+    </div>
+
+    <div class="menu-item ${pagina.includes("home") ? "active" : ""}" 
+         onclick="location.href='home.html'">
       <img src="https://img.icons8.com/ios-filled/50/toolbox.png">
       <span>Mais ferramentas</span>
     </div>
+
   </div>
 
   <div class="menu-footer" onclick="sair()">
