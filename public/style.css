@@ -326,8 +326,27 @@ button svg {
 }
 
 .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 14px;
+  border-radius: 8px;
+
   font-size: 15px;
-  margin-top: 10px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+  background: #e6edf7;
+}
+
+.menu-item:active {
+  transform: scale(0.98);
+  background: #d6e4f5;
 }
 
 /* rodapé */
