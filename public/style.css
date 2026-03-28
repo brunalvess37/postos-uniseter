@@ -291,9 +291,10 @@ button svg {
 
   box-shadow: 4px 0 16px rgba(0,0,0,0.2);
 
+  .menu-lateral {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  }
 
   transition: left 0.3s ease;
   z-index: 999;
@@ -305,6 +306,7 @@ button svg {
   align-items: center;
   gap: 10px;
 
+  height: 70px; 
   padding: 16px;
   font-weight: bold;
   font-size: 16px;
@@ -319,17 +321,19 @@ button svg {
 
 /* conteúdo */
 .menu-content {
-  padding: 20px 16px;
+  padding: 16px;
+  margin-top: 0; /* garante que fique colado no topo */
 }
 
 .menu-item {
   font-size: 15px;
-  margin-bottom: 10px;
-  cursor: pointer;
+  margin-top: 10px;
 }
 
 /* rodapé */
 .menu-footer {
+  margin-top: auto;
+
   display: flex;
   align-items: center;
   gap: 10px;
@@ -342,4 +346,18 @@ button svg {
 
 .menu-footer img {
   width: 20px;
+}
+
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(2px);
+
+  display: none;
+  z-index: 998;
 }
