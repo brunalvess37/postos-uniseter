@@ -1,5 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+  const overlay = document.createElement("div");
+  overlay.className = "menu-overlay";
+  document.body.appendChild(overlay);
+  
+  overlay.onclick = fecharMenu;
+
+  
   const menu = document.createElement("div");
   menu.id = "menuLateral";
   menu.className = "menu-lateral";
@@ -32,10 +39,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function abrirMenu(){
   document.getElementById("menuLateral").style.left = "0";
+  document.querySelector(".menu-overlay").style.display = "block";
 }
 
 function fecharMenu(){
   document.getElementById("menuLateral").style.left = "-280px";
+  document.querySelector(".menu-overlay").style.display = "none";
 }
 
 // fechar clicando fora
