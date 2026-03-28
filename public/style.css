@@ -229,7 +229,7 @@ button svg {
   color: white;
 
   height: 80px; /* altura fixa */
-  padding: 0 16px;
+  padding: 6px 16px 0 16px; /* topo | lados | baixo */
 
   display: flex;
   flex-direction: column;
@@ -240,9 +240,8 @@ button svg {
   text-align: center;
   font-size: 22px;
   font-weight: 600;
-   
-   margin-top: 6px;
-   margin-bottom: 6px;
+  
+  margin-bottom: 6px;
 }
 
 .app-header-actions {
