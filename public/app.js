@@ -189,6 +189,9 @@ ${inativo ? `
 </div>
 
   `;
+  
+  const details = document.getElementById("details");
+  details.style.display = "block";
 
   document.getElementById("suggestions").innerHTML = "";
   document.getElementById("search").value = "";
