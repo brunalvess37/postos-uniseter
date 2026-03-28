@@ -228,12 +228,12 @@ button svg {
   background: #003c8d;
   color: white;
 
-  height: 80px; /* altura fixa */
-  padding: 6px 16px 0 16px; /* topo | lados | baixo */
+  height: 80px;
+  padding: 8px 16px 0 16px;
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .app-header-title {
