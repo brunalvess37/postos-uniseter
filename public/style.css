@@ -286,15 +286,13 @@ button svg {
   width: 260px;
   height: 100%;
 
-  background: rgba(255,255,255,0.95); /* 🔥 transparência */
+  background: rgba(255,255,255,0.95);
   backdrop-filter: blur(6px);
 
   box-shadow: 4px 0 16px rgba(0,0,0,0.2);
 
-  .menu-lateral {
   display: flex;
   flex-direction: column;
-  }
 
   transition: left 0.3s ease;
   z-index: 999;
