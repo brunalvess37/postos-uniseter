@@ -1,33 +1,50 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-  // CRIA MENU
   const menu = document.createElement("div");
   menu.id = "menuLateral";
   menu.className = "menu-lateral";
 
   menu.innerHTML = `
-    <div class="menu-top">
-      <div onclick="location.href='home.html'">Mais ferramentas</div>
+    
+    <div class="menu-header" onclick="fecharMenu()">
+      <span class="menu-icon">☰</span>
+      <span>MENU</span>
     </div>
 
-    <div class="menu-bottom" onclick="sair()">
-      Sair
+    <div class="menu-content">
+      <div class="menu-item" onclick="location.href='home.html'">
+        - Mais ferramentas
+      </div>
     </div>
+
+    <div class="menu-footer" onclick="sair()">
+      <img src="https://img.icons8.com/ios-filled/50/exit.png">
+      <span>Sair</span>
+    </div>
+    
   `;
 
   document.body.appendChild(menu);
 
+  // começa fechado
+  menu.style.left = "-280px";
 });
 
 function abrirMenu(){
   document.getElementById("menuLateral").style.left = "0";
 }
 
+function fecharMenu(){
+  document.getElementById("menuLateral").style.left = "-280px";
+}
+
+// fechar clicando fora
 document.addEventListener("click", function(e){
   const menu = document.getElementById("menuLateral");
+
   if(!menu) return;
 
-  if(!menu.contains(e.target) && !e.target.innerText.includes("☰")){
-    menu.style.left = "-260px";
+  if(!menu.contains(e.target) && !e.target.closest(".app-header-menu")){
+    menu.style.left = "-280px";
   }
 });
