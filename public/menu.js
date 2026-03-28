@@ -1,17 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+// overlay
   const overlay = document.createElement("div");
   overlay.className = "menu-overlay";
-  document.body.appendChild(overlay);
-  
+  document.body.appendChild(overlay);  
   overlay.onclick = fecharMenu;
 
-  
+// menu
   const menu = document.createElement("div");
   menu.id = "menuLateral";
   menu.className = "menu-lateral";
 
-  
  menu.innerHTML = `
   
   <div class="menu-header" onclick="fecharMenu()">
@@ -25,7 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
       <img src="https://img.icons8.com/ios-filled/50/toolbox.png">
       <span>Mais ferramentas</span>
     </div>
-
   </div>
 
   <div class="menu-footer" onclick="sair()">
