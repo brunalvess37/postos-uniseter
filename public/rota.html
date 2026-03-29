@@ -75,6 +75,34 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
   transform:translateY(-50%) scale(1.1);
 }
 
+/* 👇 animação das setas */
+#btnScrollDown svg path{
+  animation: scrollDown 1.4s infinite;
+}
+
+/* atraso entre setas */
+#btnScrollDown svg path:nth-of-type(1){
+  animation-delay: 0s;
+}
+
+#btnScrollDown svg path:nth-of-type(2){
+  animation-delay: 0.2s;
+}
+
+@keyframes scrollDown{
+  0%{
+    opacity:0;
+    transform:translateY(-2px);
+  }
+  50%{
+    opacity:1;
+  }
+  100%{
+    opacity:0;
+    transform:translateY(4px);
+  }
+}
+    
 </style>
 
 </head>
