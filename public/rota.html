@@ -89,6 +89,10 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
   animation-delay: 0.2s;
 }
 
+#btnScrollDown[data-mode="up"] svg path{
+  animation:none;
+}
+    
 @keyframes scrollDown{
   0%{
     opacity:0;
@@ -388,7 +392,7 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
   </div>
 </div>
 
-<div id="btnScrollDown" style="
+<div id="btnScrollDown" data-mode="down" style="
   position:fixed;
   right:8px;
   top:50%;
