@@ -182,7 +182,7 @@ if (btnScroll){
     const passouDoTopo = scrollTop > 150;
 
     // 👇 mostrar só se tiver conteúdo e rolou a tela
-    if (rota.length >= 3 && passouDoTopo){
+    if (rota.length >= 3){
       btnScroll.style.display = "block";
     } else {
       btnScroll.style.display = "none";
