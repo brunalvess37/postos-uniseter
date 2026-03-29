@@ -17,6 +17,15 @@
   data-clerk-publishable-key="pk_test_bHVja3ktc3RpbmtidWctODUuY2xlcmsuYWNjb3VudHMuZGV2JA">
 </script>
 
+<script>
+async function sair() {
+  const c = window.Clerk;
+  await c.load();
+  await c.signOut();
+  location.href = "/signin.html";
+}
+</script>
+
 <link rel="stylesheet" href="style.css?v=202501">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -24,15 +33,10 @@
 <style>
 /* 👉 AQUI É VISUAL (CSS) */
 body{display:none;}
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
 
 #map{
   width:100%;
-  height:calc(100vh - 220px);
+  height:calc(100vh - 140px);
   border-radius:12px;
   border:1px solid var(--border);
 }
@@ -40,7 +44,7 @@ header{
 /* 📱 ajuste fino apenas para mobile */
 @media (max-width: 768px){
   #map{
-    height:calc(100svh - 300px);
+    height:calc(100svh - 180px);
   }
 }
 
@@ -351,6 +355,49 @@ header{
   border: 2px solid white;
   box-shadow: 0 0 0 4px rgba(0,102,255,0.2);
 }
+
+/* ===== BOTÃO FLUTUANTE ⋮ ===== */
+#btnMenu{
+  position: fixed;
+  left: 16px;
+  bottom: 90px;
+
+  width: 48px;
+  height: 48px;
+
+  border-radius: 50%;
+  background: #003c8d;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 22px;
+  cursor: pointer;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+
+  z-index: 900;
+}
+
+/* ===== MENU DO BOTÃO ⋮ ===== */
+#menuOpcoes{
+  position: fixed;
+  left: 16px;
+  bottom: 150px;
+
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+
+  z-index: 901;
+
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 8px;
+}
   
 </style>
 
@@ -368,92 +415,32 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 });
 </script>
 
-<header style="
-  background:#003c8d;
-  color:white;
-  padding:18px 16px 16px;
-  border-radius:0 0 18px 18px;
-  box-shadow:0 4px 12px rgba(0,0,0,.15);
-">
+<div class="app-header">
 
-  <div style="text-align:center; font-size:20px; font-weight:600;">
+  <div class="app-header-title">
     Postos Uniseter
   </div>
 
-  <div style="
-    display:flex;
-    justify-content:center;
-    gap:12px;
-    margin-top:14px;
-  ">
+  <div class="app-header-actions">
 
-    <div onclick="location.href='home.html'" style="
-      display:flex;
-      align-items:center;
-      gap:6px;
-      padding:10px 14px;
-      border-radius:10px;
-      background:rgba(255,255,255,0.15);
-      cursor:pointer;
-    ">
-      <img src="https://img.icons8.com/ios-filled/100/menu.png" style="width:18px;">
-      Menu
+    <div class="app-header-menu" onclick="abrirMenu()">
+      ☰
     </div>
 
-    <!-- BOTÃO (...) -->
-    <div id="btnMenu" style="
-      padding:10px 16px;
-      border-radius:10px;
-      background:rgba(255,255,255,0.15);
-      cursor:pointer;
-      font-size:18px;
-    ">
-      ⋮
+    <div class="app-header-map" onclick="location.href='mapa.html'">
+      <img src="https://img.icons8.com/ios-filled/100/marker.png">
+      <span>Mapa</span>
     </div>
-
-  <div onclick="sair()" style="
-  display:flex;
-  align-items:center;
-  gap:4px;
-  font-size:12px;
-  opacity:.85;
-  cursor:pointer;
-">
-  <img src="https://img.icons8.com/ios-filled/100/exit.png" style="width:16px;">
-  Sair
-</div>
 
   </div>
 
-</header>
-
-<div style="
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:14px 16px;
-  font-size:18px;
-  font-weight:500;
-">
-
-  <img src="https://img.icons8.com/ios-filled/100/marker.png" style="width:22px;">
-  Mapa de Postos
-
 </div>
 
-<div id="menuOpcoes" style="
-  display:none;
-  position:absolute;
-  top:110px;
-  right:16px;
-  flex-direction:column;
-  gap:6px;
-  z-index:3000;
-  background:white;
-  border:1px solid #ddd;
-  border-radius:10px;
-  padding:8px;
-">
+<div class="page-subtitle">
+  Mapa de Postos
+</div>
+
+<div id="menuOpcoes">
   <button id="btnCompartilhar" class="map-btn">📤 Compartilhar rota</button>
   <button id="btnRota" class="map-btn">🧭 Abrir rota</button>
   <button id="btnGps" class="map-btn">📍 Minha localização</button>
@@ -500,6 +487,8 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   <div id="suggestions"></div>
 </div>
 
+<!-- BOTÃO FLUTUANTE (⋮) -->
+<div id="btnMenu">⋮</div>
 
 <div style="position:relative">
   <div id="map"></div>
@@ -1386,5 +1375,7 @@ marcadores[i] = m;
 }
 </script>
 
+<script src="menu.js"></script>
+  
 </body>
 </html>
