@@ -359,33 +359,34 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
   right:8px;
   top:50%;
   transform:translateY(-50%);
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  background:#003c8d;
-  color:#fff;
   display:none;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 4px 12px rgba(0,0,0,.25);
   cursor:pointer;
   z-index:2000;
+  opacity:0.7;
   transition:.2s;
 ">
-  <div style="
-  font-size:22px;
-  line-height:1;
-  transform:translateY(1px);
-">
-  <div id="btnScrollDown">
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-    <rect x="8" y="2" width="8" height="12" rx="4" stroke="#ffffff" stroke-width="1.8"/>
-    <circle cx="12" cy="6" r="1" fill="#ffffff"/>
-    <path d="M9 16 L12 19 L15 16" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-    <path d="M9 19 L12 22 L15 19" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+    
+    <!-- Mouse -->
+    <rect x="8" y="2" width="8" height="12" rx="4"
+      stroke="#003c8d" stroke-width="1.6"/>
+
+    <!-- Scroll -->
+    <circle cx="12" cy="6" r="1"
+      fill="#003c8d"/>
+
+    <!-- Setas -->
+    <path d="M9 16 L12 19 L15 16"
+      stroke="#003c8d" stroke-width="1.6"
+      stroke-linecap="round"/>
+
+    <path d="M9 19 L12 22 L15 19"
+      stroke="#003c8d" stroke-width="1.6"
+      stroke-linecap="round"/>
+
   </svg>
-</div>
-</div>
+
 </div>
     
 <script src="menu.js"></script>
