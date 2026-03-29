@@ -240,8 +240,9 @@ button svg {
   text-align: center;
   font-size: 22px;
   font-weight: 600;
-  
-  margin-bottom: 6px;
+   
+  margin-top: 10px; 
+  margin-bottom: 4px;
 }
 
 .app-header-actions {
