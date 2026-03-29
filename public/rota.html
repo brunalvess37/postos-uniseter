@@ -76,45 +76,27 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
 
 <div class="app-header">
 
-  <div class="header-top">
-    <div class="header-title">Postos Uniseter</div>
-
-    <div class="header-logout" onclick="sair()">
-      <!-- SAIR -->
-        <img src="https://img.icons8.com/ios-filled/100/exit.png">
-      <span>Sair</span>
-    </div>
+  <div class="app-header-title">
+    Postos Uniseter
   </div>
 
-  <div class="header-actions">
-    <div class="btn-header" onclick="window.location.href='home.html'">
-      <img src="https://img.icons8.com/ios-filled/100/menu.png">
-      <span>Menu</span>
+  <div class="app-header-actions">
+
+    <div class="app-header-menu" onclick="abrirMenu()">
+      ☰
     </div>
 
-    <div class="btn-header" onclick="window.location.href='mapa.html'">
-      <!-- MAPA -->
-        <img src="https://img.icons8.com/ios-filled/100/marker.png">
+    <div class="app-header-map" onclick="location.href='mapa.html'">
+      <img src="https://img.icons8.com/ios-filled/100/marker.png">
       <span>Mapa</span>
     </div>
+
   </div>
 
 </div>
 
-<div style="
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  padding:18px 16px;
-  text-align:center;
-">
-
-  <img src="https://img.icons8.com/ios-filled/100/route.png" style="width:22px;">
-  <span style="font-size:18px; font-weight:500;">
-    Rotas do Dia
-  </span>
-
+<div class="page-subtitle">
+  Rotas do Dia
 </div>
     
 <p id="rota-info" style="margin:10px 0; color:#555;"></p>
@@ -371,6 +353,8 @@ button{ margin:4px;padding:8px 12px;font-size:14px; }
 
   </div>
 </div>
-    
+
+<script src="menu.js"></script>
+
 </body>
 </html>
