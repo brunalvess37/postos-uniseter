@@ -176,7 +176,85 @@ if (btnScroll){
       behavior: "smooth"
     });
   };
-}  
+} 
+
+// ================= 🔽 BOTÃO INTELIGENTE =================
+
+const btnScroll = document.getElementById("btnScrollDown");
+
+if (btnScroll){
+
+  window.addEventListener("scroll", () => {
+
+    const scrollTop = window.scrollY;
+    const alturaTela = window.innerHeight;
+    const alturaTotal = document.documentElement.scrollHeight;
+
+    const chegouNoFinal = scrollTop + alturaTela >= alturaTotal - 20;
+    const passouDoTopo = scrollTop > 150;
+
+    // 👇 mostrar só se tiver conteúdo e rolou a tela
+    if (rota.length >= 3 && passouDoTopo){
+      btnScroll.style.display = "block";
+    } else {
+      btnScroll.style.display = "none";
+    }
+
+    // 👇 mudar comportamento
+    if (chegouNoFinal){
+      btnScroll.dataset.mode = "up";
+    } else {
+      btnScroll.dataset.mode = "down";
+    }
+
+    atualizarIconeScroll();
+
+  });
+
+  btnScroll.onclick = () => {
+
+    if (btnScroll.dataset.mode === "up"){
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth"
+      });
+    }
+
+  };
+
+}
+
+function atualizarIconeScroll(){
+
+  const btn = document.getElementById("btnScrollDown");
+  if (!btn) return;
+
+  const svg = btn.querySelector("svg");
+
+  if (!svg) return;
+
+  if (btn.dataset.mode === "up"){
+
+    svg.innerHTML = `
+      <path d="M9 8 L12 5 L15 8" stroke="#003c8d" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M9 11 L12 8 L15 11" stroke="#003c8d" stroke-width="1.6" stroke-linecap="round"/>
+    `;
+
+  } else {
+
+    svg.innerHTML = `
+      <rect x="8" y="2" width="8" height="12" rx="4" stroke="#003c8d" stroke-width="1.6"/>
+      <circle cx="12" cy="6" r="1" fill="#003c8d"/>
+      <path d="M9 16 L12 19 L15 16" stroke="#003c8d" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M9 19 L12 22 L15 19" stroke="#003c8d" stroke-width="1.6" stroke-linecap="round"/>
+    `;
+
+  }
+
+}
+  
 });
 
 // LISTA
