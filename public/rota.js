@@ -166,18 +166,6 @@ document.getElementById("btnCompartilharRota").onclick = async () => {
   }
 });
 
-  // 👇 ação scroll down
-const btnScroll = document.getElementById("btnScrollDown");
-
-if (btnScroll){
-  btnScroll.onclick = () => {
-    window.scrollTo({
-      top: document.body.scrollHeight,
-      behavior: "smooth"
-    });
-  };
-} 
-
 // ================= 🔽 BOTÃO INTELIGENTE =================
 
 const btnScroll = document.getElementById("btnScrollDown");
