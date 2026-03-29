@@ -165,7 +165,18 @@ document.getElementById("btnCompartilharRota").onclick = async () => {
     salvarRota();
   }
 });
-  
+
+  // 👇 ação scroll down
+const btnScroll = document.getElementById("btnScrollDown");
+
+if (btnScroll){
+  btnScroll.onclick = () => {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: "smooth"
+    });
+  };
+}  
 });
 
 // LISTA
@@ -300,6 +311,13 @@ box.innerHTML+= `
   </div>`;
   
 });
+
+// 👇 controle do botão scroll
+const btnScroll = document.getElementById("btnScrollDown");
+
+if (btnScroll){
+  btnScroll.style.display = rota.length >= 3 ? "flex" : "none";
+}
 }
 
 function remo(i){ rota.splice(i,1); salvarRota(); }
